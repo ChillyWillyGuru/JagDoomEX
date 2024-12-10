@@ -109,12 +109,12 @@ into port 2. You will need an Atari ST or Amiga mouse with appropriate adapter,
 or a PS/2 mouse with appropriate adapter for upcoming mouse support.
 
 ## Acknowledgements
-
+```
 John Carmack for writing such an awesome game, and releasing it to the public.
 Carl Forhan for arranging for the code, and doing the initial work to get it
 running.
-CyranoJ for fixing the overset in the HUD in the code released by Carl.
-
+CyranoJ for fixing the offset in the HUD in the code released by Carl.
+```
 ## Known Bugs
 
 The init.s file needs some work. It didn't work as it came from Carl. I made
@@ -127,8 +127,8 @@ will get to it. I only have one Jaguar, and the JagGD cart is not compatible
 with JagLink in any case.
 
 ## Changelog
-
+```
 241210 - First commit to repo
 241209 - Fixed the spectre - now in Super Ghostly Phantasmagoric™ rendering.
 241209 - Remapped the controls to allow for the ProPad.
-
+```
