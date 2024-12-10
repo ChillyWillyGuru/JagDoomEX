@@ -1,5 +1,4 @@
 # Doom for the Atari Jaguar - Extended Edition
-============================================
 
 This project allows you to build Doom for the Jaguar under linux. It uses the
 latest toolchain released by Atari which was put into the Public Domain. You
@@ -35,7 +34,7 @@ the linux side of things. If you're contemplating building Doom, you should
 know how to do this, so I'm not going to cover it here.
 
 ## Building JagDoomEX
-==================
+
 Open a terminal in linux. Set your current directory to the project source.
 ```
 cd /home/username/Projects/Jaguar/JagDoomEX/src
@@ -74,7 +73,7 @@ a Jaguar emulator like BigPEmu, or on real hardware using a skunkboard or the
 Jaguar GameDrive cart.
 
 ## New Controls
-============
+
 C/B/A/PAUSE/OPTION remain as set in the game. The differences arise in the
 number pad, which also affects the ProPad controller.
 ```
@@ -110,14 +109,14 @@ into port 2. You will need an Atari ST or Amiga mouse with appropriate adapter,
 or a PS/2 mouse with appropriate adapter for upcoming mouse support.
 
 ## Acknowledgements
-================
+
 John Carmack for writing such an awesome game, and releasing it to the public.
 Carl Forhan for arranging for the code, and doing the initial work to get it
 running.
 CyranoJ for fixing the overset in the HUD in the code released by Carl.
 
 ## Known Bugs
-==========
+
 The init.s file needs some work. It didn't work as it came from Carl. I made
 some changes that get it working in BigPEmu, but it doesn't work on a real
 console - yet. I'll work on it until it does, but until then, we use Carl's
@@ -128,7 +127,8 @@ will get to it. I only have one Jaguar, and the JagGD cart is not compatible
 with JagLink in any case.
 
 ## Changelog
-=========
-241209 - Remapped the controls to allow for the ProPad.
+
+241210 - First commit to repo
 241209 - Fixed the spectre - now in Super Ghostly Phantasmagoric™ rendering.
+241209 - Remapped the controls to allow for the ProPad.
 
