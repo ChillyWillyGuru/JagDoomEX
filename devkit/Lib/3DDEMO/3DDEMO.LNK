@@ -1,0 +1,13 @@
+startup.o crymain.o video.o jagcry.o joypad.o
+objlist.o gpu.o turtle.o sort.o txtcry.o
+
+back1.o back2.o back3.o bottom.o bottomfr.o engbot.o engfrnt.o
+engside.o engtop.o fin.o finside.o gunback.o gunside.o guntop.o
+hood.o roof.o rtfront.o rtside.o winfrnt.o wing.o wingside.o
+winrt.o
+
+ship1.o
+
+
+
+

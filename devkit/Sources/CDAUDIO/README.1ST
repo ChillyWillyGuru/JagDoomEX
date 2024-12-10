@@ -1,0 +1,15 @@
+CD-ROM Audio Player Demo
+------------------------
+30 March 1994  D.M. Schwartz, Atari Corp.
+
+This directory contains all the files needed to make the CD_audio demo
+program.  Of course, you will also need the assembler, linker, and other
+tools as well.  Edit the source file to change the CD track number you want
+to play.
+
+
+
+
+My phone number is 408-745-2118.
+
+Dave

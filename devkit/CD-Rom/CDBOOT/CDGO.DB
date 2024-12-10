@@ -1,0 +1,20 @@
+# CDGO.DB - script for controlled boot with the Jaguar CD
+# or Emulator V2.10 or bigger
+#
+# Note: This assumes CDBOOT.ROM was loaded into Alpine 
+# Space at 802000
+
+# this installs the ROM code in Jaguar DRAM 
+g802000,80206e
+
+# this executes the bootcode from DRAM, installs the CDBIOS 
+# and reads the table of contents to $2C00
+g,50f22
+
+# this goes until you bootcode is loaded from the first track in the 
+# second session of your CD
+g,3aec
+
+# this executes the jump to your bootcode and stops with the 68k PC
+# pointing to the first instruction of your bootcode
+t

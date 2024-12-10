@@ -1,0 +1,38 @@
+echo
+echo RDB.RC file, Release March 14, 1995
+echo
+alias OLPLO 'sw f00020'
+alias OLPHI 'sw f00022'
+
+alias VMODE 'sw f00028'
+
+alias HP 'sw f0002e'
+alias HBE 'sw f00032'
+alias HDB1 'sw f00038'
+alias HDB2 'sw f0003a'
+alias HBB 'sw f00030'
+alias HDE 'sw f0003c'
+alias HS 'sw f00034'
+alias HVS 'sw f00036'
+alias HEQ 'sw f00054'
+
+alias VP 'sw f0003c'
+alias VBE 'sw f00042'
+alias VDB 'sw f00046'
+alias VBB 'sw f00040'
+alias VDE 'sw f00048'
+alias VS 'sw f00044'
+alias VEB 'sw f0004a'
+alias VEE 'sw f0004c'
+
+alias VI 'sw f0004e'
+alias INT1 'sw f000e0'
+alias INT2 'sw f000e2'
+
+alias BORD1 'sl f0002a'
+alias BG 'sw f00058'
+
+load od.db
+load fill.db
+load ngpu.db
+

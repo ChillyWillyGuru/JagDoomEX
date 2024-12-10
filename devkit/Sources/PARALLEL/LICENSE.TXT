@@ -1,0 +1,99 @@
+------------------------------
+  Software License Agreement
+------------------------------
+
+                                 IMPORTANT
+
+Read this agreement before installing or using the Software. Installing
+and/or using the Software on your computer indicates your acceptance of
+these terms. If you do not agree to these terms and conditions, delete the
+Software and all it's associated files from your computer. This Software
+License Agreement gives you ONLY RESTRICTED RIGHTS to use the Software (and
+all it's associated files and documentation) as follows:
+
+YOU MAY
+
+      1.  Use the Software without charge on as many systems as you wish,
+
+      2.  Share the Software with others for their personal use, but only
+          if you share it intact, without any changes or modifications of
+          any kind, and complete with all it's documentation and associated
+          files. You must pass it on exactly in the same form as we release
+          it, or not pass it on at all,
+
+      3.  Make backup copies of the Software, so long as you place our
+          copyright notice on the backup copies,
+
+      4.  Request and receive technical support as provided in the
+          particular product's Product Support Policy.
+
+      5.  Vendors may distribute the Software free of charge by electronic
+          or other means for the purpose of technical support, but may not
+          include the Software in their products without our written permission.
+
+YOU MAY NOT
+
+      1.  Use the Software in any way except as provided in this agreement,
+
+      2.  Modify, alter, copy, transfer, or reproduce the Software in any
+          way, except as expressly allowed in this agreement,
+
+      3.  Translate, de-assemble, de-compile, reverse program, or reverse
+          engineer the Software or any of its components,
+
+      4.  Charge any kind of fee for distributing the Software without our
+          written permission,
+
+      5.  Use the Software for commercial purposes without our permission,
+
+      6.  Sublicense, lease, rent, sell, distribute, or otherwise dispose
+          of the Software without our written permission.
+
+This license is effective from the date of first use of the Software and
+shall remain in force until terminated. You may terminate this agreement by
+destroying any and all copies of the Software and its documentation.
+Parallel Technologies, Inc. may terminate this agreement if you fail to
+comply with any of the terms and conditions of it. You agree to destroy any
+and all copies of the Software and its documentation, in whatever form, if
+we terminate this license agreement, and you agree to provide us written
+certification of such destruction upon our request.
+
+Statement of Exclusion of Warranty
+
+ALL PRODUCTS DELIVERED PURSUANT TO THIS AGREEMENT ARE DELIVERED ON AN
+"AS-IS" BASIS AND PARALLEL TECHNOLOGIES, ITS DEALERS AND DISTRIBUTORS,
+EXPRESSLY DISCLAIM ANY AND ALL WARRANTIES OR CONDITIONS OF MERCHANTABLE
+QUALITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+Limitation of Liability
+
+PARALLEL TECHNOLOGIES DISCLAIMS ALL WARRANTIES RELATING TO THIS SOFTWARE,
+WHETHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, AND ALL
+SUCH WARRANTIES ARE EXPRESSLY AND SPECIFICALLY DISCLAIMED.  NEITHER
+PARALLEL TECHNOLOGIES NOR ANYONE ELSE WHO HAS BEEN INVOLVED IN THE
+CREATION, PRODUCTION, OR DELIVERY OF THIS SOFTWARE SHALL BE LIABLE FOR ANY
+INDIRECT, CONSEQUENTIAL, SPECIAL, PUNITIVE, OR INCIDENTAL DAMAGES OR
+DAMAGES DUE TO LOST PROFITS, DATA, OR INFORMATION ARISING OUT OF THE USE OR
+INABILITY TO USE SUCH SOFTWARE EVEN IF PARALLEL TECHNOLOGIES HAS BEEN
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR CLAIMS.  IN NO EVENT SHALL
+PARALLEL TECHNOLOGIES' LIABILITY FOR ANY DAMAGES EVER EXCEED THE PRICE PAID
+FOR THE LICENSE TO USE THE SOFTWARE, REGARDLESS OF THE FORM OF CLAIM.  THE
+PERSON USING THE SOFTWARE BEARS ALL RISKS AS TO THE QUALITY AND PERFORMANCE
+OF THE SOFTWARE.  This warranty gives you specific rights and you may have
+other rights.
+
+This agreement shall be governed by the laws of the State of Washington and
+shall inure to the benefit of Parallel Technologies, Inc. and any
+successors, administrators, heirs and assigns.  Any action or proceeding
+brought by either party against the other arising out of or related to this
+agreement shall be brought only in a STATE or FEDERAL COURT of competent
+jurisdiction located in King County, Washington.
+
+     =================================================================
+     =                        FBI WARNING                            =
+     =       Failure to observe the restrictions of this license     =
+     =                     may be a violation                        =
+     =        of 17 United States Code sections 101 through 810      =
+     =      which carries severe personal and corporate penalties.   =
+     =================================================================

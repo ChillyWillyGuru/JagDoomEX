@@ -1,0 +1,177 @@
+Jaguar CD Emulator, v2.10
+-------------------------
+Hi folks, this is the latest version (v2.10) of the CD Emulator.  See the
+"CHANGES HISTORY" Section below for information on what's new in this
+version.
+
+----------------------------------------------------------------------------
+!!! Please keep a copy of the old CD ROM Emulator on a disk for security !!!
+----------------------------------------------------------------------------
+
+The entire contents of the JAGUAR\CDROMEMU directory should be copied to
+the root directory of DRIVE C of the hard drive in your Falcon030 Jaguar
+CDROM Emulator.  The directory structure should remain intact.  Below is the
+complete pathname of each file as it should be found on the Falcon030 after
+you have copied the files over.
+
+C:\CDEMU.TXT
+C:\CDROM.PRG
+C:\AUTO\GPIOINIT.PRG
+C:\CDROMSYS\CDCOLUSA.RSC
+C:\CDROMSYS\CDMONUSA.RSC
+C:\CDROMSYS\CDSTRUSA.RSC
+C:\CDROMSYS\I2S.LOD
+C:\SHDRIVER.SYS
+
+
+
+Emulator problems reported and unchanged:
+-----------------------------------------
+* 'CD_mode' does not switch to single speed
+
+* 'err_flag' is always unusable
+
+
+The following CD BIOS calls dealing with the AUDIO funtionality are untested
+for the Emulator:
+
+* CD_jeri
+* CD_mute
+* CD_umute
+* CD_osamp
+
+As you can make most of your AUDIO tests with real AUDIO CDs, this should be not a
+big problem.
+
+All other functions work in the environments we have used for testing (real
+world game projects from our inhouse development teams).
+
+If you see $DEAD sent from the Emulator DURING access of a track, the reason
+is timing: The date cannot be accessed fast enough on the external data drive
+to fulfill the speed requirements of the interrupt handler.
+
+You should be able to fix this in either of the following ways:
+
+a) Defragment your CD-DATA drive (under MSDOS).
+
+b) Glue any tiny little files you may have together into one big track file.
+(Still apply item A!)
+
+c) Use a drive that fulfills our speed requirements and that does not perform
+thermal recalibration.
+
+
+General remarks:
+----------------
+* The first rule of the CD Emulator is NEVER write ANYTHING to the 1GB
+  CD-DATA Drive from the Falcon030, even from the emulator program.  This
+  explicitly includes saving a TOC file from the emulator.  In fact, it's
+  best if you do NOT EVEN ACCESS the CD-DATA drive in the File Selector
+  dialog box that prompts you for the TOC filename.
+
+  Because of the differences in hard disk partition formats between GEMDOS
+  and MSDOS, the Falcon030 operating system can have problems if you access
+  the CD-DATA drive outside of those portions of the Emulator that know how
+  to deal with the differences.  Please note that the emulator uses two
+  different File Selector dialogs, one for loading or saving TOC files on the
+  Falcon030 internal hard drive and another for selecting track files on the
+  CD-DATA drive.  In the latter, it is perfectly acceptible to access the
+  data drive.  However, should you access the CD-DATA drive from anywhere
+  else, a reboot is required or else you will see memory errors of various
+  types.
+
+* Some People had problems with Cinepak - it would run with the Emulator
+  but NOT with the real Jaguar CD.  One of the reasons was timing, and there
+  are two things in the Cinepak player source to change:
+
+  a) The Variable BLKRATE is 72 for the Emulator and 75 for the real CD.
+
+  b) The Audio BLOCKSIZE goes into calculation for the timing of the
+  buffer-reload.
+
+  If the result is too small (for example because your Audio Blocksize is
+  bigger than you define in CINEPAK.INC), the transfer into the circular
+  buffer starts too early and you kill data by overwriting it while you still
+  are displaying it.
+
+  You can look at the audio block size with FLMINFO on the PC or with the
+  "Show Cinepak Film Info" menu item in the "Jaguar Cinepak Utilities"
+  program on the Macintosh.  (If you don't have a version with this menu
+  option please remember to update your tools more regularly.)
+
+  c) 1 chunk size movies cannot be properly played with the current PLAYER.S
+  in distribution.  The reason is that one chunk movies do not make the
+  player enter the playphase 2 and 3 correctly.  We will post a tested fix
+  for that ASAP.
+
+  We are continually in the process of further improving the "Jaguar Cinepak
+  Utilities" tool.  Please keep an eye out for updates.
+
+* The current drive/butch reads up to 64 bytes over the rim of the buffer.
+  This cannot be avoided without slowing down the 'CD_read' immensely.  Just
+  append a small scratch buffer at the end of the buffer you use.
+
+* Please note that 'CD_initm' is much less efficient than 'CD_init'.  If
+  you have reliability problems with the emulator and 'CD_initm', please
+  check if the same problem apperas with 'CD_init'.  If not, there is a good
+  likelyhood that some other code prevents the GPU to see the bus enough and
+  therefore you lose some data from time to time.  Solution: load fast, then
+  search for and relocate the code yourself (instead of having the GPU to
+  compare every longword by itself for ALL read longwords instead of only in
+  a range where it makes sense to search)
+
+* The CDBIOS will die if you stay too long in any high bus priority of the
+  68k, for example in a VBL.  You must absolutely be sure to run under 55
+  microseconds in your VBL if you are doing it in the 68k.  This is true for
+  all the 'CD_init' variations.
+
+* Avoid doing VBL in 68k at all if possible, for example using an object
+  list update with a GPU object in the object list (as demonstrated in the
+  demo code of CPKDEMO that we distribute).  If you have a problem with GPU
+  space, use overlays for the object list update.
+
+* A typical behaviour to watch for to see if you have killed the CDBIOS is
+  that the 'CD_ptr' remains at the same location.
+
+
+
+
+
+Changes History
+---------------
+
+
+v2.10
+-----
+* Fixed problem that generated a block of 0 (zeros) at the transition point
+  between two files that are virtually merged in one track on the emulator.
+
+* Falcon030 dies if Emulator is unintentionally left reading for a while
+  (This could be overcome with the old version by sending 'CD_stop' if you
+  don't need to read any more data.)
+
+* Falcon030 dies if Emulator is asked to deliver data before or after valid
+  track area.  (This could be overcome by padding the data you WANT to access
+  with dummy data.)
+
+
+v 2.05
+------
+* Found and fixed a problem that would make the emulation crash if you
+  access data out of the existing and defined file area.  This also should
+  fix the problem that the emulation dies after you forget to CD_stop if you
+  don't need to CD_read any more.
+
+
+v2.00
+-----
+* This version of the emulator features improved speed, which should make
+  it more reliable with playing Cinepak movies from the Emulator.
+
+* Another feature is that you now can define padding for files that are
+  merged into a track.  This is basically a function within the saving of the
+  file position include file FILELIST.INC.
+
+
+
+

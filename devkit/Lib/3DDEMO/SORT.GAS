@@ -1,0 +1,401 @@
+;*======================================================================*
+;*                TITLE:       SORT.GAS                                 *
+;*                Function:    Sort Turtles into Painter's Order        *
+;*                                                                      *
+;*                Project #:              RAPIER                        *
+;*                Programmer:             Rob Zdybel                    *
+;*                                                                      *
+;*            COPYRIGHT 1993 Atari Computer Corporation                 *
+;*          UNATHORIZED REPRODUCTION, ADAPTATION, DISTRIBUTION,         *
+;*          PERFORMANCE OR DISPLAY OF THIS COMPUTER PROGRAM OR          *
+;*        THE ASSOCIATED AUDIOVISUAL WORK IS STRICTLY PROHIBITED.       *
+;*                            ALL RIGHTS RESERVED.                      *
+;*                                                                      *
+;*======================================================================*
+
+;
+;       DATA ORGANIZATION
+;
+
+;
+;               +-------------------+    +---------------+
+;               |  Xrite  |  Yrite  |<---|  PTR to ARG1  | INPUT1
+;               +-------------------+    +---------------+
+;               |  Zrite  |  Xdown  |
+;               +-------------------+   ViewPoint Turtle Record
+;               |  Ydown  |  Zdown  |
+;               +-------------------+
+;               |  Xhead  |  Yhead  |
+;               +-------------------+
+;               |  Zhead  |  Xposn  |
+;               +-------------------+
+;               |  Yposn  |  Zposn  |
+;               +-------------------+
+;                        ...         
+;                         +---------+    +---------------+
+;                         | Drawers |<---|  (DrawList)   | INPUT2
+;                         +---------+    +---------------+
+;                         +---------+    +---------------+
+;                         | Scrubs  |<---|  (ScrubList)  | INPUT3
+;                         +---------+    +---------------+
+;               +-------------------+    +---------------+
+;               |     Turtle[1]     |<---|  (TURTLE[1])  | INPUT4
+;               +-------------------+    +---------------+
+;               +-------------------+
+;               |  No. of Turtles   |   INPUT5
+;               +-------------------+
+;               |  Turtle Rcd Size  |   INPUT6
+;               +-------------------+
+;
+
+	.globl    bsort
+;
+;       COMMON EQUATES
+;
+
+DEBUG_ON        EQU     0
+
+	.nlist
+
+	include "jaguar.inc"
+	include "macros.inc"
+
+	.list
+
+	.68000
+SORT_S::
+	.gpu
+	.org     G_RAM
+
+PTRSIZE         EQU     (1*4)           ; 1 LONG
+
+INPUT6          EQU     G_ENDRAM-4
+INPUT5          EQU     INPUT6-4
+INPUT4          EQU     INPUT5-4
+INPUT3          EQU     INPUT4-4
+INPUT2          EQU     INPUT3-4
+INPUT1          EQU     INPUT2-4
+
+;
+;       GLOBAL REGISTER EQUATES
+;
+temp            REGEQU  r0
+temp2           REGEQU  r1
+lomask          REGEQU  r2
+himask          REGEQU  r3
+
+ptr             REGEQU  r4
+matptr          REGEQU  r5
+mtxa            REGEQU  r6
+
+jumpr           REGEQU  r10
+gpuptr          REGEQU  r11
+inptr           REGEQU  r12
+step            REGEQU  r13
+ndx             REGEQU  r14
+
+this            REGEQU  r15     ; * Caution Multiply Defined*
+now             REGEQU  r16     ; * Caution Multiply Defined*
+last            REGEQU  r17     ; * Caution Multiply Defined*
+thisrec         REGEQU  r18     ; * Caution Multiply Defined*
+thisptr         REGEQU  r19     ; * Caution Multiply Defined*
+
+link            REGEQU  r15
+xtemp           REGEQU  r16
+ytemp           REGEQU  r17
+ztemp           REGEQU  r18
+xviewr          REGEQU  r19
+yviewr          REGEQU  r20
+zviewr          REGEQU  r21
+zposn           REGEQU  r22
+
+scrublist       REGEQU  r23
+oldlist         REGEQU  r24
+
+turtlsiz        REGEQU  r25
+nturtles        REGEQU  r26
+turtle68k       REGEQU  r27
+draw68k         REGEQU  r28
+scrub68k        REGEQU  r29
+
+rsort           REGEQU  r30
+return          REGEQU  r31
+
+;
+;       ALTERNATE REGISTER EQUATES
+;
+left1           REGEQU  r11
+left2           REGEQU  r12
+
+;
+;       LOCAL MACROS
+;
+
+;       NOTE: Dedicated Subroutine calls expect the proper
+;             registers to be pre-set. No Nesting!
+
+	.macro   JSR_SORT
+	move    PC,return
+	jump    (rsort)
+	addq    #6,return       ; Determine Return Address
+	.endm
+
+	.macro   SORT_RTS
+	jump    (return)
+	.endm
+
+;
+;       CODE SEGMENT
+;
+
+;
+;       System Initialization
+;
+
+;	DEBUG_INIT			; This is a GASM directive?
+
+bsort:
+	moveq   #1,himask
+	neg     himask
+	move    himask,lomask
+	shlq    #16,himask              ; HIMASK = $ffff0000
+	shrq    #16,lomask              ; LOMASK = $0000ffff
+	movei   #sort,rsort
+
+	movei   #INPUT1,ptr
+	load    (ptr),temp2             ; TEMP2 = 68000 ptr to Viewpt Turtle
+	addq    #4,ptr
+	load    (ptr),draw68k           ; DRAW68K = Ptr to 68000 Drawlist 
+	addq    #4,ptr
+	load    (ptr),scrub68k          ; SCRUB68K = Ptr to 68000 Scrublist 
+	addq    #4,ptr
+	load    (ptr),turtle68k         ; TURTLE68K = Ptr to 68000 Turtles
+	addq    #4,ptr
+	load    (ptr),nturtles          ; NTURTLES = Number of Active Turtles
+	addq    #4,ptr
+	load    (ptr),turtlsiz          ; TURTLSIZ = Size of a Turtle Record (Bytes)
+	or      turtlsiz,turtlsiz       ; *KLUDGE* BUG 21 FIX
+
+	movei   #G_MTXC,ptr
+	movei   #(MATRIX3|MATROW),temp ; Righthand matrix is [3x1] - COLUMN major
+	store   temp,(ptr)              ; Since we wish to multiply by the TRANSPOSE of the Viewer's Matrix
+	movei   #G_MTXA,mtxa            ; Prepare GPU for ROW MAJOR multiply
+	movei   #matrix,matptr
+
+	addq    #12,temp2
+	move    matptr,gpuptr
+	moveq   #5,ndx
+.10:
+	loadw   (temp2),temp            ; FOR (X,Y and Z Head and Posn) DO
+	addq    #2,temp2
+	shlq    #16,temp
+	sharq   #16,temp
+	subq    #1,ndx
+	store   temp,(gpuptr)           ; Matrix[i] = Head/Posn Element Sign-extended
+	jr      PL,.10
+	addq    #4,gpuptr
+
+	nop                             ; << WHY IS THIS NOP REQUIRED? >> **KLUDGE**
+
+	move    matptr,gpuptr           ; Extract Posn values into registers
+	addq    #12,gpuptr
+	load    (gpuptr),xviewr
+	addq    #4,gpuptr
+	load    (gpuptr),yviewr
+	addq    #4,gpuptr
+	load    (gpuptr),zviewr
+;
+;       Find Final Zpos for all Turtles
+;       NOTE: This code assumes ALL Turtles are active and displayed
+;
+	movei   #zloop,jumpr
+	movei   #(gpuram+4),gpuptr
+	move    turtle68k,inptr
+	addq    #18,inptr               ; INPTR = Ptr to Turtle[1].Xposn
+	move    turtlsiz,step
+	subq    #6,step                 ; STEP = Offset to same .Xposn of next turtle
+	move    nturtles,ndx
+zloop:                                  ; FOR (All Turtles) DO
+	loadw   (inptr),xtemp           ; Fetch this Turtle
+	addq    #2,inptr
+	loadw   (inptr),ytemp
+	addq    #2,inptr
+	shlq    #16,xtemp
+	shlq    #16,ytemp
+	sharq   #16,xtemp               ; XTEMP = 32-bit Xpos
+	sharq   #16,ytemp               ; YTEMP = 32-bit Ypos
+	loadw   (inptr),ztemp
+	addq    #2,inptr
+	loadw   (inptr),link
+	add     step,inptr
+	shlq    #16,ztemp
+	shlq    #2,link                 ; LINK = GPU Internal Index
+	sharq   #16,ztemp               ; ZTEMP = 32-bit Zpos
+
+	sub     xviewr,xtemp            ; XTEMP = DeltaX
+	sub     yviewr,ytemp            ; YTEMP = DeltaY
+	sub     zviewr,ztemp            ; ZTEMP = DeltaZ
+
+	and     lomask,xtemp
+	shlq    #16,ytemp
+	or      ytemp,xtemp             ; XTEMP = DeltaY | DeltaX
+	store   matptr,(mtxa)
+	moveta  xtemp,left1
+	moveta  ztemp,left2
+	nop
+	mmult   left1,zposn             ; ZPOSN = Final Z in Viewer Space
+
+	sharq   #14,zposn
+	shlq    #16,zposn
+	or      zposn,link              ; LINK = ZPosn | LinkIndex
+	subq    #1,ndx
+	store   link,(gpuptr)           ; Save this result in local memory
+	jump    NE,(jumpr)
+	addq    #4,gpuptr
+;
+;       Sort Internal Records by Zpos
+;
+
+	loadw   (draw68k),oldlist       ; OLDLIST = 68000 DrawList Root
+	movei   #gpuram,gpuptr
+	shlq    #2,oldlist              ; OLDLIST = Internalized Drawlist Root
+	moveq   #0,scrublist            ; SCRUBLIST = Nil
+	store   scrublist,(gpuptr)      ; DRAWLIST = Nil
+	JSR_SORT
+
+	loadw   (scrub68k),oldlist      ; OLDLIST = 68000 ScrubList Root
+	shlq    #2,oldlist              ; OLDLIST = Internalized Drawlist Root
+	JSR_SORT
+;
+;       Write-Back Results to 68000 RAM
+;
+	shrq    #2,scrublist
+	load    (gpuptr),temp
+	storew  scrublist,(scrub68k)    ; New ScrubList Root
+	shrq    #2,temp
+	storew  temp,(draw68k)          ; New DrawList Root
+
+	addq    #4,gpuptr
+	addq    #24,turtle68k           ; TURTLE68K = Turtle[1].Turtlnk
+writlp: load    (gpuptr),temp
+	addq    #4,gpuptr
+	and     lomask,temp
+	shrq    #2,temp                 ; Divide Index back down for 68000 land
+	subq    #1,nturtles
+	storew  temp,(turtle68k)
+	jr      NE,writlp
+	add     turtlsiz,turtle68k
+
+;
+;       GPU RTS
+;
+gpuend:
+	movei   #G_CTRL,temp2           ; GPU control/status register
+	load    (temp2),temp
+	bclr	#0,temp			; clear GPUGO bit
+	store   temp,(temp2)            ; stop the GPU
+
+endloop:
+	jr      endloop                 ; infinite loop
+	nop
+
+
+;
+;       SUBROUTINE AREA
+;
+
+;
+;       SORT   Sort Turtles by Zposn
+;
+;       GIVEN:
+;               OLDLIST = Index of First Turtle in list
+;               SCRUBLIST = Index of First Turtle in ScrubList
+;               GPUPTR = Address of TurtleRecord[0]
+;               TURTLE[0] = Drawlist Root
+;
+;       RETURNS:
+;               SCRUBLIST = New Turtles Scrubbed as needed
+;               TURTLE[0] = New Drawlist Root
+;               Turtle Records Re-Linked
+;
+;       REGISTER USAGE:
+;               temp, ptr, lomask, himask, rsort
+;               this, now, last, thisptr, thisrec
+;
+sort:
+	cmpq    #0,oldlist              ; WHILE (Oldlist <> Nil) DO
+	move    oldlist,thisptr
+	jr      NE,.10
+	nop
+	SORT_RTS                        ; NOTE: Exit from the side
+.10:
+	move    oldlist,this            ; THIS = Current Record Index
+	add     gpuptr,thisptr          ; THISPTR = Address of This Record
+	load    (thisptr),oldlist
+	move    oldlist,thisrec         ; THISREC = Current Record
+	and     lomask,oldlist          ; OLDLIST = This.Next
+	cmpq    #0,thisrec
+	jr      PL,.33                  ; IF (Zpos < 0) THEN Scrub this Turtle
+;
+;       Add this record to the Scrublist
+;
+	and     himask,thisrec
+	or      scrublist,thisrec       ; This.Next = Scrublist
+	move    this,scrublist          ; Scrublist = This
+	jump    (rsort)
+	store   thisrec,(thisptr)
+.33:                                    ; ELSE (Zpos >= 0)
+;
+;       Insert this record into the Drawlist
+;
+	or      lomask,thisrec          ; New guy wins ties
+	moveq   #0,last                 ; LAST = Index to Root
+	load    (gpuptr),now            ; NOW = Last.Next
+.40:
+	and     lomask,now              ; WHILE ((Now <> Nil) ..
+	move    now,ptr
+	jr      EQ,.49
+	add     gpuptr,ptr
+	load    (ptr),temp
+	cmp     thisrec,temp            ; .. AND (Now.Z > This.Z)) DO
+	jr      MI,.49
+	nop
+	move    now,last                ; LAST = Now
+	jr      .40
+	move    temp,now                ; NOW = Now.Next
+.49:                                    ; Drawlist Insertion Point found
+	and     himask,thisrec
+	add     gpuptr,last
+	or      now,thisrec             ; This.Next = Now
+	load    (last),temp
+	store   thisrec,(thisptr)       ; Save 'This' record
+	and     himask,temp
+	or      this,temp               ; Last.Next = This
+	jump    (rsort)
+	store   temp,(last)             ; Save 'Last' record
+
+
+;
+;       CONSTANT DATA
+;
+
+;
+;       VARIABLE STORAGE
+;
+	.long	LONG
+
+matrix:                                 ; HEAD portion of Viewpt
+	dc.l	0,0,0
+
+gpuram:                                 ; Array of Turtle Zpos|Link Records
+					; .. All the rest of memory
+
+;*======================================================================*
+;*                                 EOF                                  *
+;*======================================================================*
+
+	.phrase
+
+	.68000
+SORT_E::
+

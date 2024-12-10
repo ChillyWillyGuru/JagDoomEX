@@ -1,0 +1,20 @@
+MACFLAGS = -fb -g
+PRGSTART = 7000
+ALNFLAGS = -v -v -l -e -g -a $(PRGSTART) x x
+
+#====================================================================
+
+.SUFFIXES: .o .s
+
+.s.o:
+	mac $(MACFLAGS) $*.s
+
+.SUFFIXES: .o .das
+
+.das.o:
+	mac $(MACFLAGS) -ddsp $*.das
+
+#====================================================================
+
+cd_audio.cof: cd_audio.o echo.o
+	aln $(ALNFLAGS) cd_audio.o echo.o

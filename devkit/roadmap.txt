@@ -1,0 +1,1370 @@
+August 4, 1995
+--------------
+This file contains a roadmap to the Jaguar Developer Kit distribution files
+which are available online.
+
+There is a separate entry for each archive, showing a basic description of
+the contents.  This is followed by more detailed overviews of each group of
+files contained in the archive and a list of files showing the date and file
+size.
+
+If you've got a copy of a file with an older date and/or different filesize
+than what is listed as being in the archive, then you should download that
+particular archive to get the update.
+
+Please remember that when you download an updated archive file, you should
+extract it to an empty directory first, then backup whatever old versions of
+files you may wish to save, then copy over the new files.  To avoid data
+loss, please do not extract directly to your working directories.
+
+Please note that each general category of files shares a single description,
+which may be repeated under the listing of different archive files.  For
+example, the description of MADMAC is shown under the entries for both
+MACALN.ZIP and STTOOLS.ZIP, and there are some files which are in both
+archives (such as JAGUAR\DOCS\MAC.TXT).  So if a description seems to mention
+something and there's no matching file, look for another archive file that
+also includes that category description (e.g.  Look at the entries for
+"Object module utilities" under both STTOOLS.ZIP and UTILPC.ZIP).
+
+------------------------------------------------------------------------------
+
+ARTWORK.ZIP, 8/4/95    Jaguar Artwork Viewer & Jaguar Graphics Tool
+875783 bytes           (Windows)
+
+   Jaguar Graphics & Artwork Utilities -- This package includes the Jaguar
+   Artwork Viewer and the Jaguar Graphics Tool.  The Jaguar Artwork Viewer
+   allows you to preview your artwork on the Jaguar via the Microsoft Windows
+   system clipboard.  The Jaguar Graphics Tool is a Windows-based graphics
+   conversion and manipulation utility.
+
+     JAGUAR\ARTWORK\CMDIALOG.VBX                          4/28/93      18688
+     JAGUAR\ARTWORK\ARTWORK.DOC                            7/6/95      18432
+     JAGUAR\ARTWORK\COMMDLG.DLL                           11/1/93      97936
+     JAGUAR\ARTWORK\JAGTOOL.HLP                           6/29/95     311949
+     JAGUAR\ARTWORK\LEAD.VBX                               4/4/95      55440
+     JAGUAR\ARTWORK\JAGTOOL.EXE                           7/27/95     152127
+     JAGUAR\ARTWORK\LEADDIB.DRV                            4/4/95      38752
+     JAGUAR\ARTWORK\LEAD45.DLL                             4/4/95     517104
+     JAGUAR\ARTWORK\JAGTOOL1.DLL                          6/13/95     125009
+     JAGUAR\ARTWORK\JAGUAR.DLL                             8/2/95      77996
+     JAGUAR\ARTWORK\ARTWORK.HLP                           7/14/95      21796
+     JAGUAR\ARTWORK\ARTWORK.BIN                            8/2/95      74368
+     JAGUAR\ARTWORK\ARTWORK.EXE                            8/4/95     311806
+     JAGUAR\ARTWORK\JAGDLL.TXT                            7/31/95       9614
+     JAGUAR\ARTWORK\VBRUN300.DLL                          6/12/95     398416
+
+------------------------------------------------------------------------------
+
+BPEG.ZIP, 4/17/95      Brainstorm's BPEG (JPEG) image
+511682 bytes           compresssion/decompression tools & library
+
+   BPEG Image Compression & Decompression -- BPEG is Brainstorm's version of
+   JPEG for Jaguar.  Allows you to compress graphics images to a small
+   fraction of their original size, and later decompress them with little
+   visible loss of quality.  Note that BPEG is a lossy compression method
+   designed especially for graphics data and is not applicable to other forms
+   of information (like program code).  Consider LZSS compression for data
+   requiring non-lossy techniques.
+
+   The April 21, 1995 revision to the sample program now uses the Standard
+   Jaguar startup code (included, see also SOURCE.ZIP)
+
+     JAGUAR\BPEG\PICS\GOLDRGB.BPG                         11/4/94      10280
+     JAGUAR\BPEG\PICS\PLAINRGB.BPG                        11/4/94       8716
+     JAGUAR\BPEG\FISH.TGA                                 9/26/94     192018
+     JAGUAR\BPEG\PICS\BEACHRGB.BPG                        11/4/94      11332
+     JAGUAR\BPEG\BPEG.S                                   2/17/95      49823
+     JAGUAR\BPEG\PICS\CHICARGB.BPG                        11/4/94      14076
+     JAGUAR\BPEG\TESTBPEG.LNK                             1/23/95         49
+     JAGUAR\BIN\CBPEG.TTP                                10/17/94      88197
+     JAGUAR\BIN\CBPEG.EXE                                10/17/94     160994
+     JAGUAR\BPEG\PICS\WHITERGB.BPG                        11/4/94      11868
+     JAGUAR\BPEG\STARTUP.S                                4/17/95      11347
+     JAGUAR\BPEG\PATRICK.TGA                              9/26/94     192018
+     JAGUAR\BPEG\RGB2CRY.S                                2/13/95     135146
+     JAGUAR\BPEG\PICS\GREENRGB.BPG                        11/4/94      10148
+     JAGUAR\BPEG\README.TXT                               2/13/95       7983
+     JAGUAR\BPEG\MAKEFILE                                 4/17/95       1278
+     JAGUAR\BPEG\TEST.S                                   4/10/95       7079
+
+------------------------------------------------------------------------------
+
+CDROM.ZIP, 6/23/95     Jaguar CD-ROM files (includes CINEPAK & EMULATOR)
+286088 bytes
+
+   CD Boot Emulator -- The CD Boot Emulator allows you to emulate the boot
+   process of the Jaguar CD so that you can more easily debug your CD boot
+   code and starting phases of a CD program.
+
+     JAGUAR\CDBOOT\CDBOOT.ROM                             6/23/95     184614
+     JAGUAR\CDBOOT\CDGO.DB                                6/23/95        588
+     JAGUAR\CDBOOT\CDBOOT.TXT                             6/23/95       1462
+
+   CD-ROM BIOS -- The Jaguar CD-ROM BIOS is used for developing Jaguar CD-ROM
+   titles.  While a version of the CD-ROM BIOS is built into the ROM of a
+   Jaguar CD-ROM system, it is loaded separately during the development &
+   debugging cycle.
+
+     JAGUAR\CDROM\CD_BIOS.20\CDBIOS20.DTA                  6/3/94          8
+     JAGUAR\CDROM\CDBIOS43.DTA                            4/11/95          8
+     JAGUAR\CDROM\CD_BIOS.20\MAKEFILE                     5/18/94       1434
+     JAGUAR\CDROM\CD_BIOS.20\INOUT.DAS                    4/21/94       2393
+     JAGUAR\CDROM\CD_BIOS.20\CD_SAMP.S                    4/21/94       4781
+     JAGUAR\CDROM\CD_BIOS.20\CD_ASAMP.S                   4/21/94       1688
+     JAGUAR\CDROM\CD_BIOS.20\CDBIOS20.DB                  2/15/95        249
+     JAGUAR\CDROM\CD_BIOS.20\CDBIOS20.TX                   6/3/94       1464
+     JAGUAR\CDROM\CDBIOS43.DB                             4/17/95        209
+     JAGUAR\CDROM\CD_BIOS.20\CD_SAMP.GAS                  4/21/94       1151
+     JAGUAR\CDROM\CDBIOS43.TX                             4/11/95       2472
+
+   CD-ROM Emulator -- The CD-ROM emulator program runs on an Atari Falcon030
+   computer.  The DSP interface of the Falcon030 connects to the Jaguar
+   CD-ROM and allows the emulator to supply information to the Jaguar that
+   looks the same as what the CD-ROM supplies.  From the Jaguar viewpoint,
+   there is no difference except a slight drop in overall throughput (the
+   emulator works at about 97% of the CD-ROM's speed).
+
+   An MSDOS-format SCSI hard disk drive is connected to the Falcon030.  It
+   contains the files which correspond to the tracks of a CDROM.  After you
+   have assembled the files on your PC, you connect the hard drive to your
+   Falcon030 and then tell the emulator which files are used for each track
+   of the CDROM.  Then the emulator reads the appropriate portions of those
+   files and sends the information to the Jaguar whenever a CD-ROM read
+   request is made.
+
+     JAGUAR\CDROMEMU\CDROMSYS\CDSTRUSA.RSC                3/17/94       7536
+     JAGUAR\CDROMEMU\SHDRIVER.SYS                          3/4/94      14824
+     JAGUAR\CDROMEMU\CDROM.PRG                             5/3/95     101272
+     JAGUAR\CDROMEMU\AUTO\GPIOINIT.PRG                     2/4/94        128
+     JAGUAR\CDROMEMU\CDROMSYS\CDMONUSA.RSC                7/29/94      11700
+     JAGUAR\CDROMEMU\CDROMSYS\CDCOLUSA.RSC                7/29/94      11700
+     JAGUAR\CDROMEMU\CDROMSYS\I2S.LOD                     4/11/94       2166
+     JAGUAR\CDROMEMU\CDEMU.TXT                            5/30/95       7150
+
+   CD-ROM Sample Programs -- Sample programs to demonstrate accessing the
+   Jaguar CD-ROM drive.
+
+     JAGUAR\CDROM\CD_SWITC.S                              4/17/95       2026
+     JAGUAR\CDROM\README.TXT                              4/11/95       2418
+     JAGUAR\CDROM\MAKEFILE                                4/17/95       1174
+     JAGUAR\CDROM\INOUT.S                                 2/17/95       2493
+     JAGUAR\CDROM\CD_SAMPM.S                              4/17/95       4934
+     JAGUAR\INCLUDE\CD.INC                                4/11/95       1183
+     JAGUAR\CDROM\CD_SAMP.S                               4/17/95       4624
+     JAGUAR\CDROM\CD_ASAMP.S                              4/17/95       1688
+     JAGUAR\CDROM\CD_SAMPG.S                              2/17/95       1557
+
+   Cinepak for Jaguar -- Cinepak Full Motion video playback library,
+   utilities, sample code, and sample films.  The Cinepak library allows you
+   to play full screen, full motion video on the Jaguar screen.
+
+     JAGUAR\CINEPAK\MOVIES\README.TXT                      8/1/94        889
+     JAGUAR\CINEPAK\CPKDEMO\DSPCODE.S                      5/6/95      12177
+     JAGUAR\CINEPAK\SAMPLE\CLEAR.S                         6/1/95       2265
+     JAGUAR\CINEPAK\CPKDEMO\MAKELIST.S                     5/6/95       5160
+     JAGUAR\CINEPAK\CPKDEMO\TOCREAD.S                      5/6/95       5980
+     JAGUAR\CINEPAK\CPKDEMO\GROTATE.S                      5/6/95      12278
+     JAGUAR\CINEPAK\CPKDEMO\PLAYER.INC                     5/6/95       4055
+     JAGUAR\CINEPAK\CPKDEMO\CLEAR.S                        5/6/95        645
+     JAGUAR\CINEPAK\MOVIES\PLAYER.ABS                      8/1/94      11962
+     JAGUAR\CINEPAK\MOVIES\ENDLESS.ABS                     8/1/94      11990
+     JAGUAR\CINEPAK\DECOMP\CODEC_A.O                       2/7/95       1840
+     JAGUAR\CINEPAK\CPKDEMO\GPUSTART.S                     5/6/95       4751
+     JAGUAR\CINEPAK\SAMPLE\MEMORY.INC                     4/28/94       1054
+     JAGUAR\CINEPAK\SAMPLE\MAKEFILE                        6/1/95       1463
+     JAGUAR\CINEPAK\CPKDEMO\STARTUP.S                     3/31/95       9859
+     JAGUAR\CINEPAK\DECOMP\GPUCODE.OG                      2/7/95       4730
+     JAGUAR\CINEPAK\README.TXT                            7/21/94       3479
+     JAGUAR\CINEPAK\MOVIES\SYNC                           3/16/94         64
+     JAGUAR\CINEPAK\DECOMP\CODEC.O                         2/7/95       1379
+     JAGUAR\CINEPAK\SAMPLE\PLAYER.S                        6/1/95      15562
+     JAGUAR\INCLUDE\CD.INC                                4/11/95       1183
+     JAGUAR\CINEPAK\CPKDEMO\MAKEFILE                       5/6/95       1619
+     JAGUAR\CINEPAK\SAMPLE\INTSERV.S                       6/1/95       2817
+     JAGUAR\CINEPAK\SAMPLE\UTILS.S                        7/21/94      11179
+     JAGUAR\CINEPAK\SAMPLE\DSPCODE.DAS                     7/9/94       6470
+     JAGUAR\CINEPAK\CPKDEMO\LT_BOX.RGB                     3/8/95      16384
+     JAGUAR\CINEPAK\CPKDEMO\INTSERV.S                      5/6/95       2119
+     JAGUAR\CINEPAK\SAMPLE\LISTER.S                       4/28/94       4355
+     JAGUAR\CINEPAK\SAMPLE\CINEPAK.INC                    10/7/94       4557
+     JAGUAR\CINEPAK\SAMPLE\VIDINIT.S                      4/28/94       1661
+     JAGUAR\CINEPAK\CPKDEMO\CPKDEMO.LNK                    5/6/95        145
+     JAGUAR\CINEPAK\SAMPLE\MAKEFILE.ST                     7/9/94       1165
+     JAGUAR\CINEPAK\SAMPLE\PLAYER.LNK                      6/1/95        102
+     JAGUAR\CINEPAK\CPKDEMO\UTILS.S                        5/6/95      13012
+     JAGUAR\CINEPAK\CPKDEMO\SCALVARS.S                     5/6/95      11059
+     JAGUAR\CINEPAK\CPKDEMO\README.TXT                     5/6/95       8461
+     JAGUAR\CINEPAK\CPKDEMO\PLAYER.S                      6/22/95      24432
+     JAGUAR\CINEPAK\CPKDEMO\MEMORY.INC                     5/6/95       1179
+     JAGUAR\CINEPAK\DECOMP\README.TXT                     2/23/95       2062
+     JAGUAR\CINEPAK\CPKDEMO\CPKDEMO.DB                     5/6/95         58
+
+   Cinepak Utilities -- Utilities for converting movies and films from other
+   formats, such as Apple Quicktime Movies into a Jaguar Cinepak Film.
+   Filminfo utility dissects a Jaguar Cinepak film and dumps out various
+   pieces of information about it.
+
+   JAGMAC.SEA is self-extracting Macintosh StuffIt Deluxe archive file...
+   needs to be transfered to Mac using MacBinary protocol (i.e.  downloaded
+   or file copy via Apple File Exchange), or converted with a utility that
+   understands MacBinary.
+
+     JAGUAR\DOCS\FLMINFO.TXT                              9/27/94        540
+     JAGUAR\BIN\FLMINFO.EXE                               3/17/95      33608
+
+------------------------------------------------------------------------------
+
+CESDEM.ZIP, 9/23/94    Winter '94 CES 3D Demo program
+470856 bytes
+
+   CES Demo -- This is the 3D texture-mapped graphics demo that was shown at
+   the Winter '94 Consumer Electronics Show
+
+     JAGUAR\CES_DEMO\CES_DEMO.DB                          9/23/94        389
+     JAGUAR\CES_DEMO\README.TXT                           7/27/94       1177
+     JAGUAR\CES_DEMO\CES_DEMO.ROM                          1/6/94    1538056
+
+------------------------------------------------------------------------------
+
+DBPC.ZIP, 5/8/95       RDBJAG & WDB debuggers (MSDOS)
+427843 bytes
+
+   DB Debugger -- Jaguar Debugger, communicates with Alpine Board plugged
+   into Jaguar console's cartridge slot.  RDBJAG is console/TTY
+   user-interface version, WDB is windowed version.  Windowed
+   (character-based windows) version of RDBJAG debugger includes separate
+   windows for disassembly listing, memory dump, breakpoint list, memory
+   checkpoint list, symbol table, and so on.  Uses same script files as
+   RDBJAG (OD.DB, GPU.DB, etc.)
+
+   Requires 8-bit true bi-directional parallal port (Everex Magic I/O, SIIG
+   I/O Professional, SIIG VL-IDE)
+
+   April 21, 1995: readme files from earlier versions, ADDENDUM.RDB,
+   ADDENDUM.WDB, RDBJAG.TXT, & WRDBJAG.TXT all merged into a single new file
+   named RDB.TXT
+
+     JAGUAR\BIN\ZAPJAG.DB                                10/13/94       1202
+     JAGUAR\DOCS\DB.TXT                                    5/8/95      70035
+     JAGUAR\DOCS\JAGDEV.FAQ                               3/10/95       8633
+     JAGUAR\BIN\DBSTUFF\FILLCODE.S                        9/28/94        674
+     JAGUAR\BIN\REGDUMP.BIN                               1/29/94        160
+     JAGUAR\BIN\WDB.EXE                                    5/8/95     472042
+     JAGUAR\BIN\NGPU.DB                                    5/8/95       5483
+     JAGUAR\BIN\WINC.DB                                    5/8/95       1956
+     JAGUAR\BIN\FILLCODE.DAT                              9/28/94        104
+     JAGUAR\BIN\DEMO.DB                                    2/8/95        794
+     JAGUAR\BIN\OD.DB                                    11/16/94       4872
+     JAGUAR\BIN\GPU.DB                                    7/18/94       8757
+     JAGUAR\BIN\WINS.DB                                   1/13/95       4664
+     JAGUAR\BIN\RDBJAG.EXE                                 5/8/95     345066
+     JAGUAR\BIN\FILL.DB                                   9/28/94        412
+     JAGUAR\BIN\DBSTUFF\MAKEFILE                          9/24/94        143
+     JAGUAR\BIN\RDB.RC                                     5/4/95        689
+     JAGUAR\BIN\WSAMPLE.DB                                 5/8/95       1640
+
+------------------------------------------------------------------------------
+
+EDSTUF.ZIP, 9/16/94    Files for various programmer's editors (Brief,
+185194 bytes           Codewright, etc.)
+
+   Brief Macros -- Miscellaneous Collection of macros for use with BRIEF text
+   editor.
+
+     JAGUAR\EDITORS\BRIEF\RESTORE.CB                     10/11/89      22660
+     JAGUAR\EDITORS\BRIEF\SHITTY.CB                       9/18/91      16583
+     JAGUAR\EDITORS\BRIEF\PVCS.CB                         1/18/90      16785
+     JAGUAR\EDITORS\BRIEF\SCRAPPER.CB                     8/24/89       1168
+     JAGUAR\EDITORS\BRIEF\BUFFERS.CB                       1/4/90      22148
+     JAGUAR\EDITORS\BRIEF\MODULA2.CB                      10/4/89      23299
+     JAGUAR\EDITORS\BRIEF\WP.CB                            1/8/90       7379
+     JAGUAR\EDITORS\BRIEF\HELP.CB                        11/30/89      11247
+     JAGUAR\EDITORS\BRIEF\OLDERROR.CB                     4/29/91      22715
+     JAGUAR\EDITORS\BRIEF\BRACE.CB                         9/3/89       2064
+     JAGUAR\EDITORS\BRIEF\DIR.CB                          11/3/89      21946
+     JAGUAR\EDITORS\BRIEF\WINDOWS.CB                      8/26/89       8591
+     JAGUAR\EDITORS\BRIEF\FORTRAN.CB                      9/11/89      26213
+     JAGUAR\EDITORS\BRIEF\STARTUP.CB                      10/8/91       2848
+     JAGUAR\EDITORS\BRIEF\KILLER.CB                      11/15/90       1197
+     JAGUAR\EDITORS\BRIEF\SAVEHIST.CB                     8/24/89       1595
+     JAGUAR\EDITORS\BRIEF\KEYS.CB                          9/3/89      14366
+     JAGUAR\EDITORS\BRIEF\LANGUAGE.CB                    11/17/89      14845
+     JAGUAR\EDITORS\BRIEF\ROUTINES.CB                     5/16/91       3181
+     JAGUAR\EDITORS\BRIEF\COLUMN.CB                        8/5/89       3808
+     JAGUAR\EDITORS\BRIEF\SEARCH.CB                       5/16/91      17400
+     JAGUAR\EDITORS\BRIEF\FL.CB                          10/30/91       6089
+     JAGUAR\EDITORS\BRIEF\ERRORFIX.CB                    10/19/90      22762
+     JAGUAR\EDITORS\BRIEF\ALIGN.CM                        4/19/94       1705
+     JAGUAR\EDITORS\README.TXT                            9/16/94        262
+     JAGUAR\EDITORS\BRIEF\AUTOSAVE.CB                     10/6/89       7969
+     JAGUAR\EDITORS\BRIEF\DIALOG.CB                       1/10/90      42763
+     JAGUAR\EDITORS\BRIEF\PROMPT.CB                      10/19/89      18933
+     JAGUAR\EDITORS\BRIEF\REPEAT.CB                        8/5/89       4140
+     JAGUAR\EDITORS\BRIEF\TLIB.CB                         11/7/89      14098
+     JAGUAR\EDITORS\BRIEF\COBOL.CB                        10/5/89      45927
+     JAGUAR\EDITORS\BRIEF\INDENT.CB                       1/15/90      23746
+     JAGUAR\EDITORS\BRIEF\ADA.CB                          9/12/89      21608
+     JAGUAR\EDITORS\BRIEF\OLD.CB                          5/30/89        819
+     JAGUAR\EDITORS\BRIEF\BASIC.CB                        10/4/89      20753
+     JAGUAR\EDITORS\BRIEF\DIVINE.CB                        1/8/92       2929
+     JAGUAR\EDITORS\BRIEF\PASCAL.CB                       10/4/89      22634
+     JAGUAR\EDITORS\BRIEF\SNASM.CB                       10/12/92      26154
+     JAGUAR\EDITORS\BRIEF\NEW.CB                           9/7/89       1365
+     JAGUAR\EDITORS\BRIEF\ALIGN.CB                        4/19/94       3125
+     JAGUAR\EDITORS\BRIEF\KEY.CB                           9/3/89       1547
+     JAGUAR\EDITORS\BRIEF\COMPILE.CB                       1/5/90      16028
+     JAGUAR\EDITORS\BRIEF\SNASM1.CB                      10/12/92      28403
+     JAGUAR\EDITORS\BRIEF\ALIGN.TXT                       4/20/94        355
+
+   Codewright Utilities -- This package contains a DLL file for use with the
+   Codewright programmer's editor for MS Windows.  It provides
+   Jaguar-specific syntax color coding for Jaguar DSP & GPU assembly code.
+
+     JAGUAR\EDITORS\CWRIGHT\S.DLL                         8/30/94      12288
+     JAGUAR\EDITORS\CWRIGHT\CWRIGHT.TXT                   8/29/94       1149
+
+------------------------------------------------------------------------------
+
+GCC1.ZIP, 6/12/95      GCC C compiler for 68000/GPU/DSP, PC version, part 1
+716475 bytes
+
+   GCC C Compiler -- GCC C compiler --- Generates either 680x0 or GPU/DSP
+   code for Jaguar.  Runs under MSDOS.
+
+     JAGUAR\BIN\AGPU\2.6\CPP.EXE                          6/12/95     173034
+     JAGUAR\BIN\AGPU\2.6\CC1.EXE                          6/12/95    1078250
+     JAGUAR\BIN\AGPU\2.6\AS.EXE                           1/28/95      11436
+     JAGUAR\BIN\M68K\2.6\SPECS                            1/30/95        436
+     JAGUAR\BIN\AGPU\2.6\SPECS                            1/30/95        436
+     JAGUAR\BIN\M68K\2.6\AS.EXE                           1/28/95      11436
+     JAGUAR\BIN\M68K\2.6\CPP.EXE                          6/12/95     173034
+
+------------------------------------------------------------------------------
+
+GCC2.ZIP, 6/12/95      GCC C compiler for 68000/GPU/DSP, PC version, part 2
+618502 bytes
+
+   GCC C Compiler -- GCC C compiler --- Generates either 680x0 or GPU/DSP
+   code for Jaguar.  Runs under MSDOS.
+
+     JAGUAR\BIN\M68K\2.6\CC1.EXE                          6/12/95    1147882
+     JAGUAR\BIN\CPP.EXE                                    5/4/95     173034
+
+------------------------------------------------------------------------------
+
+GCC3.ZIP, 6/13/95      GCC C compiler for 68000/GPU/DSP, PC version, part 3
+125733 bytes
+
+   GCC C Compiler -- GCC C compiler --- Generates either 680x0 or GPU/DSP
+   code for Jaguar.  Runs under MSDOS.
+
+     JAGUAR\DOCS\COPYING                                  3/20/95      18311
+     JAGUAR\BIN\GCC.EXE                                   6/12/95     136170
+     JAGUAR\DOCS\GCC.TXT                                  6/13/95     120207
+     JAGUAR\SOURCE\TEST_C\TEST.C                          4/27/95        610
+     JAGUAR\SOURCE\TEST_C\MAKEFILE                         5/9/95       1102
+
+   GCC Libraries -- GCC Runtime library routines (things like math routines,
+   not standard C library)
+
+     jaguar\lib\GPULIB.SRC\MAKEFILE                       5/18/95       1313
+     jaguar\lib\GPULIB.SRC\MULSI3.S                       6/12/95        415
+     jaguar\lib\GPULIB.SRC\UMULSI3.S                      6/12/95        307
+     jaguar\lib\GPULIB.SRC\LIBINC.S                       6/12/95        113
+     jaguar\lib\GPULIB.SRC\DIVHISI3.S                     6/12/95        319
+     JAGUAR\LIB\GPUSTD.A                                  6/12/95       1064
+     jaguar\lib\GPULIB.SRC\DIVSI3.S                       6/12/95        926
+     jaguar\lib\GPULIB.SRC\DIVSI3.O                       5/18/95        150
+     JAGUAR\LIB\CLIB.A                                    3/20/95      17644
+     jaguar\lib\GPULIB.SRC\UMULSI3.O                      5/18/95        123
+     jaguar\lib\GPULIB.SRC\MULSI3.O                       5/18/95        170
+     jaguar\lib\GPULIB.SRC\DIVHISI3.O                     5/18/95        160
+
+------------------------------------------------------------------------------
+
+GRAFIK.ZIP, 6/13/95    Jaguar Graphics Tools (TGA2CRY)
+222374 bytes
+
+   Graphics Conversion Utilities -- TGA2CRY converts a Targa format picture
+   into MADMAC source code or binary data for a CRY format image.
+
+     JAGUAR\BIN\MAKECRY.BAT                               7/25/94         12
+     JAGUAR\BIN\CW3211.DLL                                6/10/94     188416
+     JAGUAR\BIN\WINDPMI.386                               6/10/94      17996
+     JAGUAR\BIN\DPMI32VM.OVL                              6/10/94      58344
+     JAGUAR\BIN\32RTM.EXE                                 6/17/94     152108
+     JAGUAR\BIN\TGA2CRY.EXE                               6/13/95      97771
+     JAGUAR\DOCS\TGA2CRY.TXT                              6/13/95       6275
+
+------------------------------------------------------------------------------
+
+JAGLIB.ZIP, 7/21/95    Jaguar Libraries, with related tools and sample
+644348 bytes           programs (3D Graphics, LZSS compression)
+
+   3D Demo -- 3D Demo is a simple demo that demonstrates how to render and
+   texture map a 3D demo and move it around using the Jaguar 3D Graphics
+   Library.  Demonstrates how to take an AutoCAD 3D-Studio model, run it
+   through 3DS2JAG, and then use it.
+
+     JAGUAR\3DDEMO\SHIP1.3DS                               6/9/94      12928
+     JAGUAR\3DDEMO\3DDEMO.LNK                              9/9/94        310
+     JAGUAR\3DDEMO\GUNBACK.TGA                            5/17/94        824
+     JAGUAR\3DDEMO\RTSIDE.TGA                             5/17/94      13100
+     JAGUAR\3DDEMO\TXTCRY.GAS                              4/6/95      76150
+     JAGUAR\3DDEMO\ENGTOP.TGA                             5/17/94       4796
+     JAGUAR\3DDEMO\WINGSIDE.TGA                           6/13/94       4604
+     JAGUAR\3DDEMO\ROOF.TGA                               5/17/94      11204
+     JAGUAR\3DDEMO\WINRT.TGA                              5/23/94       4844
+     JAGUAR\3DDEMO\ENGFRNT.TGA                            5/17/94       3284
+     JAGUAR\3DDEMO\3DDEMO.INC                              9/8/94        436
+     JAGUAR\3DDEMO\BOTTOMFR.TGA                           5/17/94       2924
+     JAGUAR\DOCS\3DS2JAG.TXT                              10/4/94       2147
+     JAGUAR\3DDEMO\WING.TGA                               5/17/94       8204
+     JAGUAR\3DDEMO\BACK3.TGA                              5/23/94       4940
+     JAGUAR\3DDEMO\FIN.TGA                                5/17/94       4172
+     JAGUAR\3DDEMO\TURTLE.GAS                              4/6/95      14864
+     JAGUAR\3DDEMO\ENGSIDE.TGA                            5/17/94       6188
+     JAGUAR\3DDEMO\FINSIDE.TGA                            5/17/94       1766
+     JAGUAR\3DDEMO\ENGBOT.TGA                             5/17/94        812
+     JAGUAR\3DDEMO\BOTTOM.TGA                             5/17/94       4436
+     JAGUAR\3DDEMO\OBJLIST.S                               9/8/94       7431
+     JAGUAR\3DDEMO\RTFRONT.TGA                             5/5/94       6092
+     JAGUAR\3DDEMO\HOOD.TGA                               5/17/94       5000
+     JAGUAR\3DDEMO\WINFRNT.TGA                            5/23/94       5228
+     JAGUAR\3DDEMO\MAKEFILE                               2/16/95       1803
+     JAGUAR\3DDEMO\JAGCRY.S                                9/8/94       3600
+     JAGUAR\3DDEMO\JOYPAD.S                                9/6/94       2897
+     JAGUAR\3DDEMO\GPU.S                                  2/16/95       3846
+     JAGUAR\3DDEMO\BACK1.TGA                              5/23/94       4940
+     JAGUAR\BIN\3DS2JAG.TTP                               10/4/94      60746
+     JAGUAR\3DDEMO\BACK2.TGA                              5/23/94       4940
+     JAGUAR\3DDEMO\SORT.GAS                                4/6/95      12252
+     JAGUAR\3DDEMO\CRYMAIN.S                               9/8/94      15240
+     JAGUAR\3DDEMO\GUNSIDE.TGA                            5/17/94       2732
+     JAGUAR\3DDEMO\VIDEO.S                                 9/8/94       5939
+     JAGUAR\BIN\3DS2JAG.EXE                               10/4/94     167396
+     JAGUAR\3DDEMO\STARTUP.S                               9/8/94       3706
+     JAGUAR\3DDEMO\GUNTOP.TGA                             5/17/94       3740
+
+   3D Rendering Library -- The New 3D rendering library is similar to, but
+   different from, the original Jaguar 3D library and demo.  The library
+   comes complete with a demo program that includes four different 3D objects
+   and which allows you to see the different rendering methods.  A new
+   conversion tool that takes 3D Studio object files and converts them to the
+   required format for use with the 3D library is also included.
+
+   WARNING: This demo program is intended to be used as a specific example of
+   how to use the 3D library.  It is not intended to be used as an example of
+   Jaguar programming in general.  DO NOT USE this program as a shell or to
+   obtain startup code for your own programs.
+
+     JAGUAR\3D\INCLUDE\JOYPAD.INC                         4/21/95        359
+     JAGUAR\3D\INCLUDE\LIMITS.H                           4/21/95       2149
+     JAGUAR\3D\INCLUDE\JOYPAD.H                           4/21/95        918
+     JAGUAR\3D\INCLUDE\MEMORY.H                           4/21/95       1437
+     JAGUAR\3D\LIB\JOYINP.S                               4/21/95       2603
+     JAGUAR\3D\INCLUDE\STDLIB.H                           4/21/95       2807
+     JAGUAR\3D\CLIP.INC                                   4/20/95       3976
+     JAGUAR\3D\TRI68K.C                                   3/28/95      27734
+     JAGUAR\3D\INCLUDE\FONT.H                             4/21/95        997
+     JAGUAR\3D\GLOBLREG.INC                               4/24/95       1200
+     JAGUAR\3D\RADAR.3DS                                  4/21/95       8948
+     JAGUAR\3D\N3DINTER.H                                 4/24/95       1144
+     JAGUAR\3D\GOURREND.S                                 4/24/95       6651
+     JAGUAR\3D\TRAPREGS.INC                               4/11/95       1874
+     JAGUAR\3D\GOURDRAW.INC                               4/24/95       2772
+     JAGUAR\3D\INCLUDE\STDARG.H                           4/21/95       1635
+     JAGUAR\3D\INCLUDE\STDDEF.H                           4/21/95        890
+     JAGUAR\3D\INCLUDE\OLIST.H                            4/21/95       1799
+     JAGUAR\3D\FIN.TGA                                    4/21/95       4172
+     JAGUAR\3D\ENGTOP.TGA                                 4/21/95       4796
+     JAGUAR\3D\ENGSIDE.TGA                                4/21/95       6188
+     JAGUAR\3D\LIB\STRCAT.C                               4/25/95        468
+     JAGUAR\3D\GUNTOP.TGA                                 4/21/95       3740
+     JAGUAR\3D\LIB\GPULIB.S                               4/21/95       1840
+     JAGUAR\3D\MKMAT.S                                    4/17/95       3442
+     JAGUAR\3D\RADAR1E.TGA                                4/21/95       2322
+     JAGUAR\3D\INCLUDE\COMPILER.H                         4/21/95       5215
+     JAGUAR\3D\FONTS\PD6X10.JFT                           4/21/95        968
+     JAGUAR\3D\LIB\CTYPE.C                                4/21/95       2382
+     JAGUAR\3D\FONTS\HELVB10.JFT                          4/21/95       2599
+     JAGUAR\3D\FONTS\HELVR10.JFT                          4/21/95       2599
+     JAGUAR\3D\INCLUDE\ALLOC.H                            4/21/95        429
+     JAGUAR\3D\MAKEFILE                                   6/13/95       4429
+     JAGUAR\DOCS\3DSCONV.TXT                              4/27/95       2802
+     JAGUAR\3D\INCLUDE\BLIT.H                             4/21/95      11530
+     JAGUAR\3D\SHIP1.3DS                                  4/21/95      12928
+     JAGUAR\3D\FONTS\HELVR12.JFT                          4/21/95       2983
+     JAGUAR\3D\GLOBE.3DS                                  4/21/95      12446
+     JAGUAR\3D\N3D.H                                      4/24/95       3271
+     JAGUAR\3D\DOCRY.BAT                                  4/27/95         22
+     JAGUAR\3D\DOTRI.INC                                  4/19/95      14214
+     JAGUAR\3D\DRAW.INC                                   4/11/95       2863
+     JAGUAR\3D\DRAWTRI.C                                  4/20/95       1387
+     JAGUAR\3D\ENGBOT.TGA                                 4/21/95        812
+     JAGUAR\3D\FLATTEX.S                                  4/25/95       6726
+     JAGUAR\3D\LIB\JAGRT.S                                 5/5/95       1615
+     JAGUAR\3D\RADAR1A.TGA                                4/21/95       3090
+     JAGUAR\BIN\3DSCONV.EXE                                5/5/95     165618
+     JAGUAR\BIN\3DSCONV.TTP                               4/27/95      85712
+     JAGUAR\3D\LIB\STRCMP.C                               4/25/95        741
+     JAGUAR\3D\LIB\OLIST.C                                4/21/95       4384
+     JAGUAR\3D\LIB\VIDEO.S                                4/21/95       7060
+     JAGUAR\3D\FONTS\TER7X14.JFT                          4/21/95       1352
+     JAGUAR\3D\LIB\STRCPY.C                                5/5/95        376
+     JAGUAR\3D\FONTS\CLR6X12.JFT                          4/21/95       1160
+     JAGUAR\3D\LIB\STRRCHR.C                              4/25/95        475
+     JAGUAR\3D\LIB\STRNCMP.C                              4/25/95        869
+     JAGUAR\3D\RTSIDE.TGA                                 4/21/95      13100
+     JAGUAR\3D\RTFRONT.TGA                                4/21/95       6092
+     JAGUAR\3D\TEXDRAW.INC                                4/24/95       4236
+     JAGUAR\3D\ROOF.TGA                                   4/21/95      11204
+     JAGUAR\3D\TEXDRAW1.INC                               4/25/95       8931
+     JAGUAR\3D\TEXDRAW2.INC                               4/25/95       8521
+     JAGUAR\3D\LIB\UTIL.S                                 4/21/95       3067
+     JAGUAR\3D\BOTTOM.TGA                                 4/21/95       4436
+     JAGUAR\3D\LIB\STRLEN.C                               4/21/95        321
+     JAGUAR\3D\L2.TGA                                     4/21/95      16146
+     JAGUAR\3D\L3.TGA                                     4/21/95      15378
+     JAGUAR\3D\LOAD.INC                                   4/25/95       3840
+     JAGUAR\3D\LOADXPT.INC                                4/24/95       8798
+     JAGUAR\3D\BACK3.TGA                                  4/21/95       4940
+     JAGUAR\3D\C2.TGA                                     4/21/95      13842
+     JAGUAR\3D\HOOD.TGA                                   4/21/95       5000
+     JAGUAR\3D\BOTTOMFR.TGA                               4/21/95       2924
+     JAGUAR\3D\WFDRAW.INC                                 4/20/95       4666
+     JAGUAR\3D\C1.TGA                                     4/21/95      15378
+     JAGUAR\3D\TRIG.S                                     3/24/95       4679
+     JAGUAR\3D\C3.TGA                                     4/21/95      17298
+     JAGUAR\3D\LIB\STRDUP.C                               4/21/95        294
+     JAGUAR\3D\RADAR1B.TGA                                4/21/95      12306
+     JAGUAR\3D\GSTEX.S                                    4/25/95       6716
+     JAGUAR\3D\WFREND.S                                   4/24/95       6420
+     JAGUAR\3D\LIB\CLOCK.S                                4/21/95        432
+     JAGUAR\3D\INCLUDE\CTYPE.H                            4/21/95       2626
+     JAGUAR\3D\LIB\FONT.C                                  5/5/95      14647
+     JAGUAR\3D\INCLUDE\STRING.H                           4/21/95       3880
+     JAGUAR\3D\GUNSIDE.TGA                                4/21/95       2732
+     JAGUAR\3D\L1.TGA                                     4/21/95      15378
+     JAGUAR\3D\U3.TGA                                     4/21/95      15378
+     JAGUAR\3D\CLIPSUBS.INC                               4/19/95       7131
+     JAGUAR\3D\WINFRNT.TGA                                4/21/95       5228
+     JAGUAR\3D\WING.TGA                                   4/21/95       8204
+     JAGUAR\3D\WINGSIDE.TGA                               4/21/95       4604
+     JAGUAR\3D\WINRT.TGA                                  4/21/95       4844
+     JAGUAR\3D\README.TXT                                 6/13/95      18875
+     JAGUAR\3D\TURRET1B.TGA                               4/21/95       4626
+     JAGUAR\3D\GUNBACK.TGA                                4/21/95        824
+     JAGUAR\3D\U2.TGA                                     4/21/95      17490
+     JAGUAR\3D\U1.TGA                                     4/21/95      15378
+     JAGUAR\3D\TEXREND.S                                  4/25/95       6708
+     JAGUAR\3D\RADAR1D.TGA                                4/21/95       6930
+     JAGUAR\3D\ENGFRNT.TGA                                4/21/95       3284
+     JAGUAR\3D\FINSIDE.TGA                                4/21/95       1766
+     JAGUAR\3D\LIB\SPRINTF.C                               5/5/95       3225
+     JAGUAR\3D\MISCASM.S                                  4/20/95       1432
+     JAGUAR\3D\INIT.INC                                   4/21/95      16530
+     JAGUAR\3D\INCLUDE\TYPES.H                            4/21/95        556
+     JAGUAR\3D\INCLUDE\SETJMP.H                           4/21/95        345
+     JAGUAR\3D\CASTLE.3DS                                 4/18/95      22251
+     JAGUAR\3D\LIB\MEMCPY.S                               4/21/95       1355
+     JAGUAR\3D\CUBE.C                                     4/19/95       1192
+     JAGUAR\3D\LIB\MEMSET.S                               4/21/95       1475
+     JAGUAR\3D\LIB\ALLOC.C                                4/21/95       2819
+     JAGUAR\3D\LIB\ATOL.C                                 4/21/95        313
+     JAGUAR\3D\DEMO.LNK                                   4/27/95       1162
+     JAGUAR\3D\DEMO.C                                     4/27/95      16341
+     JAGUAR\3D\LIB\JOYPAD.C                               4/21/95        610
+     JAGUAR\3D\DEMO.S                                      5/5/95       9316
+
+   LZJAG Compression/Decompression -- Lossless compression/decompression
+   utilities & code for Jaguar.  LZJAG consists of a compression utility that
+   runs under MSDOS and a decompression routine for the Jaguar GPU.  The
+   compression is non-lossy (the decompressed output is 100% identical to the
+   original data) and can be used for program code as well as graphics or
+   music & sound data.
+
+     JAGUAR\LZJAG\DELZJAG.S                               9/21/94       5060
+     JAGUAR\BIN\LZJAG.EXE                                 9/21/94      73417
+     JAGUAR\LZJAG\README.TXT                              10/3/94       3241
+     JAGUAR\LZJAG\MAKEFILE                                10/7/94        765
+     JAGUAR\LZJAG\MOU.ABS                                 9/20/94      26320
+     JAGUAR\LZJAG\TESTLZSS.LNK                            9/20/94         41
+     JAGUAR\LZJAG\MOU.LZJ                                 9/20/94       4944
+     JAGUAR\LZJAG\TESTLZSS.S                              9/21/94       2544
+
+   NV RAM Cartridge Simulator -- NV RAM Cartridge Simulator & Access library.
+   This lets you use your Alpine board to simulate the NV-RAM cartridge (used
+   by CD-ROM titles to save games, high scores, user settings, etc.)
+
+     JAGUAR\NVRAMSIM\NVMSIM.ROM                           4/10/95      58816
+     JAGUAR\NVRAMSIM\DISKIMG.IMG                          2/23/95     131072
+     JAGUAR\NVRAMSIM\NVMTEST.DB                           4/10/95         63
+     JAGUAR\NVRAMSIM\NVMSIM.DB                            4/10/95         37
+     JAGUAR\NVRAMSIM\NVRAM.TXT                            2/23/95       1450
+     JAGUAR\NVRAMSIM\NVRAMSIM.TXT                         7/21/95      17635
+
+------------------------------------------------------------------------------
+
+JAGSYN.ZIP, 5/2/95     Jaguar Synth & Music Driver, & Sound Tool
+425602 bytes
+
+   Synthesizer & Music Driver -- Jaguar Synthesizer & Music Driver - library
+   routines, sample code, & synthesizer patch files.
+
+     JAGUAR\MUSIC\SOUNDS\WARM_PAD.PTC                     8/15/94       5912
+     JAGUAR\MUSIC\SOUNDS\SAWLEAD5.PTC                      9/3/94       5912
+     JAGUAR\MUSIC\SOUNDS\SHORTSNR.PTC                      9/2/94       5912
+     JAGUAR\MUSIC\SOUNDS\STRING.PTC                        6/8/94       5900
+     JAGUAR\MUSIC\SOUNDS\VIBESX.PTC                       8/11/94       5912
+     JAGUAR\MUSIC\SYNDEMO\DEMO.MID                        12/9/94       5321
+     JAGUAR\MUSIC\SYNDEMO\DRIVER.S                        3/24/95       6694
+     JAGUAR\MUSIC\SYNDEMO\MAKEFILE                         2/2/95       3825
+     JAGUAR\MUSIC\SYNDEMO\PARSE.CNF                       12/9/94        353
+     JAGUAR\MUSIC\SAMPLES\IRONSNR2.MID                    1/31/95        875
+     JAGUAR\MUSIC\SAMPLES\DRIVER.S                        3/24/95       6694
+     JAGUAR\MUSIC\SOUNDS\SYNBRASS.PTC                     8/15/94       5912
+     JAGUAR\MUSIC\SAMPLES\PATCHES\RESBASS1.JAF            1/31/95        361
+     JAGUAR\MUSIC\MUSICDRV\PATCHES\STRLOW.ASC             12/9/94        783
+     JAGUAR\MUSIC\MUSICDRV\SAMPLES\SYNSTRGS.CMP           7/20/94      20146
+     JAGUAR\MUSIC\MUSICDRV\SLOPEENV\STRING5.ENV            9/1/94        139
+     JAGUAR\MUSIC\SAMPLES\IRONSNR1.MID                    1/31/95      30141
+     JAGUAR\MUSIC\SYNDEMO\SYNTH.S                         12/9/94       4966
+     JAGUAR\MUSIC\SOUNDS\BLIP1.PTC                         9/2/94       5912
+     JAGUAR\MUSIC\SOUNDS\BEEP1.PTC                         9/2/94       5912
+     JAGUAR\MUSIC\SOUNDS\BARISAX.PTC                       9/2/94       5912
+     JAGUAR\MUSIC\SNDTOOL\SNDTOOL.TX                      1/20/95      95180
+     JAGUAR\MUSIC\SOUNDS\BLIP2.PTC                         9/2/94       5912
+     JAGUAR\MUSIC\SNDTOOL\SNDTOOL.DTA                     1/20/95     100646
+     JAGUAR\MUSIC\SOUNDS\PERC9.PTC                         9/2/94       5912
+     JAGUAR\MUSIC\SAMPLES\SAMPLES\SNARE.CMP               1/31/95      10394
+     JAGUAR\MUSIC\SAMPLES\SAMPLES\STIX.CMP                1/31/95       4699
+     JAGUAR\MUSIC\SAMPLES\PATCHES\KICK2.ASC               1/31/95        358
+     JAGUAR\MUSIC\SAMPLES\PATCHES\MGUN.ASC                1/31/95        357
+     JAGUAR\MUSIC\SAMPLES\PATCHES\IRONSNR2.MID            1/31/95        875
+     JAGUAR\MUSIC\SAMPLES\PATCHES\KICK.ASC                1/31/95        357
+     JAGUAR\MUSIC\SAMPLES\SAMPLES\SLAP.CMP                1/31/95       4708
+     JAGUAR\MUSIC\MUSICDRV\PATCHES\NEWPATCH.ASC           12/9/94        671
+     JAGUAR\MUSIC\SNDTOOL\SNDTOOL.SYM                     1/20/95      24984
+     JAGUAR\MUSIC\SYNDEMO\ENVS\EBASS9.ENV                 9/14/94        131
+     JAGUAR\MUSIC\SOUNDS\PIANO2.PTC                       8/11/94       5912
+     JAGUAR\MUSIC\SAMPLES\SAMPLES\RESBASS1.CMP            1/31/95       2488
+     JAGUAR\MUSIC\SOUNDS\FLUTEX.PTC                       8/11/94       5912
+     JAGUAR\MUSIC\SOUNDS\EXP3.PTC                         8/15/94       5912
+     JAGUAR\MUSIC\SOUNDS\EXP4.PTC                         8/15/94       5912
+     JAGUAR\MUSIC\CNF\NOTES21.CNF                         1/28/94       3011
+     JAGUAR\MUSIC\SOUNDS\EXP2.PTC                         8/15/94       5912
+     JAGUAR\MUSIC\SOUNDS\EXP1.PTC                         8/15/94       5912
+     JAGUAR\MUSIC\SOUNDS\EPIANO2.PTC                      8/15/94       5912
+     JAGUAR\MUSIC\SOUNDS\FMSYNTH1.PTC                     8/19/94       5912
+     JAGUAR\MUSIC\SOUNDS\ELECBASS.PTC                     8/11/94       5912
+     JAGUAR\MUSIC\SOUNDS\HIGHEPNO.PTC                      9/3/94       5912
+     JAGUAR\MUSIC\SYNDEMO\PATCHES\OHH.ASC                 9/14/94        356
+     JAGUAR\MUSIC\CNF\NOTES.CNF                           1/28/94       3011
+     JAGUAR\MUSIC\CNF\PARSE.CNF                            8/3/94        199
+     JAGUAR\MUSIC\SYNDEMO\WAVES\PNOWAVE1.WAV              9/13/94       1632
+     JAGUAR\MUSIC\SOUNDS\MARIMBAX.PTC                     8/11/94       5912
+     JAGUAR\MUSIC\SOUNDS\LEAD_SAW.PTC                     8/15/94       5912
+     JAGUAR\MUSIC\SYNDEMO\PATCHES\KICK.ASC                9/14/94        352
+     JAGUAR\MUSIC\SOUNDS\ORG_LESL.PTC                     8/10/94       5912
+     JAGUAR\MUSIC\SOUNDS\EPIANO.PTC                       8/15/94       5912
+     JAGUAR\MUSIC\SYNDEMO\PATCHES\HIGHPNO1.ASC            9/14/94        353
+     JAGUAR\MUSIC\SYNDEMO\ENVS\ENV0.ENV                   9/14/94        204
+     JAGUAR\MUSIC\SYNDEMO\ENVS\ENV1.ENV                   9/14/94         69
+     JAGUAR\MUSIC\SYNDEMO\ENVS\ENV2.ENV                   9/14/94         69
+     JAGUAR\MUSIC\SYNDEMO\ENVS\ENV4.ENV                   9/14/94         51
+     JAGUAR\MUSIC\SYNDEMO\PATCHES\CHH.ASC                 9/14/94        356
+     JAGUAR\MUSIC\SYNDEMO\PATCHES\CLAPS.ASC               9/14/94        354
+     JAGUAR\MUSIC\CNF\NOTES15.CNF                          2/1/95       3027
+     JAGUAR\MUSIC\SYNDEMO\PATCHES\EBASS9.ASC              9/13/94        354
+     JAGUAR\MUSIC\SOUNDS\PERCHH1.PTC                       9/3/94       5912
+     JAGUAR\MUSIC\SOUNDS\EGUIT_CL.PTC                     8/15/94       5912
+     JAGUAR\MUSIC\SYNDEMO\SYNTH.CNF                       12/9/94       2347
+     JAGUAR\MUSIC\SNDTOOL\SNDTOOL.DB                       2/1/95        283
+     JAGUAR\MUSIC\MUSIC.TXT                                6/5/95      47010
+     JAGUAR\MUSIC\SAMPLES\PATCHES\SLAP.ASC                1/31/95        357
+     JAGUAR\MUSIC\SOUNDS\KICK1.PTC                        8/11/94       5912
+     JAGUAR\MUSIC\SOUNDS\HORN3.PTC                        8/19/94       5912
+     JAGUAR\MUSIC\SOUNDS\HORN2.PTC                        8/11/94       5912
+     JAGUAR\MUSIC\SOUNDS\HIGHPNO1.PTC                      9/2/94       5912
+     JAGUAR\MUSIC\SYNDEMO\PATCHES\CLICK.ASC               9/14/94        353
+     JAGUAR\MUSIC\FULSYN\FULSYN.INC                        9/1/94        738
+     JAGUAR\MUSIC\SOUNDS\CHINK.PTC                         9/2/94       5912
+     JAGUAR\MUSIC\SOUNDS\CHIRP.PTC                         9/2/94       5912
+     JAGUAR\MUSIC\SOUNDS\CLAR.PTC                         8/15/94       5912
+     JAGUAR\MUSIC\SAMPLES\SAMPLES\STEP1.CMP               1/31/95      22553
+     JAGUAR\DOCS\MIDIDOCS\JAGMIDI.RFT                     9/26/94     119622
+     JAGUAR\MUSIC\SOUNDS\CLICK5.PTC                        9/2/94       5912
+     JAGUAR\MUSIC\SOUNDS\DBAR_ORG.PTC                     8/10/94       5912
+     JAGUAR\MUSIC\SOUNDS\DBAR2ORG.PTC                     8/10/94       5912
+     JAGUAR\DOCS\MIDIDOCS\JAGMIDI.WRI                     9/26/94      60416
+     JAGUAR\MUSIC\SOUNDS\BOW_PAD.PTC                      8/15/94       5912
+     JAGUAR\MUSIC\SOUNDS\EBASS3.PTC                       8/11/94       5912
+     JAGUAR\DOCS\MIDIDOCS\README.TXT                      9/26/94        848
+     JAGUAR\DOCS\MIDIDOCS\WINWORD.2\JAGMIDI.DOC           9/26/94      62976
+     JAGUAR\DOCS\MIDIDOCS\WINWORD.6\JAGMIDI.DOC           9/26/94      77824
+     JAGUAR\MUSIC\MUSICDRV\SYNTH.CNF                      12/9/94       2591
+     JAGUAR\MUSIC\MUSICDRV\MAKEFILE                        4/6/95       3736
+     JAGUAR\MUSIC\FULSYN\CHANGES.TXT                       2/1/95        856
+     JAGUAR\MUSIC\FULSYN\FS02_55.DAS                       5/2/95      87116
+     JAGUAR\MUSIC\FULSYN\FS02_55.OJ                        2/1/95      14674
+     JAGUAR\MUSIC\MUSICDRV\DRIVER.S                       3/24/95       6694
+     JAGUAR\MUSIC\MUSICDRV\CSCALE.MID                     12/2/94        116
+     JAGUAR\MUSIC\SAMPLES\PATCHES\SNARE2.ASC              1/31/95        359
+     JAGUAR\MUSIC\FULSYN\SYNTH.CNF                        12/9/94       2347
+     JAGUAR\MUSIC\SAMPLES\SAMPLES\KICK.CMP                1/31/95       5814
+     JAGUAR\MUSIC\SOUNDS\EBASS.PTC                        8/10/94       5912
+     JAGUAR\MUSIC\SAMPLES\PATCHES\SAWBLIPL.JAF            1/31/95        361
+     JAGUAR\MUSIC\FULSYN\MAKEFILE                          2/1/95        247
+     JAGUAR\MUSIC\SAMPLES\SYNTH.CNF                       1/31/95       2584
+     JAGUAR\MUSIC\SAMPLES\PARSE.CNF                       1/31/95        530
+     JAGUAR\MUSIC\SAMPLES\MAKEFILE                         2/1/95       3947
+     JAGUAR\MUSIC\SAMPLES\SYNTH.S                          2/1/95       5954
+     JAGUAR\MUSIC\SOUNDS\BUZTRMPT.PTC                     8/11/94       5912
+     JAGUAR\MUSIC\SAMPLES\PATCHES\IRONSNR1.MID            1/31/95      30141
+     JAGUAR\MUSIC\SAMPLES\PATCHES\SAWBLIPR.JAF            1/31/95        361
+     JAGUAR\MUSIC\SAMPLES\SAMPLES\SAWBLIP1.CMP            1/31/95       2940
+     JAGUAR\MUSIC\SAMPLES\PATCHES\SNARE.ASC               1/31/95        358
+     JAGUAR\MUSIC\SAMPLES\SAMPLES\TOMS.CMP                1/31/95       8819
+     JAGUAR\MUSIC\SAMPLES\PATCHES\STEP.ASC                1/31/95        357
+     JAGUAR\MUSIC\SAMPLES\SAMPLES\JAGKICK2.CMP            1/31/95       6372
+     JAGUAR\MUSIC\SAMPLES\PATCHES\CHH.ASC                 1/31/95        356
+     JAGUAR\MUSIC\MUSICDRV\SYNTH.S                        12/9/94       4930
+     JAGUAR\MUSIC\SAMPLES\PATCHES\STEPR.ASC               1/31/95        357
+     JAGUAR\MUSIC\SAMPLES\SAMPLES\MGUN1.CMP               1/31/95      12924
+     JAGUAR\MUSIC\SOUNDS\DRUMKIT.PTC                       9/3/94       5912
+     JAGUAR\MUSIC\SOUNDS\ECHOFX1.PTC                       9/2/94       5912
+     JAGUAR\MUSIC\SOUNDS\PIANO1.PTC                       8/11/94       5912
+     JAGUAR\MUSIC\SAMPLES\SAMPLES\JAGCLK4.CMP             1/31/95       4688
+     JAGUAR\MUSIC\SAMPLES\SAMPLES\CHH.CMP                 1/31/95       2160
+     JAGUAR\MUSIC\SAMPLES\PATCHES\TOMS.ASC                1/31/95        357
+     JAGUAR\MUSIC\SAMPLES\PATCHES\STIX.ASC                1/31/95        357
+
+------------------------------------------------------------------------------
+
+LINUX.ZIP, 6/23/95     Linux versions of tools (MADMAC, ALN, DB)
+434174 bytes
+
+   ALN -- ALN - Atari Linker.  Builds executable program files from a
+   specified collection of object modules, archive libraries, and binary data
+   files.
+
+   Note: ADDENDUM.MAC merged into ALN.TXT as of April 6, 1995
+
+     JAGUAR\BIN\ALN                                        5/3/95      69632
+     (See also the description of MACALN.ZIP for additional documentation
+      files also included in this archive.)
+
+   BPEG Image Compression & Decompression -- BPEG is Brainstorm's version of
+   JPEG for Jaguar.  Allows you to compress graphics images to a small
+   fraction of their original size, and later decompress them with little
+   visible loss of quality.  Note that BPEG is a lossy compression method
+   designed especially for graphics data and is not applicable to other forms
+   of information (like program code).  Consider LZSS compression for data
+   requiring non-lossy techniques.
+
+   The April 21, 1995 revision to the sample program now uses the Standard
+   Jaguar startup code (included, see also SOURCE.ZIP)
+
+     JAGUAR\BIN\CBPEG                                     2/17/95      55250
+
+   DB Debugger -- Jaguar Debugger, communicates with Alpine Board plugged
+   into Jaguar console's cartridge slot.  RDBJAG is console/TTY
+   user-interface version, WDB is windowed version.  Windowed
+   (character-based windows) version of RDBJAG debugger includes separate
+   windows for disassembly listing, memory dump, breakpoint list, memory
+   checkpoint list, symbol table, and so on.  Uses same script files as
+   RDBJAG (OD.DB, GPU.DB, etc.)
+
+   Requires 8-bit true bi-directional parallal port (Everex Magic I/O, SIIG
+   I/O Professional, SIIG VL-IDE)
+
+   April 21, 1995: readme files from earlier versions, ADDENDUM.RDB,
+   ADDENDUM.WDB, RDBJAG.TXT, & WRDBJAG.TXT all merged into a single new file
+   named RDB.TXT
+
+     JAGUAR\BIN\RDBJAG                                     5/3/95     253952
+     JAGUAR\BIN\WDB                                        5/3/95     372736
+     (See also the description of DBPC.ZIP for additional documentation
+      files and script files which are also included in this archive.)
+
+   Madmac -- Macro Assembler for 680x0, Jaguar GPU/DSP
+
+   ADDENDUM.MAC and MAC.TXT documentation files now merged into MADMAC.TXT
+
+     JAGUAR\BIN\MAC                                        5/3/95     114688
+     (See also the description of MACALN.ZIP for additional documentation
+      files also included in this archive.)
+
+------------------------------------------------------------------------------
+
+MACALN.ZIP, 5/6/95     MADMAC assembler & ALN Linker (MSDOS)
+199845 bytes
+
+   ALN -- ALN - Atari Linker.  Builds executable program files from a
+   specified collection of object modules, archive libraries, and binary data
+   files.
+
+   Note: ADDENDUM.MAC merged into ALN.TXT as of April 6, 1995
+
+     JAGUAR\DOCS\ALN.TXT                                   5/6/95      13385
+     JAGUAR\BIN\ALN.EXE                                    5/3/95     140266
+
+   Madmac -- Macro Assembler for 680x0, Jaguar GPU/DSP
+
+   ADDENDUM.MAC and MAC.TXT documentation files now merged into MADMAC.TXT
+
+     JAGUAR\DOCS\MADMAC.TXT                                5/6/95      45936
+     JAGUAR\BIN\MAC.EXE                                    5/3/95     205802
+
+   Miscellaneous Documentation -- Miscellanous text files with documentation,
+   Jaguar developer lore, questions & answers, archived online messages, etc.
+
+     JAGUAR\DOCS\JAGDEV.FAQ                               3/10/95       8633
+
+------------------------------------------------------------------------------
+
+MOVIE1.ZIP, 2/10/95    Sample Cinepak film #1 (Julia Set animation)
+779530 bytes
+
+   Cinepak for Jaguar -- Cinepak Full Motion video playback library,
+   utilities, sample code, and sample films.  The Cinepak library allows you
+   to play full screen, full motion video on the Jaguar screen.
+
+     JAGUAR\CINEPAK\MOVIES\SINEJUL.DB                     2/10/95        142
+     JAGUAR\CINEPAK\MOVIES\SINEJUL.CRG                    2/20/94    1090624
+
+------------------------------------------------------------------------------
+
+MOVIE3.ZIP, 8/8/94     Cinepak sample film #3 (short STAR WARS escape
+754621 bytes           sequence)
+
+   Cinepak for Jaguar -- Cinepak Full Motion video playback library,
+   utilities, sample code, and sample films.  The Cinepak library allows you
+   to play full screen, full motion video on the Jaguar screen.
+
+     JAGUAR\CINEPAK\MOVIES\ESC6.CRG                        8/1/94     882296
+     JAGUAR\CINEPAK\MOVIES\ESC6.DB                         8/8/94        215
+
+------------------------------------------------------------------------------
+
+MUSICP.ZIP, 6/5/95     Jaguar Music & Sound utilities, PC versions
+258180 bytes
+
+   Music & Sound Tools -- Utilities that go with the Jaguar Synthesizer &
+   Music Driver and the Jaguar Sound Tool.
+
+   PARSE takes MIDI type 0 files and converts them into instructions for the
+   Jaguar Music Driver.
+   MERGE takes multiple output files from PARSE and merges them together.
+   MKAIF.EXE Creates an AIFF (Audio Interchange File Format) file.
+   MONO.EXE converts stereo sample files to mono.
+   LOADFIX converts patches for older versions of the Jaguar Sound Tool to
+   the format used by the current version.
+   SNDCMP compresses 16-bit sample files using the square root method.
+   UNCMP decompresses SNDCMP-ed files back to 16-bit.
+   WAVEFM creates wave form files for the Jaguar Synth.
+
+     JAGUAR\BIN\WAVEFM.EXE                                11/1/94      39656
+     JAGUAR\BIN\XNOTES.EXE                                3/24/95      59916
+     JAGUAR\BIN\UNCMP.EXE                                 1/26/95      37954
+     JAGUAR\BIN\MKAIF.EXE                                10/25/94      38582
+     JAGUAR\BIN\NOTES.CNF                                 1/28/94       3011
+     JAGUAR\BIN\STRIPAIF.EXE                             11/11/94      39446
+     JAGUAR\BIN\PARSE.EXE                                  6/1/95      68716
+     JAGUAR\MUSIC\MUSIC.TXT                                6/5/95      47010
+     JAGUAR\BIN\MONO.EXE                                 11/11/94      42168
+     JAGUAR\BIN\MERGE.EXE                                 3/24/95      92438
+     JAGUAR\BIN\SNDCMP.EXE                                1/26/95      53642
+     JAGUAR\BIN\PARSE.CNF                                 5/22/95        982
+     JAGUAR\BIN\LOADFIX.EXE                               11/1/94      39232
+
+------------------------------------------------------------------------------
+
+PARALLEL.ZIP, 3/11/93  Parallel port tester program
+42200 bytes
+
+   Parallel Port Test Utility -- This program tests your computer's parallel
+   ports to determine their capabilities.  It can tell you if you have an
+   monodirectional port, a 4-bit bidirectional port, or an 8-bit
+   bidirectional port, and so on.
+
+     JAGUAR\PARALLEL\PARALLEL.EXE                         3/10/93      23182
+     JAGUAR\PARALLEL\PARALLEL.DOC                         3/11/93      86933
+     JAGUAR\PARALLEL\README.TXT                           3/11/93       1982
+     JAGUAR\PARALLEL\LICENSE.TXT                          3/11/93       5070
+
+------------------------------------------------------------------------------
+
+QSOUND.ZIP, 4/22/95    QSound 3D sound library
+657686 bytes
+
+   QSound For Jaguar -- QSound for Jaguar is a 3D sound field processing
+   library.  It takes digital audio samples as input, and reprocesses them to
+   position the sound within a three-dimensional sound field generated from a
+   single pair of stereo speakers.
+
+     JAGUAR\QSOUND\QPANNER.DAS                           10/19/94       5961
+     JAGUAR\QSOUND\MIX3.SND                              10/19/94     180776
+     JAGUAR\QSOUND\MAKEFILE                               4/22/95        840
+     JAGUAR\QSOUND\PHASER.SND                            10/19/94      41856
+     JAGUAR\QSOUND\QSOUND.INC                            10/19/94        278
+     JAGUAR\QSOUND\VIDSTUFF.INC                           4/22/95        441
+     JAGUAR\QSOUND\QSOUND.OT                             10/19/94       9819
+     JAGUAR\QSOUND\QDEMO.S                                4/22/95       7069
+     JAGUAR\QSOUND\COPTER.SND                            10/19/94      38056
+     JAGUAR\SOURCE\SAMPLE.RGB                             4/10/95      18432
+     JAGUAR\QSOUND\DEMO.S                                 4/22/95       7534
+     JAGUAR\QSOUND\README.TXT                             4/22/95       1384
+     JAGUAR\DOCS\QSOUND.DOC                               11/2/94      49664
+     JAGUAR\QSOUND\STARTUP.S                              4/18/95      11330
+     JAGUAR\QSOUND\JOYPAD.S                              10/19/94       3240
+     JAGUAR\QSOUND\QDEMO.LNK                              4/22/95        163
+     JAGUAR\QSOUND\VALOGO16.PIC                          10/19/94     153608
+
+------------------------------------------------------------------------------
+
+SOURCE.ZIP, 6/13/95    Jaguar Startup Code, Include Files, Sample Programs
+171226 bytes
+
+   Blitter Cookbook -- This is a program that lets you plug different values
+   into the blitter registers so that you can see what effect they have on a
+   blit operation.  You can use it as sort of a "Blitter Cookbook" to figure
+   out your own custom blitter recipes
+
+     JAGUAR\BLITTER\BLITCOOK.COF                           9/2/94      55393
+
+   Blitter Examples -- Miscellaneous Example Programs for Blitter
+
+   JAGBLCK - Draw a rectangular area using blitter.
+   JAGLINE - Draw a horizontal line using blitter
+   JAGSHAD - Draw shaded polygons using blitter
+   JAGSKEW - Draw a skewed rectagle (parallelogram) using blitter
+   JAGSLNT - Draw a diagonal line using blitter
+
+     JAGUAR\SOURCE\BLIT\INTSERV.S                         9/22/94        794
+     JAGUAR\SOURCE\BLIT\JAGLINE.S                          9/1/94       1813
+     JAGUAR\SOURCE\BLIT\LISTBAR.S                         6/24/94       6418
+     JAGUAR\SOURCE\BLIT\BLITSKEW.S                        9/22/94       1961
+     JAGUAR\SOURCE\BLIT\BLITBLCK.S                        9/22/94       1907
+     JAGUAR\SOURCE\BLIT\BLITLINE.S                        9/22/94       1361
+     JAGUAR\SOURCE\BLIT\BLITSLNT.S                        9/22/94       1570
+     JAGUAR\SOURCE\BLIT\CLEARBAR.S                         9/1/94       1943
+     JAGUAR\SOURCE\BLIT\BLITSHAD.S                        9/22/94       1902
+     JAGUAR\SOURCE\BLIT\MAKEFILE                           4/6/95       1581
+     JAGUAR\SOURCE\BLIT\VIDINIT.S                          9/1/94       1747
+     JAGUAR\SOURCE\BLIT\CRY.PAL                           1/29/94       1805
+
+   CRY Color Picker -- This example shows a CRY-model color picker.  It shows
+   you what a particular CRY color value will look like on your monitor or
+   TV, and gives you the closest RGB equivalent value.
+
+     JAGUAR\WORKSHOP\CRYPICK\CRYPICK.INC                  8/25/94       1448
+     JAGUAR\WORKSHOP\CRYPICK\CPK_BLIT.S                   9/22/94       4184
+     JAGUAR\WORKSHOP\CRYPICK\FONT.S                       8/26/94       7504
+     JAGUAR\WORKSHOP\CRYPICK\CRYTABLE.S                   8/19/94       3417
+     JAGUAR\WORKSHOP\CRYPICK\MAKEFILE                     8/25/94        956
+     JAGUAR\WORKSHOP\CRYPICK\CPK_LOOP.S                   8/29/94      15464
+     JAGUAR\WORKSHOP\CRYPICK\CPK_LIST.S                   8/29/94      16476
+     JAGUAR\WORKSHOP\CRYPICK\CPK_INIT.S                   8/29/94       4928
+
+   DB Message Example -- This short program demonstrates how programs running
+   on the Jaguar can send messages and commands to the debugger running on
+   the host computer.
+
+     JAGUAR\SOURCE\DBMSG\MAKEFILE                          4/6/95        356
+     JAGUAR\SOURCE\DBMSG\RDBMSG.S                        11/15/94        773
+     JAGUAR\SOURCE\DBMSG\README.TXT                       8/23/94        481
+
+   EEPROM Example -- Library code for read/write operations with a
+   cartridge's EEPROM (for High scores, configuration settings, etc.)
+
+     JAGUAR\SOURCE\EEPROM\EEDOCS.ASC                      1/19/95       5556
+     JAGUAR\SOURCE\EEPROM\TEST_E2.S                       1/18/95       5570
+     JAGUAR\SOURCE\EEPROM\EEPROM.S                        3/14/95       9936
+     JAGUAR\SOURCE\EEPROM\MAKEFILE                         4/6/95       1061
+
+   Include Files -- MADMAC/GASM Assembly Language Include files with equates
+   (*.INC) and 'C' language header files with #defines (*.H) for Jaguar
+   hardware registers.
+
+   April 6, 1995 -- BLIT.INC, GPU.INC, VIDEO.INC, OBJLIST.INC, JOYPAD.INC and
+   DSP.INC removed from distribution.  See JAGUAR.INC instead.
+
+     JAGUAR\INCLUDE\MACROS.INC                            2/22/95       1605
+     JAGUAR\INCLUDE\CD.INC                                4/11/95       1183
+     JAGUAR\INCLUDE\JAGUAR.H                              6/13/95      30050
+     JAGUAR\INCLUDE\JAGUAR.INC                            6/13/95      26593
+
+   Jagmand -- Sample Jaguar Mandlebrot Fractal Demonstration program, shows
+   how to install GPU code into GPU RAM, how to execute it, and a simple
+   means of inter-CPU communication.
+
+     JAGUAR\SOURCE\JAGMAND\CALCMAND.S                     2/10/94       2577
+     JAGUAR\SOURCE\JAGMAND\CRY.PAL                        1/29/94       1805
+     JAGUAR\SOURCE\SAMPLE.RGB                             4/10/95      18432
+     JAGUAR\SOURCE\JAGMAND\STARTUP.S                      4/18/95      11330
+     JAGUAR\SOURCE\JAGMAND\JAGMAND.S                      4/18/95       8740
+     JAGUAR\SOURCE\JAGMAND\MANDLE.S                       4/18/95       2038
+     JAGUAR\SOURCE\JAGMAND\MAKEFILE                        5/4/95        901
+
+   Jaguar Workshop #1 - Minimum Object List Update -- This entry in the
+   Jaguar Workshop Series demonstrates the bare minimum code required to
+   setup and maintain an object list on the Jaguar.
+
+     JAGUAR\WORKSHOP\MOU\MAKEFILE                         3/29/95        836
+     JAGUAR\WORKSHOP\MOU\MOU_INIT.S                       9/28/94       4334
+     JAGUAR\WORKSHOP\DATA\JAGUAR.BIN                      9/20/94      25728
+     JAGUAR\WORKSHOP\MOU\MOU.INC                          8/29/94        461
+     JAGUAR\WORKSHOP\MOU\MOU_LIST.S                       9/28/94       5366
+
+   Jaguar Workshop #12 - Blitter Bitmap Rotation -- This entry in the Jaguar
+   Workshop Series demonstrates how to rotate bitmapped graphics data using
+   the Jaguar blitter.
+
+     JAGUAR\WORKSHOP\JAGROT\MAKEFILE                       8/2/94        904
+     JAGUAR\WORKSHOP\JAGROT\JR_CLR.S                      9/22/94       1933
+     JAGUAR\WORKSHOP\JAGROT\JR_GROT.S                     8/30/94      12705
+     JAGUAR\WORKSHOP\JAGROT\JR.INC                        8/29/94       1129
+     JAGUAR\WORKSHOP\JAGROT\JR_INIT.S                     9/28/94       3590
+     JAGUAR\WORKSHOP\JAGROT\JR_LIST.S                     9/28/94       5386
+     JAGUAR\WORKSHOP\JAGROT\JAGPIC.S                      8/29/94      28420
+
+   Jaguar Workshop #2 - Moving Objects -- This entry in the Jaguar Workshop
+   Series demonstrates how to move objects around on the screen by
+   manipulating the coordinates in the object list.
+
+     JAGUAR\WORKSHOP\MOVE\MAKEFILE                        3/29/95        890
+     JAGUAR\WORKSHOP\MOVE\MOV_LIST.S                      9/28/94       5679
+     JAGUAR\WORKSHOP\MOVE\MOVE.INC                        8/29/94        542
+     JAGUAR\WORKSHOP\MOVE\MOV_MOVE.S                      8/29/94       3063
+     JAGUAR\WORKSHOP\MOVE\MOV_INIT.S                      9/28/94       3657
+     JAGUAR\WORKSHOP\DATA\JAGUAR.BIN                      9/20/94      25728
+
+   Jaguar Workshop #3 - Clipping Objects -- This entry in the Jaguar Workshop
+   Series demonstrates how to clip bitmap objects using the object processor.
+
+     JAGUAR\WORKSHOP\CLIP\CLP_INIT.S                      9/28/94       3819
+     JAGUAR\WORKSHOP\DATA\JAGUAR.BIN                      9/20/94      25728
+     JAGUAR\WORKSHOP\CLIP\MAKEFILE                        3/29/95        890
+     JAGUAR\WORKSHOP\CLIP\CLP_CLIP.S                      9/28/94       3834
+     JAGUAR\WORKSHOP\CLIP\CLP_LIST.S                      9/28/94       6035
+     JAGUAR\WORKSHOP\CLIP\CLIP.INC                        8/17/94        486
+
+   Jaguar Workshop #4 - Scaling Objects -- This entry in the Jaguar Workshop
+   Series demonstrates how to scale bitmapped images up or down using the
+   object processor.
+
+     JAGUAR\WORKSHOP\DATA\JAGUAR.BIN                      9/20/94      25728
+     JAGUAR\WORKSHOP\SCALE\SCL_LIST.S                     9/28/94       5886
+     JAGUAR\WORKSHOP\SCALE\MAKEFILE                       3/29/95        895
+     JAGUAR\WORKSHOP\SCALE\SCL_INIT.S                     9/28/94       3581
+     JAGUAR\WORKSHOP\SCALE\SCALE.INC                      8/29/94        480
+     JAGUAR\WORKSHOP\SCALE\SCL_SCAL.S                     8/29/94       3007
+
+   Jaguar Workshop #6 - GPU Interrupt Handling -- This entry in the Jaguar
+   Workshop Series demonstrates how to set up a GPU interrupt handler.
+
+     JAGUAR\WORKSHOP\GPUINT\GPUINT.INC                    8/29/94        798
+     JAGUAR\WORKSHOP\GPUINT\BUGNOTE.TXT                   7/27/94        267
+     JAGUAR\WORKSHOP\GPUINT\MAKEFILE                      3/29/95        896
+     JAGUAR\WORKSHOP\DATA\JAGUAR.BIN                      9/20/94      25728
+     JAGUAR\WORKSHOP\GPUINT\GPU_LIST.S                    9/28/94       7094
+     JAGUAR\WORKSHOP\GPUINT\GPU_HNDL.S                    9/28/94       3933
+     JAGUAR\WORKSHOP\GPUINT\GPU_INIT.S                    9/28/94       5089
+
+   Joypad Demo -- Example code for how to read and use the Jaguar joypads.
+
+     JAGUAR\SOURCE\JOYTEST\JT_INIT.S                       9/2/94       3939
+     JAGUAR\SOURCE\JOYTEST\JT_LOOP.S                       9/8/94      16743
+     JAGUAR\SOURCE\JOYTEST\JT_LIST.S                       9/2/94      13571
+     JAGUAR\SOURCE\JOYTEST\MAKEFILE                        4/6/95        860
+     JAGUAR\SOURCE\JOYTEST\JOYTEST.INC                     9/2/94        615
+
+   Simple -- Sample sound-generation code using Jaguar DSP
+
+     JAGUAR\SOURCE\SIMPLE\SIMPLE.S                        7/26/94       1696
+     JAGUAR\SOURCE\SIMPLE\MAKEFILE                         4/6/95       1037
+     JAGUAR\SOURCE\SIMPLE\SIMPSYN.DAS                      4/6/95       3213
+
+   Startup Code -- "Golden" Jaguar Startup Code.  Using this as your startup
+   code should eliminate the likelihood of program errors due to improper
+   system initialization.
+
+     JAGUAR\STARTUP\README.TXT                            4/22/95       4169
+     JAGUAR\STARTUP\STARTUP.S                             4/22/95      11318
+     JAGUAR\STARTUP\LT_BOX.RGB                             3/8/95      16384
+     JAGUAR\STARTUP\MAKEFILE                               3/6/95        790
+     JAGUAR\STARTUP\LB_BOX.RGB                             3/8/95      16384
+
+   TestRGB -- Sample code that demonstrates how to set up and draw into a
+   16-bit true color video object.
+
+     JAGUAR\SOURCE\TESTRGB\TEST.S                         4/22/95       1720
+     JAGUAR\SOURCE\SAMPLE.RGB                             4/10/95      18432
+     JAGUAR\SOURCE\TESTRGB\STARTUP.S                      4/18/95      11330
+     JAGUAR\SOURCE\TESTRGB\VIDSTUFF.INC                   4/22/95        441
+     JAGUAR\SOURCE\TESTRGB\MAKEFILE                       5/22/95        885
+     JAGUAR\SOURCE\TESTRGB\TESTRGB.S                      4/22/95       7077
+
+------------------------------------------------------------------------------
+
+STTOOLS.ZIP, 6/23/95   ST versions of tools (Madmac, ALN, DB, music & sound
+635976 bytes           tools, misc utilities)
+
+   ALN -- ALN - Atari Linker.  Builds executable program files from a
+   specified collection of object modules, archive libraries, and binary data
+   files.
+
+   Note: ADDENDUM.MAC merged into ALN.TXT as of April 6, 1995
+
+     JAGUAR\BIN\ALN.TTP                                  10/21/94      69235
+     JAGUAR\BIN\DOINDEX.TTP                               1/29/94      18551
+     (See also the description of MACALN.ZIP for additional documentation
+      files also included in this archive.)
+
+   DB Debugger -- Jaguar Debugger, communicates with Alpine Board plugged
+   into Jaguar console's cartridge slot.  RDBJAG is console/TTY
+   user-interface version, WDB is windowed version.  Windowed
+   (character-based windows) version of RDBJAG debugger includes separate
+   windows for disassembly listing, memory dump, breakpoint list, memory
+   checkpoint list, symbol table, and so on.  Uses same script files as
+   RDBJAG (OD.DB, GPU.DB, etc.)
+
+   Requires 8-bit true bi-directional parallal port (Everex Magic I/O, SIIG
+   I/O Professional, SIIG VL-IDE)
+
+   April 21, 1995: readme files from earlier versions, ADDENDUM.RDB,
+   ADDENDUM.WDB, RDBJAG.TXT, & WRDBJAG.TXT all merged into a single new file
+   named RDB.TXT
+
+     JAGUAR\BIN\RDBJAG.TOS                               12/21/94     195878
+     (See also the description of DBPC.ZIP for additional documentation
+      files also included in this archive.)
+
+   Filefix -- Converts ABS/COF executable files output from ALN into separate
+   files for the text (*.TXT), data (*.DTA), and symbol (*.SYM) sections, and
+   also writes out an RDBJAG script file (*.DB) for loading each file to the
+   appropriate location in the Jaguar's memory.
+
+   When the source file is a BSD/COFF format executable, FILEFIX does not
+   write out a symbol file, and does not reference the symbol file in the DB
+   script it outputs.
+
+   Can also write out a ROM image file (raw binary data of an entire
+   cartridge).
+
+     JAGUAR\BIN\FILEFIX.TTP                               10/4/94      20802
+
+   GASM -- GASM is the original macro assembler for Jaguar GPU/DSP.  It is
+   not capable of producing 680x0 code at all.  GASM does not produce
+   standard DRI-format object modules or BSD/COFF object modules, so the
+   LTXCONV utility is also provided.  LTXCONV converts the *.LTX object
+   modules output from GASM into either DRI-format *.O object module or *.BIN
+   raw binary data files.  See the LTXCONV printed documentation for more
+   information.
+
+   GASM is made obsolete by newer versions of MADMAC which can generate code
+   for the 680x0, GPU, and DSP.  GASM should be used primarily to maintain
+   existing code.  New code should be written using MADMAC in place of GASM.
+
+     JAGUAR\BIN\LTXCONV.TTP                               1/29/94      21448
+     JAGUAR\BIN\GASM.TTP                                  11/8/93      51624
+
+   Graphics Conversion Utilities -- TGA2CRY converts a Targa format picture
+   into MADMAC source code or binary data for a CRY format image.
+
+     JAGUAR\BIN\TGA2CRY.TTP                               8/22/94      78380
+     JAGUAR\BIN\MAKECRY.G                                  8/4/94         13
+
+   Madmac -- Macro Assembler for 680x0, Jaguar GPU/DSP
+
+   ADDENDUM.MAC and MAC.TXT documentation files now merged into MADMAC.TXT
+
+     JAGUAR\BIN\MAC.TTP                                   3/20/95     124487
+     (See also the description of MACALN.ZIP for additional documentation
+      files also included in this archive.)
+
+   MicroEMACS -- MicroEMACS text/source code editor.  TOS version is ready to
+   run.  The MSDOS install files must be copied to a floppy disk or the root
+   directory of a hard disk and then installed.  The files should be
+   installed to JAGUAR\BIN (so that no additional directory specifications in
+   your PATH will be required).
+
+     JAGUAR\BIN\EMACS.RC                                  4/13/94       3799
+     JAGUAR\BIN\EMACS.TTP                                 1/29/94     105753
+
+   Music & Sound Tools -- Utilities that go with the Jaguar Synthesizer &
+   Music Driver and the Jaguar Sound Tool.
+
+   PARSE takes MIDI type 0 files and converts them into instructions for the
+   Jaguar Music Driver.
+   MERGE takes multiple output files from PARSE and merges them together.
+   MKAIF.EXE Creates an AIFF (Audio Interchange File Format) file.
+   MONO.EXE converts stereo sample files to mono.
+   LOADFIX converts patches for older versions of the Jaguar Sound Tool to
+   the format used by the current version.
+   SNDCMP compresses 16-bit sample files using the square root method.
+   UNCMP decompresses SNDCMP-ed files back to 16-bit.
+   WAVEFM creates wave form files for the Jaguar Synth.
+
+     JAGUAR\BIN\WAVEFM.TTP                               10/26/94      15932
+     JAGUAR\BIN\MKAIF.TTP                                10/26/94      14948
+     JAGUAR\BIN\LOADFIX.TTP                              10/26/94      15776
+     JAGUAR\BIN\MERGE.TTP                                 2/15/95      19452
+     JAGUAR\BIN\MONO.TTP                                 10/26/94      17020
+     JAGUAR\BIN\XNOTES.TTP                                3/23/95      28228
+     JAGUAR\BIN\PARSE.TTP                                  6/1/95      38106
+     JAGUAR\BIN\UNCMP.TTP                                 1/19/95      10380
+     JAGUAR\BIN\STRIPAIF.TTP                             10/26/94      17928
+     JAGUAR\BIN\SNDCMP.TTP                               10/24/94      18950
+
+   Object Module Utilities -- Object module & Executable File manipulation
+   utilities
+
+   AR68 - DRI-format archive librarian (TOS only)
+   AR - BSD-format archive librarian (MSDOS only)
+   NAME - Dump list of all symbols within an object module (DRI-format only)
+   SIZE - Show sizes of segments within an object module or executable
+   program file (Alcyon/DRI or BSD/COFF format), optionally shows list of
+   symbols too.
+   STRIP - Strip symbols from an DRI-format executable (TOS only)
+
+     JAGUAR\BIN\SIZE.TTP                                  7/27/94      22262
+     JAGUAR\BIN\AR68.TTP                                  1/29/94      20968
+     JAGUAR\BIN\STRIP68.TTP                               1/29/94      16511
+
+   UNIX Utilities -- Unix-style file utilties:
+
+   ls = directory listing (MSDOS)
+   make = GNU-Make program built utility
+   dmp = Hex Dump utility
+   fgrep = Fast GREP (extended pattern recognition) utility
+   gulam (TOS only) = command line shell with many built-in functions
+   including LS
+
+     JAGUAR\BIN\MAKE.TTP                                  1/29/94     103145
+     JAGUAR\BIN\DUMP.TTP                                  1/29/94      10112
+     JAGUAR\BIN\GULAM.PRG                                 11/8/93      60556
+     JAGUAR\BIN\GULAM.G                                    4/5/94        774
+
+------------------------------------------------------------------------------
+
+TECHNT.ZIP, 5/4/95     Jaguar Technical Notes (documentation)
+10207 bytes
+
+   Technical Notes -- Jaguar Technical notes are released periodically with
+   important information such as updated bug/warning lists, programming tips
+   & caveats, etc.
+
+     JAGUAR\DOCS\TECHNOTE.S\JDEV0004.TXT                   5/4/95        800
+     JAGUAR\DOCS\TECHNOTE.S\JDEV0003.TXT                   5/4/95       1696
+     JAGUAR\DOCS\TECHNOTE.S\JDEV0002.TXT                  3/22/95      11765
+     JAGUAR\DOCS\TECHNOTE.S\JDEV0001.TXT                   2/6/95      10716
+
+------------------------------------------------------------------------------
+
+UTILPC.ZIP, 8/3/95     Miscellaneous utilities, PC versions
+433176 bytes
+
+   Filefix -- Converts ABS/COF executable files output from ALN into separate
+   files for the text (*.TXT), data (*.DTA), and symbol (*.SYM) sections, and
+   also writes out an RDBJAG script file (*.DB) for loading each file to the
+   appropriate location in the Jaguar's memory.
+
+   When the source file is a BSD/COFF format executable, FILEFIX does not
+   write out a symbol file, and does not reference the symbol file in the DB
+   script it outputs.
+
+   Can also write out a ROM image file (raw binary data of an entire
+   cartridge).
+
+     JAGUAR\BIN\MAKEROM.BAT                               3/17/95         27
+     JAGUAR\BIN\FILEFIX.EXE                               3/21/95      51648
+     JAGUAR\DOCS\FILEFIX.TXT                               5/5/95       6668
+
+   Flash ROM Utilities -- The Flash ROM utilities allow a ROM image file to
+   be downloaded to a Flash ROM cartridge, which has an encrypted EPROM.  The
+   resulting cartridge can be played on all Jaguar consoles.
+
+     JAGUAR\BIN\FLASH.COM                                 7/27/95      12657
+     JAGUAR\DOCS\FLASH.TXT                                7/27/95       3492
+
+   Object Module Utilities -- Object module & Executable File manipulation
+   utilities
+
+   AR68 - DRI-format archive librarian (TOS only)
+   AR - BSD-format archive librarian (MSDOS only)
+   NAME - Dump list of all symbols within an object module (DRI-format only)
+   SIZE - Show sizes of segments within an object module or executable
+   program file (Alcyon/DRI or BSD/COFF format), optionally shows list of
+   symbols too.
+   STRIP - Strip symbols from an DRI-format executable (TOS only)
+
+     JAGUAR\DOCS\ROMSPLIT.TXT                            11/23/94       4730
+     JAGUAR\BIN\AR.EXE                                    8/26/94     191866
+     JAGUAR\DOCS\COPYING                                  3/20/95      18311
+     JAGUAR\BIN\ROMSPLIT.EXE                               8/3/95      14715
+     JAGUAR\BIN\GO32.EXE                                   5/1/94      77456
+     JAGUAR\DOCS\SIZE.TXT                                 7/27/94       1929
+     JAGUAR\BIN\SIZE.EXE                                 12/16/94      45454
+     JAGUAR\BIN\RANLIB.EXE                                8/26/94     191866
+
+   UNIX Utilities -- Unix-style file utilties:
+
+   ls = directory listing (MSDOS)
+   make = GNU-Make program built utility
+   dmp = Hex Dump utility
+   fgrep = Fast GREP (extended pattern recognition) utility
+   gulam (TOS only) = command line shell with many built-in functions
+   including LS
+
+     JAGUAR\BIN\DMP.EXE                                   5/13/89      12957
+     JAGUAR\BIN\MAKEFILE                                   1/6/94         28
+     JAGUAR\BIN\MAKE.EXE                                  1/29/94     133990
+     JAGUAR\DOCS\LS.TXT                                    5/3/94        677
+     JAGUAR\BIN\LS.EXE                                   12/14/93      21451
+     JAGUAR\BIN\FGREP.EXE                                  9/6/90      36003
+
+------------------------------------------------------------------------------
+
+If you've downloaded archives in the past, the way we've rearranged the
+contents of the archives may be a bit confusing at first.  Below is a list of
+the new archives which consolidate the contents of older archives:
+
+STTOOLS.ZIP contains the contents of the older archives ALNST.ZIP, MACST.ZIP,
+RDBST.ZIP, UTILST.ZIP, MUSICS.ZIP, CRYST.ZIP, and TGAJST.ZIP.
+
+CDROM.ZIP contains the contents of the older archives CDROM.ZIP, CINEPK.ZIP,
+CINEPC.ZIP, CD_EMU.ZIP, and CPLAY.ZIP.
+
+MACALN.ZIP contains the contents of the older archives ALNPC.ZIP and
+MACPC.ZIP.
+
+DBPC.ZIP contains the contents of the older archives RDBPC.ZIP and WDBPC.ZIP.
+
+SOURCE.ZIP contains the contents of the older archives EXAMP1.ZIP,
+EEPROM.ZIP, INCLUD.ZIP, and BLITR.ZIP.
+
+JAGSYN.ZIP contains the contents of the older archives SYNTH.ZIP, SNDTL.ZIP,
+and MIDI.ZIP.
+
+JAGLIB.ZIP contains the contents of the older archives 3DDEMO.ZIP and
+LZJAG.ZIP.
+
+UTILPC.ZIP contains the contents of the older archives UTILPC.ZIP,
+ROMSPLIT.ZIP, and FLASH.ZIP.
+
+GRAFIK.ZIP contains the contents of the older archives CRYPC.ZIP (aka
+TGACRYPC.ZIP)
+
+------------------------------------------------------------------------------
+Older archives no longer in distribution:
+
+JAGPEG.ZIP, TGAJST.ZIP, and TGAJPC.ZIP contained the JAGPEG utilities and
+code, and are no longer distributed in favor of the BPEG package.
+
+GASMPC.ZIP containing the GASM macro assembler is no longer distributed.
+
+<<< END OF FILE >>>
+

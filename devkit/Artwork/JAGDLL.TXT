@@ -1,0 +1,263 @@
+
+JAGUAR.DLL entry points
+=======================
+
+------------------------------------------------------------------------------------------
+
+short FAR PASCAL InitJag(WORD flag, HWND parent, LPSTR inifile)
+
+Initialize the communications and check if the Jaguar is present and running.
+
+- if 'flag' is not 0, the DLL will open a configuration box, even if a
+  previous configuration was found in the .INI file (see inifile).
+
+- if flag is 0, will silently use the configuration found in its .INI file,
+  if it exists, or will ask for a configuration if not.
+
+- 'parent' must contains a handle (HWND) to the caller's main window, in
+  order for the DLL to open its dialog box.
+
+- 'inifile' must be a pointer to a string containing a filename. This
+  filename will be used as a .INI file by the DLL, to store its configuration.
+  This can be the caller's .INI file, for instance. The section name will be
+  [JAGUAR DLL Setup].
+
+------------------------------------------------------------------------------------------
+
+short FAR PASCAL StartJag(DWORD pc, WORD flag, LPLONG result)
+
+Launch a program on the jaguar.
+
+- if 'pc' is set to 0, the program will be launched from the current 68000 PC.
+  else the current 68000 PC will be set to this value before launching.
+
+- if 'flag' is set to 0, the DLL will wait for the Jaguar to finish it's
+  job (exception, breakpoint or MSG trap).
+
+- if 'flag' is not 0, the DLL just launch the Jaguar program before returning
+  to caller appication, which should use WaitJag() to check the Jaguar
+  status.
+
+The Jaguar routine should finish its job by sending a MSG containing the
+result in a long (could be an address wich can be read later by a ReadJag()
+command).
+
+For instance:
+ move.l Checksum,-(sp) ;Return Checksum in result
+ move.w #$55ab,-(sp)   ;Some kind of magic, unused.
+ move.w #5,-(sp)       ;Send a MSG
+ move #11,-(sp)
+ trap #$e              ; Finished, Return To Stub...
+
+This function returns -1 if it cannot run the program,
+                      -2 if the program running generated an exception. 'result' will
+                         contains the exception number.    
+                      -3 if the program running encountered a breakpoint       
+                       1 if the program is currently running
+                       0 if the program finished. In this case, result contains the return
+                         code from the program (returned via a MSG trap).
+
+------------------------------------------------------------------------------------------
+
+short FAR PASCAL WaitJag(WORD flag, LPLONG result)
+
+Check the Jaguar status while running (see StartJag).
+
+- if 'flag' is set to 0, wait for the Jaguar to finish (see StartJag).
+- if 'flag' !=0, do not wait for the Jaguar to finish (use WaitJag).
+
+This function returns -1 if it cannot run the program,
+                      -2 if the program running generated an exception. 'result' will
+                         contains the exception number.    
+                      -3 if the program running encountered a breakpoint       
+                       1 if the program is currently running
+                       0 if the program finished. In this case, result contains the return
+                         code from the program (returned via a MSG trap).
+
+------------------------------------------------------------------------------------------
+
+short FAR PASCAL SendJag(DWORD addr, DWORD size, LPBYTE datas, WORD speed)
+
+Send a memory block from the PC to the Jaguar.
+
+- 'addr' is the Jaguar address where datas will be copied to.
+- 'size' is the size, in bytes, of the datas.
+- 'datas' is the address of the memory block on the PC side.
+- 'speed' must be set to 0 for using the old (slow) parallel protocol.
+- 'speed' must be set to 1 for using the fast parallel protocol (or the slow
+  one if pprot==-1 in the DLL configuration).
+
+'speed' is unused when used with a serial stub.
+
+This function returns 0 if no error or -1 if an error occurs.
+
+*NOTE*
+------
+The 'datas' address is a 32 bit pointer, but as Windows cannot handle such
+pointers as a parameter for a DLL function, it must be allocated via the
+(Watcom C) AllocHugeAlias16() function. Although there are probably some
+equivalents in others Windows compiler, we don't know if these are
+compatible with the Watcom ones.
+
+For instance:
+
+char *fcode16, *FCode;
+long FSize=0x100000;
+
+/* Allocate some space */
+FCode=malloc(FSize);
+
+/*
+fill FCode with whatever you want
+*/
+
+/* Transform the FCcode 32 bits pointer in a fake 16 bits one */
+fcode16=(char *)AllocHugeAlias16(FCode,FSize);
+
+/* Send the memory block */
+result =InvokeIndirectFunction(hsend,0x4000,FSize,fcode16,1,SendJag);
+
+/* Free the alias */
+FreeHugeAlias16((DWORD)fcode16,FSize);
+
+/* Free the memory */
+free(FCode);
+
+The InvokeIndirectFunction call is discussed in the last part of this file,
+in the Initialisation section.
+
+------------------------------------------------------------------------------------------
+
+short FAR PASCAL ReadJag(DWORD addr, DWORD size, LPBYTE datas, WORD speed)
+
+Receives a memory block from the Jaguar to the PC.
+
+See SendJag for the parameters. All the same, except for 'speed' wich
+is unused in this function, even on a parallel port.
+
+------------------------------------------------------------------------------------------
+
+short FAR PASCAL ResetJag()
+
+- no params.
+- only works if the RESET button is cabled on the parallel port.
+  (i.e. if the 'reset' command of the debugger works) 
+- untested (but should work OK).
+
+
+
+JAGUAR.DLL clients initialisation
+=================================
+
+This DLL is designed to be used in 32 bits OS (Windows3+win32s/NT/Win95).
+Although it should be possible to call its functions from any Windows
+application, we strongly suggest the use of the Watcom compiler. This
+document applies only to this environment.
+
+
+Initialisation sample:
+
+#include <windows.h>
+#define InitJag 1
+#define StartJag 2
+#define WaitJag 3
+#define SendJag 4
+#define ReadJag 5
+#define ResetJag 6
+
+/* hwnd is a handle to the main window of the application */ 
+short InitDLL(HWND hwnd)
+{
+        FARPROC fp;
+        HANDLE hlib32;
+        HINDIR hinit,hstart,hwait,hsend,hread,hreset;
+        char buf[128];
+        short result;
+        char *fcode16;
+
+	/* Locate and load the DLL */
+        if ((hlib32=LoadLibrary("jaguar.dll"))<HINSTANCE_ERROR) {
+		sprintf(buf,"JAGUAR.DLL failed to initialize!\n Error number %hd.",(short) hlib32);
+		MessageBox(NULL, buf, "My Application Name", MB_OK);
+		return(FALSE);
+        }
+
+	/* Find the main DLL procedure address */
+        fp = GetProcAddress( hlib32, "Win386LibEntry");
+
+	/* From this address, get pointers to the DLL functions */
+
+	/* pointer to InitJag() */
+        hinit = GetIndirectFunctionHandle( fp, INDIR_WORD, INDIR_WORD,
+                        INDIR_PTR, INDIR_WORD, INDIR_ENDLIST );
+
+	/* pointer to StartJag() */
+        hstart = GetIndirectFunctionHandle( fp, INDIR_DWORD, INDIR_WORD,
+                        INDIR_PTR, INDIR_WORD, INDIR_ENDLIST );
+
+	/* pointer to WaitJag() */
+        hwait = GetIndirectFunctionHandle( fp, INDIR_WORD, INDIR_PTR,
+                        INDIR_WORD, INDIR_ENDLIST );
+
+	/* pointer to SendJag() */
+        hsend = GetIndirectFunctionHandle( fp, INDIR_DWORD, INDIR_DWORD,
+                        INDIR_DWORD, INDIR_WORD, INDIR_WORD, INDIR_ENDLIST);
+
+	/* pointer to ReadJag() */
+        hread = GetIndirectFunctionHandle( fp, INDIR_DWORD, INDIR_DWORD,
+                        INDIR_DWORD, INDIR_WORD, INDIR_WORD, INDIR_ENDLIST);
+
+	/* pointer to ResetJag() */
+	hreset = GetIndirectFunctionHandle(fp, INDIR_WORD, INDIR_ENDLIST);
+
+	/* Now, call InitJag, dont force a reconfiguration, use JAGUAR.INI config file */
+        result = InvokeIndirectFunction(hinit,0,hwnd,"jaguar.ini",InitJag);
+
+	/* And check the result */
+        if (result) {
+                sprintf(buf,"Jaguar failed to initialize!");
+                MessageBox( NULL, buf, "My Application Name", MB_OK );
+                FreeLibrary( hlib32 );
+                return (FALSE);
+	}
+/*	sprintf(buf,"Jaguar initialized");
+	MessageBox( NULL, buf, "My Application Name", MB_OK );*/
+	return (TRUE);
+}
+
+As shown in this sample, once the DLL is initialised (LoadLibrary), any
+call to its functions is of the form:
+
+InvokeIndirectFunction(function_pointer,param1,...,lastparam,function_number);
+
+For instance (last one), here is a sample of how to execute a program in the
+Jaguar memory:
+
+	short result;
+	long event;
+
+	/* Start a program at PC=0x4000 and wait for its return*/
+        result = InvokeIndirectFunction(hstart,0x4000,0,&event,StartJag);
+        switch (result) {
+            case 0:
+                sprintf(buf,"Program finished: result=0x%lx",event);
+                MessageBox( NULL, buf, "My Application Name", MB_OK );
+                break;
+            case -1:
+                sprintf(buf,"Cannot run program!");
+                MessageBox( NULL, buf, "My Application Name", MB_OK );
+                break;
+            case -2:
+                sprintf(buf,"Exception nb:%ld",event);
+                MessageBox( NULL, buf, "My Application Name", MB_OK );
+                break;
+            default:    /*must be a breakpoint!*/
+                break;
+
+
+Do not forget the *NOTE* in the SendJag() section.
+
+Do not forget to free the DLL before exiting your program by a FreeLibrary(DLL_handle)
+call.
+
+Brainstorm.

@@ -1,0 +1,2528 @@
+
+	.globl Transform
+	.globl point2
+	.globl writexy
+	.globl tmatrix
+	.globl lmatrix
+	.globl rmatrix
+	.globl mmult3x1
+	.globl segloop
+	.globl inexit
+	.globl chkvert
+	.globl vertdone
+	.globl okcnt
+	.globl flatlp
+	.globl no_Yneg
+	.globl EndOfPack
+	.globl ttime1
+	.globl ttime2
+	.globl ttime3
+
+; Here are the defines for the CLIP values. Used by the texture mapping
+; primitive.
+
+GPXMNCL		EQU	0
+GPXMXCL		EQU	319
+GPYMNCL		EQU	0
+GPYMXCL		EQU	199
+
+; 9/10/93 DLF -
+;*======================================================================*
+;*                TITLE:      TEXTDRAW.GAS                              *
+;*                Function:   Polyhedron Transform, Texture Mapping     *
+;*                            Gouraud Shading.  No z-buffering.         *
+;*                                                                      *
+;*                                                                      *
+;*                Authors:    Denis L. Fung/Rob Zydbel                  *
+;*                                                                      *
+;*        COPYRIGHT 1992,1993,1994 Atari Computer Corporation           *
+;*        UNAUTHORIZED REPRODUCTION, ADAPTATION, DISTRIBUTION,          *
+;*        PERFORMANCE OR DISPLAY OF THIS COMPUTER PROGRAM OR            *
+;*        THE ASSOCIATED AUDIOVISUAL WORK IS STRICTLY PROHIBITED.       *
+;*                          ALL RIGHTS RESERVED.                        *
+;*                                                                      *
+;*======================================================================*
+;*
+;* The data is organized in the following fashion in memory:
+;*
+;*      *** WARNING *** WARNING *** WARNING ***
+;*
+;*      All pointers MUST BE long aligned
+;*
+;*      *** WARNING *** WARNING *** WARNING ***
+;*
+;*              68000|GPU (32 bits)     GPU (32 bits)
+;*              +-------------------+    +---------------+
+;*              |   #VERT |  #FACE  |<---|  PTR to ARG1  | INPUT1
+;*              +-------------------+    +---------------+
+;*              |    PTR to VERTS   |--+
+;*              +-------------------+  |
+;*        +-----|    PTR to TMAPS   |  |        ****** WARNING ******
+;*        |     +-------------------+  |         Change to model to
+;*     +--|-----|    PTR to TARRAYS |  |          add texture maps
+;*     |  |     +-------------------+  |
+;*     |  |     |   VCNT  |  COLOR  |  |        One Entry/Face
+;*     |  |     +-------------------+  |
+;*     |  |               | VRT IDX |  |        VCNT Vertex Indices
+;*     |  |               ----------+  |
+;*     |  | ...              ...      ...
+;*     |  |               +---------+  |
+;*     |  |               | VRT IDX |  |
+;*     |  |               +---------+  |
+;*     |  | ...          ...          ...
+;*     |  |     +-------------------+  |
+;*     |  |     |    X    |    Y    |<-+        One Entry per Vertex
+;*     |  |     +-------------------+
+;*     |  |     |    Z    |    Nx   |
+;*     |  |     +-------------------+
+;*     |  |     |    Ny   |    Nz   |
+;*     |  |     +-------------------+
+;*     |  |              ...         
+;*     |  |     +-------------------+
+;*     |  +---->| PTR to TextureMap |           One per texture map
+;*     |        +-------------------+
+;*     |        | TextMap Blit Flag |           Pitch, pixelsize, width
+;*     |        +-------------------+
+;*     |                 ...
+;*     |        +-------------------+
+;*     +------->| Ptr to TexMap Box |           Ptr to array of words
+;*              +-------------------+
+;*                       ...
+;*              +-------------------+    +---------------+
+;*              |  Xrite  |  Yrite  |<---|  PTR to ARG2  | INPUT2
+;*              +-------------------+    +---------------+
+;*              |  Zrite  |  Xdown  |
+;*              +-------------------+           Viewer Matrix
+;*              |  Ydown  |  Zdown  |           +-             -+
+;*              +-------------------+           | L11  L12  L13 |
+;*              |  Xhead  |  Yhead  |           | L21  L22  L23 |
+;*              +-------------------+           | L31  L32  L33 |
+;*              |  Zhead  |  Xposn  |           |  X    Y    Z  |
+;*              +-------------------+           +-             -+
+;*              |  Yposn  |  Zposn  |
+;*              +-------------------+
+;*                       ...         
+;*              +-------------------+    +---------------+
+;*              |  Xrite  |  Yrite  |<---|  PTR to ARG6  | INPUT3
+;*              +-------------------+    +---------------+
+;*              |  Zrite  |  Xdown  |
+;*              +-------------------+           Object's Matrix
+;*              |  Ydown  |  Zdown  |           +-             -+
+;*              +-------------------+           | R11  R12  R13 |
+;*              |  Xhead  |  Yhead  |           | R21  R22  R23 |
+;*              +-------------------+           | R31  R32  R33 |
+;*              |  Zhead  |  Xposn  |           |  X    Y    Z  |
+;*              +-------------------+           +-             -+
+;*              |  Yposn  |  Zposn  |
+;*              +-------------------+
+;*                       ...
+;*              +-------------------+    +---------------+
+;*              | AMBIENT |  SrcI   |<---|  PTR to ARG3  | INPUT4
+;*              +-------------------+    +---------------+
+;*              |  SrcX   |  SrcY   |
+;*              +-------------------+           Lighting Model
+;*              |  SrcZ   |  SrcI   |
+;*              +-------------------+
+;*                       ...         
+;*              +-------------------+
+;*              |  SrcI=0 |         |
+;*              +-------------------+
+;*                       ...         
+;*              +-------------------+    +---------------+
+;*              | DRAW BUFFER PTR   |<---|  PTR to ARG5  | INPUT5
+;*              +-------------------+    +---------------+
+;*                       ...                    Active Draw Buffer
+;*                       ...         
+;*              +-------------------+    +---------------+
+;*              | VERTEX BUFFER PTR |<---|  PTR to ARG6  | INPUT6
+;*              +-------------------+    +---------------+
+;*                                              Scratch Vertex Buffer
+;*
+;*======================================================================*
+	.globl    text3D  
+	.globl    textMap
+	.globl    TEXTDATA
+	.globl    TexVertPtr
+	.globl    DESTADDR
+	.globl    NumVerts
+;       for debug purposes only
+	.globl    LeftEdge
+	.globl    RightEdge
+	.globl    SetUpEdge
+	.globl    StepEdge
+	.globl    lineDraw
+	.globl    VertexPtr
+	.globl    TexVertPtr
+
+	.globl    truepoly
+	.globl    facend
+	.globl    varray
+
+DEBUG_ON        EQU     0
+
+;*======================================================================*
+	NOLIST
+
+	include "jaguar.inc"
+	include "macros.inc"
+
+	LIST
+;*======================================================================*
+
+MAXVERTS        EQU     16              ; <-- MAX #SIDES/POLYGON
+
+PTRSIZE         EQU     (1*4)           ; 1 LONG
+
+INPUT6          EQU     G_ENDRAM-PTRSIZE
+INPUT5          EQU     INPUT6-PTRSIZE
+INPUT4          EQU     INPUT5-PTRSIZE
+INPUT3          EQU     INPUT4-PTRSIZE
+INPUT2          EQU     INPUT3-PTRSIZE
+INPUT1          EQU     INPUT2-PTRSIZE
+GPUSTACK        EQU     INPUT1
+
+;*======================================================================*
+
+	.68000
+TXTCRY_S::	
+	.gpu
+	.org     G_RAM
+
+;*======================================================================*
+;*      GLOBAL REGISTER EQUATES
+;*======================================================================*
+temp            REGEQU  r0
+temp2           REGEQU  r1
+himask          REGEQU  r2
+lomask          REGEQU  r3
+
+;*======================================================================*
+;*      MATRIX MULTIPLY AND POINT TRANSFORM REGISTER EQUATES
+;*======================================================================*
+temp3           REGEQU  r4
+jumpr           REGEQU  r5
+vcnt            REGEQU  r6
+vertptr         REGEQU  r7
+riteptr         REGEQU  r8
+rptr            REGEQU  r9
+ptr             REGEQU  r10
+left1           REGEQU  r11
+left2           REGEQU  r12
+left3           REGEQU  r13
+intensity       REGEQU  r14
+xtrans          REGEQU  r15
+ytrans          REGEQU  r16
+ztrans          REGEQU  r17
+mtxa            REGEQU  r18
+x               REGEQU  r19
+y               REGEQU  r20
+z               REGEQU  r21
+ambient         REGEQU  r22
+lptr            REGEQU  r23
+xnorm           REGEQU  r24
+ynorm           REGEQU  r25
+znorm           REGEQU  r26
+
+elemptr         REGEQU  r27
+leftptr         REGEQU  r28
+idx             REGEQU  r29
+
+rsubr           REGEQU  r30
+return          REGEQU  r31
+
+rntnslp         REGEQU  r28     ; *CAUTION REDEFINED*
+rinexit         REGEQU  r29     ; *CAUTION REDEFINED*
+rsunlit         REGEQU  r30     ; *CAUTION REDEFINED*
+rvarray         REGEQU  r31     ; *CAUTION REDEFINED*
+
+;*======================================================================*
+;*      LOCAL MACROS
+;*======================================================================*
+;
+;       Special Case - One Level Only JSR
+;       NOTE: Register RSUBR Contains the subroutine address
+;
+
+	.macro   JSR_MMULT
+	move    PC,return
+	jump    (rsubr)
+	addq    #6,return       ; Determine Return Address
+	.endm
+
+	.macro   RTS_MMULT
+	jump    (return)
+	.endm
+
+;*======================================================================*
+;*      CODE SEGMENT
+;*======================================================================*
+;
+;       System Initialization
+;
+
+;	DEBUG_INIT		; Some GASM directive???
+
+text3D:
+	moveq   #1,temp2
+	movei   #PIT0,temp
+	neg     temp2
+	store   temp2,(temp)
+
+	moveq   #1,himask
+	neg     himask
+	move    himask,lomask
+	shlq    #16,himask              ; HIMASK = $ffff0000
+	shrq    #16,lomask              ; LOMASK = $0000ffff
+;
+;       Initialize for [3x3] x [3x4] Matrix Multiply
+;
+	movei   #mmult3x1,rsubr         ; Init for subroutine calls
+	movei   #G_MTXC,ptr
+	movei   #(MATRIX3|MATROW),temp ; Righthand matrix is [3x1] - COLUMN major
+	movei   #G_MTXA,mtxa            ; Prepare GPU for ROW MAJOR multiply
+	store   temp,(ptr)              ; Since we wish to multiply by the TRANSPOSE of the Viewer's Matrix
+
+	movei   #INPUT2,ptr
+	movei   #lmatrix,leftptr        ; LEFTPTR = Viewer's Matrix
+	load    (ptr),lptr              ; LPTR = 68000 ptr to Viewer Matrix
+	movei   #rmatrix,riteptr        ; RITEPTR = Object's Matrix
+	movei   #INPUT3,ptr
+	movei   #tmatrix,elemptr        ; TMATRIX = Resultant Instance Xform Matrix
+	load    (ptr),rptr              ; RPTR = 68000 ptr to Model Matrix
+;
+;       Copy Matrices into GPU space
+;
+	moveq   #9,idx
+	move    leftptr,ptr             ; PTR = ptr to local Viewer Matrix
+	move    riteptr,temp3           ; TEMP3 = ptr to local Object Matrix
+matlp:
+	loadw   (rptr),temp             ; get RIGHT element from external memory
+	loadw   (lptr),temp2            ; get LEFT element from external memory
+	addq    #2,rptr
+	addq    #2,lptr
+	shlq    #16,temp
+	shlq    #16,temp2
+	sharq   #16,temp
+	sharq   #16,temp2               ; Sign-Extend to Long
+	store   temp,(temp3)            ; copy RIGHT element into GPU space
+	store   temp2,(ptr)             ; copy LEFT element into GPU space
+	subq    #1,idx
+	addqt   #4,temp3
+	jr      NE,matlp
+	addq    #4,ptr                  ; *Branch Optimization*
+
+	moveq   #3,idx
+deltlp:                                 ; Compute Deltas and store into GPU space
+	loadw   (rptr),temp             ; get RIGHT element from external memory
+	loadw   (lptr),temp2            ; get LEFT element from external memory
+	addq    #2,rptr
+	addq    #2,lptr
+	shlq    #16,temp2
+	shlq    #16,temp
+	sharq   #16,temp2
+	sharq   #16,temp                ; Sign-Extend to Long
+	store   temp2,(temp3)           ; Save Original Viewer Coords into GPU space
+	addq    #4,temp3
+	sub     temp2,temp              ; TEMP = Viewed - Viewer
+	subq    #1,idx
+	store   temp,(ptr)              ; copy DELTA element into GPU space
+	jr      NE,deltlp
+	addq    #4,ptr                  ; *Branch Optimization*
+;
+;       Instance Xform = [ViewerMatrix][ObjectMatrix]
+;       Perform [3x3][3x3] matrix multiply using MMULT3x1.
+;
+	move    leftptr,lptr            ; LPTR = Viewer's Matrix
+	move    riteptr,rptr            ; RPTR = Object's Matrix
+	JSR_MMULT                       ; [E11 E12 E13]
+
+	move    riteptr,rptr            ; RPTR = Object's Matrix
+	JSR_MMULT                       ; [E21 E22 E23]
+
+	move    riteptr,rptr            ; RPTR = Object's Matrix
+	JSR_MMULT                       ; [E31 E32 E33]
+;
+;       Rotate Delta X,Y,Z into Viewer Space
+;
+	move    leftptr,rptr            ; RPTR = Viewer's Matrix
+	JSR_MMULT                       ; [E41 E42 E43]
+
+;
+;       Rotate and Translate Light Sources into Viewer Space
+;
+	move    leftptr,ptr
+	subq    #12,ptr
+	load    (ptr),xtrans            ; XTRANS = Viewer Xposn
+	addq    #4,ptr
+	load    (ptr),ytrans            ; YTRANS = Viewer Yposn
+	addq    #4,ptr
+	load    (ptr),ztrans            ; ZTRANS = Viewer Zposn
+	movei   #INPUT4,temp
+	addq    #20,rsubr               ; *DANGER* Adjust for special entry point
+	load    (temp),lptr             ; LPTR = ptr to lighting model
+;       movei   #varray,elemptr         ; NOTE: Elemptr is left pointing to Varray already
+	movei   #litelp,jumpr           ; JUMPR = Top of loop address
+	loadw   (lptr),ambient
+	addq    #2,lptr
+	shlq    #8,ambient              ; AMBIENT = Ambient intensity
+litelp:
+	loadw   (lptr),temp
+	addq    #2,lptr
+	cmpq    #0,temp                 ; WHILE (Light Sources Remain) DO
+	store   temp,(elemptr)          ; Save Source Intensity
+	addqt   #4,elemptr
+	jr      NE,.10
+	btst    #15,temp                ; *Branch Optimization*
+	movei   #litexit,temp
+	jump    (temp)
+	nop
+.10:    jr      NE,.20                  ; IF (SunLight) THEN
+	loadw   (lptr),left1            ; Li1
+	addq    #2,lptr
+	loadw   (lptr),temp             ; Li2
+	addq    #2,lptr
+	shlq    #16,temp
+	loadw   (lptr),left2            ; LEFT2 = Li3
+	or      temp,left1              ; LEFT1 = Li2 | Li1
+	addq    #2,lptr
+	move    leftptr,rptr            ; RPTR = Viewer's Matrix
+	JSR_MMULT                       ; Rotate SunLight Vector
+	jump    (jumpr)
+	nop
+.20:                                    ; ELSE (InScene Lighting)
+	addq    #2,lptr                 ; LEFT1 = InScene Xposn
+	shlq    #16,left1
+	loadw   (lptr),y                ; Y = InScene Yposn
+	addq    #2,lptr
+	shlq    #16,y
+	loadw   (lptr),z                ; Z = InScene Zposn
+	addq    #2,lptr
+	shlq    #16,z
+	sharq   #16,left1
+	sharq   #16,y
+	sharq   #16,z
+	sub     xtrans,left1
+	sub     ytrans,y
+	sub     ztrans,z                ; Translate InScene Vector into Viewer Space
+	and     lomask,left1
+	shlq    #16,y
+	move    z,left2                 ; LEFT2 = Li3
+	or      y,left1                 ; LEFT1 = Li2 | Li1
+	move    leftptr,rptr            ; RPTR = Viewer's Matrix
+	JSR_MMULT                       ; Rotate InScene vector
+	jump    (jumpr)
+	nop
+litexit:
+
+;
+;       Jump Around our only subroutine. It wants to be here 
+;       because it is near its callers and register equates.
+;       Someday it should move .. No, no point to it really.
+;
+	movei   #Transform,temp
+	jump    (temp)
+	nop
+
+;*======================================================================*
+;* mmult3x1() - do a [3x3][3x1] matrix multiply using MMULT.
+;*              place the result in the destination matrix.
+;*
+;*      input:
+;*              lptr    = the address of the left-hand matrix (GPU memory)
+;*              rptr    = the address of the right-hand matrix (GPU memory)
+;*              elemptr = the address of the result matrix element (GPU memory)
+;*
+;*      +-             -+   +-             -+   +-             -+
+;*      | L11  L12  L13 | X | R11  R12  R13 | = | E11  E12  E13 |
+;*      +-             _+   | R21  R22  R13 |   +-             -+
+;*                          | R31  R32  R13 |
+;*                          +-             -+
+;*
+;*      E11 = (L11*R11)+(L12*R12)+(L13*R13)
+;*      E12 = (L11*R21)+(L12*R22)+(L13*R23)
+;*      E13 = (L11*R31)+(L12*R32)+(L13*R33)
+;*
+;*======================================================================*
+
+mmult3x1:
+	load    (lptr),left1            ;* Li1
+	addq    #4,lptr
+	and     lomask,left1
+	load    (lptr),temp             ;* Li2
+	addq    #4,lptr
+	shlq    #16,temp
+	load    (lptr),left2            ;* Li3
+	or      temp,left1              ;* Li2 | Li1
+	addq    #4,lptr
+	and     lomask,left2
+;
+;       CAUTION: Entry point here for light sources
+;
+	store   rptr,(mtxa)             ;* tell the GPU where to find the right-hand matrix
+
+	moveta  left1,left1
+	moveta  left2,left2
+	nop                             ; *** WHY IS THIS NOP REQUIRED? ***
+	mmult   left1,left3             ;* left3 = Ei1
+	sharq   #14,left3               ;* re-normalize the multiply
+	store   left3,(elemptr)         ;* Ei1 = (Li1*R11)+(Li2*R21)+(Li3*R31)
+	addq    #4,elemptr              ;* Ei2
+
+	addq    #12,rptr                ; Increment matrix ptr for ROW addressing
+	store   rptr,(mtxa)             ;* MTXADDR = &R21
+	moveta  left1,left1
+	moveta  left2,left2
+	nop                             ; *** WHY IS THIS NOP REQUIRED? ***
+	mmult   left1,left3             ;* left3 = Ei2
+	sharq   #14,left3               ;* re-normalize the multiply
+	store   left3,(elemptr)         ;* Ei2 = (Li1*R12)+(Li2*R22)+(Li3*R32)
+	addq    #4,elemptr              ;* Ei3
+
+	addq    #12,rptr                ; Increment matrix ptr for ROW addressing
+	store   rptr,(mtxa)             ;* MTXADDR = &R31
+	moveta  left1,left1
+	moveta  left2,left2
+	nop                             ; *** WHY IS THIS NOP REQUIRED? ***
+	mmult   left1,left3             ;* left3 = Ei3
+	sharq   #14,left3               ;* re-normalize the multiply
+	store   left3,(elemptr)         ;* Ei3 = (Li1*R13)+(Li2*R23)+(Li3*R33)
+	RTS_MMULT                       ;* End of MULT3X1
+	addq    #4,elemptr
+
+;*==================================================================
+;* Moved the perspective tranform up to right after the transform
+;* to viewer space.  In doing this, must reuse the following registers.
+;*==================================================================
+	x2center                REGEQU          R29
+	y2center                REGEQU          R30
+	x2scale         REGEQU          R27
+	y2scale         REGEQU          R28
+ 
+;*======================================================================*
+;* Transform() - For each vertex in the instance do a [3x1][3x3] matrix multiply
+;*               and then add the translation components to transform the vertex.
+;*               Next, the vertex normal must be transformed without translation.
+;*               Finally, use the vertex normal vector to compute the total intensity
+;*               at that vertex. These operations will compress the vertex list of the
+;*               instance from 6-tuples to quads, which are used by the polydraw.
+;*======================================================================*
+Transform:
+	movei   #299,x2scale            ; **KLUDGE** This information should be acquired
+	movei   #299,y2scale            ; **KLUDGE** This information should be acquired
+	movei   #159,x2center           ; **KLUDGE** This information should be acquired
+	movei   #99,y2center            ; **KLUDGE** This information should be acquired
+
+	movei   #tmatrix,riteptr        ; RITEPTR = Ptr to Final Transformation Matrix
+
+;       Initialize input registers *** WARNING *** WARNING *** long boundaries
+
+	movei   #INPUT1,temp
+	load    (temp),ptr              ; PTR = ptr to 68000 parameters
+	loadw   (ptr),vcnt              ; VCOUNT = #Vertices in model
+	addq    #4,ptr
+	load    (ptr),vertptr           ; VERTPTR = Pointer to VERTEX data
+
+	move    riteptr,ptr             ; Extract the translation components from the matrix
+	addq    #18,ptr
+	addq    #18,ptr                 ; PTR = Ptr to translation components
+	load    (ptr),xtrans
+	addq    #4,ptr
+	load    (ptr),ytrans
+	addq    #4,ptr
+	load    (ptr),ztrans
+  
+	movei   #varray,rvarray
+
+	movei   #INPUT6,temp            ; now load up the WRITE LOCATION
+
+	movei   #vertlp,jumpr           ; JUMPR = Top of loop address
+	move    vertptr,ptr             ; VERTPTR = WRITE LOCATION
+					; PTR    = READ  LOCATION
+	load    (temp),vertptr          ; load up the vertex buffer
+
+vertlp:
+	load    (ptr),left1             ;*  X|Y
+	addq    #4,ptr
+	load    (ptr),left2             ;*  Z|Ix
+	addq    #4,ptr
+	rorq    #16,left1               ;*  Y|X
+	move    left2,xnorm
+	shrq    #16,left2               ;*  0|Z
+;
+;       Transform Vertex
+;
+	move    riteptr,rptr            ; Point to transformation matrix
+	store   rptr,(mtxa)             ;* MTXADDR = &R11
+	moveta  left1,left1
+	moveta  left2,left2
+	nop                             ;*** WHY IS THIS NOP REQUIRED ??? ***
+	mmult   left1,x                 ; X = Transformed Xcomponent
+	addq    #12,rptr
+	sharq   #14,x                   ;* restore the decimal in the multiply
+	store   rptr,(mtxa)             ;* MTXADDR = &R21
+	add     xtrans,x                ;* add translation component
+
+	moveta  left1,left1
+	moveta  left2,left2
+	nop                             ;*** WHY IS THIS NOP REQUIRED ??? ***
+	mmult   left1,y                 ; Y = Transformed Ycomponent
+;       move    x,temp
+	sharq   #14,y                   ;* restore the decimal in the multiply
+;       shlq    #16,temp                ; TEMP = X|0
+	add     ytrans,y                ;* add translation component
+
+	addq    #12,rptr
+;       move    y,temp2
+	store   rptr,(mtxa)             ;* MTXADDR = &R31
+;       and     lomask,temp2            ; TEMP2 = 0|Y
+	moveta  left1,left1
+;       or      temp2,temp
+	moveta  left2,left2
+
+;       store   temp,(vertptr)          ; Write X|Y back into vertex list
+;       addq    #4,vertptr
+
+	nop                             ;*** WHY IS THIS NOP REQUIRED ??? ***
+	mmult   left1,z                 ; Z = E13
+	sharq   #14,z                   ;* restore the decimal in the multiply
+	load    (ptr),left2             ;* Iy|Iz
+	add     ztrans,z                ;* add translation component
+
+;
+;       Transform the Vertex Normal
+;
+	addq    #4,ptr          ; leave this in for the mainloop
+	move    left2,left1
+	and     lomask,xnorm            ;*  0|Ix
+	and     himask,left1            ;* Iy|0
+	and     lomask,left2            ;*  0|Iz
+	or      xnorm,left1             ;* Iy|Ix
+
+	move    riteptr,rptr            ; point to Final Transformation matrix
+	moveta  left1,left1
+	store   rptr,(mtxa)             ;* MTXADDR = &R11
+	moveta  left2,left2
+	nop                             ;*** WHY IS THIS NOP REQUIRED ??? ***
+	mmult   left1,xnorm             ; XNORM = E11
+	addq    #12,rptr
+	sharq   #14,xnorm               ;* restore the decimal in the multiply
+
+	store   rptr,(mtxa)             ;* MTXADDR = &R21
+	moveta  left1,left1
+	moveta  left2,left2
+	nop                             ;*** WHY IS THIS NOP REQUIRED ??? ***
+	mmult   left1,ynorm             ; YNORM = E12
+	addq    #12,rptr
+	sharq   #14,ynorm               ;* restore the decimal in the multiply
+
+	store   rptr,(mtxa)             ;* MTXADDR = &R31
+	moveta  left1,left1
+	moveta  left2,left2
+	nop                             ;*** WHY IS THIS NOP REQUIRED ??? ***
+	mmult   left1,znorm             ; ZNORM = E13
+	sharq   #14,znorm               ;* restore the decimal in the multiply
+;
+;       Vertex Intensity = Sum of Intensities from all Light Sources
+;
+	move    rvarray,lptr            ; LPTR = Ptr to Internalized LiteModel
+	move    ambient,intensity       ; Initialize to the ambient component
+intenslp:
+	load    (lptr),left3            ; LEFT3 = Intensity component
+	addq    #4,lptr
+	cmpq    #0,left3
+	jr      NE,.10                  ; WHILE (Light Sources Remain) DO
+	btst    #15,left3               ; *Branch Optimization*
+	movei   #inexit,temp
+	jump    (temp)
+	nop
+.10:
+	jr      NE,.11
+	bclr    #15,left3               ; Clear flag bit
+	movei   #sunlit,temp
+	jump    (temp)
+	nop
+;
+; Find the InScene vector and Vertex normal vector DOT product and attenuate
+;
+.11:
+	load    (lptr),left1            ; LEFT1 = SourceX
+	addq    #4,lptr
+	sub     x,left1                 ; LEFT1 = DeltaX = SourceX - VertexX
+	move    left1,left2
+	imult   left1,left1             ; LEFT1 = (DeltaX)^2
+	imult   xnorm,left2             ; LEFT2 = (DeltaX*Nx)
+
+	load    (lptr),temp             ; TEMP = SourceY
+	addq    #4,lptr
+	sub     y,temp                  ; TEMP = DeltaY = SourceY - VertexY
+	move    temp,temp2
+	imult   temp,temp               ; TEMP = (DeltaY)^2
+	imult   ynorm,temp2             ; TEMP2 = (DeltaY*Ny)
+	add     temp,left1              ; LEFT1 = (DeltaX)^2 + (DeltaY)^2
+	add     temp2,left2             ; LEFT2 = (DeltaX*Nx) + (DeltaY*Ny)
+
+	load    (lptr),temp             ; TEMP = SourceZ
+	addq    #4,lptr
+	sub     z,temp                  ; TEMP = DeltaZ = SourceZ - VertexZ
+	move    temp,temp2
+	imult   temp,temp               ; TEMP = (DeltaZ)^2
+	imult   znorm,temp2             ; TEMP2 = (DeltaZ*Nz)
+	add     temp,left1              ; LEFT1 = (DeltaX)^2 + (DeltaY)^2 + (DeltaZ)^2
+	add     temp2,left2             ; LEFT2 = (DeltaX*Nx) + (DeltaY*Ny) + (DeltaZ*Nz)
+	jr      MI,.13                  ; IF (Positive Reflectance) THEN Sum InScene Intensity
+					; *NOTICE* InScene Attenuation Scaling Factor *NOTICE*
+	shrq    #12,left1               ; <-- 1/4 of SunLight (#14 would give equality with SunLight)
+					; *NOTICE* InScene Attenuation Scaling Factor *NOTICE*
+	addq    #1,left1                ; Avoid divide-by-zero
+	div     left1,left2             ; LEFT2 = Attenuation Factor
+	mult    left3,left2             ; I*Attenuation
+	shrq    #6,left2                ; Increase Intensity magnitude (to 8.8)
+	add     left2,intensity         ; Intensity += InScene Source
+.13:
+	movei   #intenslp,temp
+	jump    (temp)
+;       jump    (rntnslp)
+	nop
+;
+; Find the SunLight vector and Vertex normal vector DOT product
+;
+sunlit: load    (lptr),temp2            ; TEMP2 = SourceX
+	addq    #4,lptr
+	imult   xnorm,temp2             ; TEMP2 = (Sx*Nx)
+	load    (lptr),temp             ; TEMP = SourceY
+	addq    #4,lptr
+	imult   ynorm,temp              ; TEMP = (Sy*Ny)
+	add     temp,temp2              ; TEMP2 = (Sx*Nx)+(Sy*Ny)
+	load    (lptr),temp             ; TEMP = SourceZ
+	addq    #4,lptr
+	imult   znorm,temp
+	add     temp,temp2              ; TEMP2 = (Sx*Nx)+(Sy*Ny)+(Sz*Nz)
+	sharq   #14,temp2               ; Restore fixed floating point
+	jr      MI,.13                  ; IF (Positive Reflectance) THEN Sum it
+	mult    left3,temp2             ; I((Sx*Nx)+(Sy*Ny)+(Sz*Nz))
+	shrq    #6,temp2                ; Increase Intensity magnitude (to 8.8)
+	add     temp2,intensity         ; Intensity += Sunlight Source
+.13:
+	movei   #intenslp,temp
+	jump    (temp)
+;       jump    (rntnslp)
+	nop
+inexit:
+	sharq   #8,intensity            ; DLF BUG?
+	cmp     lomask,intensity        ;* I = IaK + IsK(Vsn*N)         [K=1]
+	jr      MI,oksun
+	nop
+	move    lomask,intensity        ; Max Intensity at $ffff
+oksun:
+ 
+	cmpq    #5,z
+	jr      PL,.40
+	nop
+	moveq   #5,z
+.40:
+;;      nop
+	imult   x2scale,x
+	imult   y2scale,y
+ 
+	abs     x
+	jr      CC,.10
+	div     z,x
+	neg     x
+.10:
+	abs     y
+	jr      CC,.20
+	div     z,y
+	neg     y
+.20:
+;; testing limits
+;       movei   #okyneg,temp
+;       cmpq    #15,z
+;       jump    PL,(temp)
+;       nop
+;       movei   #($800),temp
+;       cmp     temp,x          ; is x bigger than $0800
+;       jr      MI,okx800
+;       nop
+;       move    temp,x
+;okx800: cmp    temp,y
+;       jr      MI,oky800
+;       nop
+;       move    temp,y
+;oky800: movei  #(-$800),temp
+;       cmp     x,temp
+;       jr      MI,okxneg
+;       nop
+;       move    temp,x
+;okxneg: cmp    y,temp
+;       jr      MI,okyneg
+;       nop
+;       move    temp,y
+;okyneg:
+;;      end testing!!!
+ 
+	add     x2center,x
+	add     y2center,y
+ 
+	shlq    #16,x
+	and     lomask,y
+	or      y,x
+	store   x,(vertptr)
+	addq    #4,vertptr
+;
+;       Combine calculated intensity with Z vertex and store
+;
+	shlq    #16,z                   ; Z = Z|0
+	or      z,intensity
+;;      store   z,(vertptr)             ; write back only z, DLF
+	store   intensity,(vertptr)     ; Write Z|I back into vertex list
+	addq    #4,vertptr
+
+	subq    #1,vcnt
+	jump    NE,(jumpr)              ; UNTIL (All vertices done)
+	nop
+
+;*==============================================================*
+;*      ACTUALLY DRAW THE POLYHEDRON
+;*==============================================================*
+
+REGUNDEF        z
+REGUNDEF        vertptr
+REGUNDEF        ptr
+REGUNDEF        jumpr
+REGUNDEF        temp3
+REGUNDEF        return
+
+;*======================================================================*
+;*      ALTERNATE REGISTER EQUATES
+;*======================================================================*
+;; DLF - Removed the use of these alternate registers to facilitate
+;;       adding in texture mapping.  Could be put back in.
+
+;*======================================================================*
+;*      REGISTER EQUATES  (SubPolygon Draw)
+;*======================================================================*
+rb_cmd          REGEQU  r4
+texptr          REGEQU  r5
+tboxptr         REGEQU  r6
+
+texindex        REGEQU  r10
+tboxindex       REGEQU  r11
+saveint         REGEQU  R13             ; just to save intensity
+color           REGEQU  r12
+left            REGEQU  r13
+xleft           REGEQU  r14
+yleft           REGEQU  r15
+ileft           REGEQU  r16
+rite            REGEQU  r17
+xrite           REGEQU  r18
+yrite           REGEQU  r19
+irite           REGEQU  r20
+
+;*======================================================================*
+;*      REGISTER EQUATES  (Draw Polygon)
+;*======================================================================*
+vcount          REGEQU  r26     ; *CAUTION: Alternate Saved*
+verts           REGEQU  r27     ; *CAUTION: Alternate Saved*
+
+next            REGEQU  r28     ; *CAUTION: ReDefined*
+ynext           REGEQU  r29     ; *CAUTION: ReDefined*
+temp3           REGEQU  r12
+
+clipsum         REGEQU  r24
+ptr             REGEQU  r25
+
+;*======================================================================*
+;*      REGISTER EQUATES  (Draw Polyhedron)
+;*======================================================================*
+faceptr         REGEQU  r28     ; *CAUTION: Alternate Saved*
+segptr          REGEQU  r29     ; *CAUTION: Alternate Saved*
+vertptr         REGEQU  r30     ; *CAUTION: Alternate Saved*
+facecnt         REGEQU  r31     ; *CAUTION: Alternate Saved*
+
+jumpr           REGEQU  r24
+
+z               REGEQU  r16
+xscale          REGEQU  r20
+yscale          REGEQU  r21
+xcenter         REGEQU  r22
+ycenter         REGEQU  r23
+
+segcnt          REGEQU  r21     ; *CAUTION: ReDefined*
+xnew            REGEQU  r22     ; *CAUTION: ReDefined*
+ynew            REGEQU  r23     ; *CAUTION: ReDefined*
+
+;*****************************************************************************
+;* Alternate bank registers used by textMap and its subroutines
+;*****************************************************************************
+	a_R_DestI       REGEQU          R2
+	a_lomask        REGEQU          R3
+	a_himask        REGEQU          R4
+	a_DestY         REGEQU          R5
+	a_L_DestI       REGEQU          R9
+	a_lineDraw      REGEQU          R11
+	a_B_IINC        REGEQU          R18
+	a_GPXMNCL       REGEQU          R8
+	a_R_DestX       REGEQU          R14
+	a_L_DestX       REGEQU          R15
+	a_L_SourceX     REGEQU          R16
+	a_R_SourceX     REGEQU          R17
+	a_DestFlags     REGEQU          R19
+	a_DESTADDR      REGEQU          R20
+	a_B_PATD        REGEQU          R21
+	a_B_I3          REGEQU          R22
+	a_B_CMD         REGEQU          R23
+	a_B_COUNT       REGEQU          R24
+	a_StepEdge      REGEQU          R25
+	a_GPXMXCL       REGEQU          R26
+	a_TexFlags      REGEQU          R27
+	a_A1_FLAGS      REGEQU          R28
+	a_A1_BASE       REGEQU          R29
+	a_A1_PIXEL      REGEQU          R1
+	a_A1_INC        REGEQU          R0
+	a_do_tmap       REGEQU          R6
+	a_FFFFFF        REGEQU          R7
+
+	movei   #A1_INC,R0
+	movei   #R_DestI,R1
+	movei   #$0000ffff,R2
+	movei   #DestY,R4
+	move    R2,R3
+	movei   #do_tmap,R5
+	not     R3
+	moveta  R0,a_A1_INC
+	moveta  R1,a_R_DestI
+	moveta  R2,a_lomask
+	moveta  R3,a_himask
+	moveta  R4,a_DestY
+	moveta  R5,a_do_tmap
+	movei   #$0ffffff,R0
+	movei   #L_DestI,R2
+	movei   #lineDraw,R3
+	movei   #B_IINC,R5
+	moveta  R0,a_FFFFFF
+	moveta  R2,a_L_DestI
+	moveta  R3,a_lineDraw
+	moveta  R5,a_B_IINC
+
+	movei   #R_DestX,R1
+	moveq   #GPXMNCL,R0
+	movei   #L_DestX,R2
+	movei   #L_SourceX,R3
+	movei   #R_SourceX,R4
+	moveta  R0,a_GPXMNCL
+	moveta  R1,a_R_DestX
+	moveta  R2,a_L_DestX
+	moveta  R3,a_L_SourceX
+	moveta  R4,a_R_SourceX
+	movei   #DestFlags,R0
+	movei   #B_PATD,R2
+	movei   #B_I3,R3
+	movei   #B_CMD,R4
+	movei   #B_COUNT,R5
+	moveta  R0,a_DestFlags
+	moveta  R2,a_B_PATD
+	moveta  R3,a_B_I3
+	moveta  R4,a_B_CMD
+	moveta  R5,a_B_COUNT
+	movei   #StepEdge,R0
+	movei   #GPXMXCL,R1
+	movei   #TexFlags,R2
+	movei   #A1_FLAGS,R3
+	movei   #A1_BASE,R4
+	movei   #A1_PIXEL,R5
+	moveta  R0,a_StepEdge
+	moveta  R1,a_GPXMXCL
+	moveta  R2,a_TexFlags
+	moveta  R3,a_A1_FLAGS
+	moveta  R4,a_A1_BASE
+	moveta  R5,a_A1_PIXEL
+
+	movei   #INPUT5,temp
+	load    (temp),temp3            ; Current DRAW buffer address
+	moveta  temp3,a_DESTADDR
+
+	movei   #DestFlags,ptr
+	movei   #(PITCH2|PIXEL16|WID320),temp   ; flags
+	store   temp,(ptr)
+	addq    #4,ptr
+
+;*==============================================================*
+;
+;       Fetch Model Parameters - Model Initialization
+;
+point2:
+	movei   #INPUT1,temp
+	load    (temp),ptr              ; PTR = ptr to 68000 parameters
+	loadw   (ptr),vcount            ; VCOUNT = #Vertices in model
+	addq    #2,ptr
+	loadw   (ptr),facecnt           ; FACECNT = #Faces in model
+	addq    #6,ptr
+	load    (ptr),texptr            ; TEXPTR = Pointer to texture maps
+	addq    #4,ptr
+	load    (ptr),tboxptr           ; TBOXPTR = Ptr to arrays of vertices
+	addq    #4,ptr                  ; for the texture maps
+
+	movei   #INPUT6,temp
+	move    ptr,faceptr             ; FACEPTR = Pointer into FACE data
+	load    (temp),vertptr          ; VERTPTR = Pointer to VERTEX data
+
+;*======================================================================*
+;*      POLYHEDRON RENDERING
+;*======================================================================*
+
+
+	movei   #PIT0,temp
+	movei   #ttime1,temp2
+	load    (temp),temp3
+	store   temp3,(temp2)
+
+;
+;       Model Draw
+;
+faceloop:                               ; FOR (All Faces) DO
+	movefa  a_lomask,lomask
+
+	moveq   #0,texindex             ; clear out
+	moveq   #0,tboxindex
+	loadw   (faceptr),texindex
+	addq    #2,faceptr
+	shlq    #16,texindex
+	loadw   (faceptr),tboxindex
+	sharq   #16,texindex
+	addq    #2,faceptr
+	moveta  texindex,texindex       ; save off as flag for text/gouraud
+
+	loadw   (faceptr),segcnt        ; SEGCNT = #Segments in Face
+	addq    #2,faceptr
+	loadw   (faceptr),color
+	addq    #2,faceptr
+	shlq    #8,color                ; COLOR = Face Color
+	move    color,temp
+	shlq    #16,color
+	or      temp,color              ; C|0|C|0
+	moveta  color,color             ; save off the color
+
+;
+;       Model Decode
+;
+	movei   #varray,verts           ; VERTS = Ptr to local vertex array
+	move    verts,vcount            ; vcount = Ptr to next free slot in vertex array
+	movei   #segloop,jumpr          ; **KLUDGE** Change this NAME
+segloop:                                ; FOR (All Segments) DO
+
+	loadw   (faceptr),temp
+	addq    #2,faceptr
+	shlq    #16,temp
+	sharq   #16,temp
+	add     vertptr,temp
+	load    (temp),xleft            ; XLEFT = vertex X|Y    
+	addq    #4,temp
+	move    xleft,yleft
+
+	store   xleft,(vcount)          ; Save X|Y
+	addq    #4,vcount
+	load    (temp),ileft            ; ILEFT = vertex Z|I
+	shlq    #16,yleft
+	sharq   #16,xleft
+	sharq   #16,yleft
+	store   ileft,(vcount)          ; Save Z|I
+	addq    #4,vcount
+	sharq   #16,ileft
+
+	subq    #1,segcnt               ; UNTIL (All Segments decoded)
+	jump    NE,(jumpr)
+	nop
+
+;
+;       Polygon Clipping
+;
+	movei   #qfaceptr,temp
+	store   faceptr,(temp)
+	addq    #8,temp
+	store   facecnt,(temp)
+	addq    #4,temp
+	store   texptr,(temp)
+	addq    #4,temp
+	store   tboxptr,(temp)
+
+exitclip:
+	subq    #8,vcount               ; VCOUNT = Ptr to Last Vertex
+
+;
+;       Perspective Transform and Find TopLeftMost Vertex
+;
+;       Also find TopY,BotY,LeftX,RightX for clipping to the screen.
+;       Note: TopY is the same as yleft.
+	BotY            REGEQU          R7
+	LeftX           REGEQU          R8
+	RightX          REGEQU          R23
+	BackZ           REGEQU          R29
+; LeftX is being used for the backface culling
+	Left2X          REGEQU          R28
+ 
+
+chkvert:
+	movei   #varray,verts
+	movefa  a_lomask,lomask
+	move    verts,ptr               ; PTR = Ptr to VertList
+	move    lomask,yleft
+
+	move    lomask,LeftX
+	move    lomask,Left2X
+	move    LeftX,BotY
+	not     BotY
+	shlq    #8,BotY                 ; make it $FF000000
+	move    BotY,RightX
+	move    BotY,BackZ
+ 
+	movei   #topvert,jumpr          ; Prepare to Loop
+	moveq   #0,temp3                ; initialize count of vertices
+
+topvert:                                ; FOR (All Vertices) DO
+	addq    #1,temp3
+	load    (ptr),xrite
+	move    xrite,yrite
+	sharq   #16,xrite               ; XRITE = 16-bit Xviewed
+	addq    #4,ptr
+	and     lomask,yrite            ; YRITE = 16-bit Yviewed
+	load    (ptr),z
+	subq    #4,ptr
+	sharq   #16,z
+
+	shlq    #16,yrite
+	sharq   #16,yrite               ; restore sign!
+
+	cmp     BotY,yrite              ; is new Y bottom-most?
+	jr      MI,ygt
+	cmp     yrite,yleft             ; is new Y top-most? (yrite < yleft)?
+	move    yrite,BotY
+ygt:
+	jr      NE,.30
+	nop
+	cmp     xrite,xleft             ; Is topmost, is it the leftmost? (xrite < xleft)?
+.30:    jr      MI,vertdone             ; no,skip it
+	cmp     xrite,LeftX             ; is new X left-most?
+
+	move    yrite,yleft             ; record new top-left-most vertex
+	move    xrite,xleft
+	move    ptr,left                ; LEFT = Top-left vertex ptr
+vertdone:
+	jr      MI,notleft
+	cmp     RightX,xrite            ; is new X right-most?
+	move    xrite,LeftX
+notleft:
+	jr      MI,notrite
+	cmp     BackZ,z
+	move    xrite,RightX
+notrite:
+	jr      MI,nleft2
+	cmp     xrite,Left2X
+	move    z,BackZ
+nleft2:
+	jr      MI,vdone2
+	cmp     vcount,ptr
+	move    xrite,Left2X
+vdone2:
+	jump    MI,(jumpr)
+	addq    #8,ptr
+;
+;       INPUT COMPLETE...and we found the top-left-most vertex
+;
+;       Now compare values with screen clip values
+ 
+scrnclp:
+	movei   #facend,temp
+	moveq   #20,temp2
+	cmp     temp2,BackZ
+	jump    MI,(temp)
+	moveq   #GPXMNCL,temp2
+	cmp     temp2,RightX            ; is rightmost X > XMNCL?
+	jump    MI,(temp)
+	moveq   #GPYMNCL,temp2
+	cmp     temp2,BotY
+	jump    MI,(temp)
+	nop
+	movei   #GPXMXCL,temp2
+	cmp     Left2X,temp2
+	jump    MI,(temp)
+	nop
+	movei   #GPYMXCL,temp2
+	cmp     yleft,temp2
+	jump    MI,(temp)
+
+	move    vcount,temp
+	movei   #NumVerts,temp2
+	store   temp3,(temp2)           ; save the number of vertices
+	sub     verts,temp
+;
+;       Perspective Xform complete...and we found the top-left-most vertex
+;
+okcnt:
+
+;
+;       FLAT-SHADING Determine intensity for entire face
+;
+	movei   #skp_flat,temp
+	cmpq    #0,texindex
+	jump    MI,(temp)
+	nop
+
+	moveq   #0,temp                 ; TEMP = Total Intensity
+	moveq   #0,temp3
+	move    verts,next              ; NEXT = Vertex ptr
+	addq    #4,next
+flatlp:                                 ; FOR (All Vertices) DO
+	load    (next),temp2
+	and     lomask,temp2            ; TEMP2 = Intensity (8.8)
+	add     temp2,temp              ; Sum Intensities
+	addq    #1,temp3
+	cmp     next,vcount
+	jr      PL,flatlp
+	addq    #8,next
+intense:
+	div     temp3,temp              ; TEMP = Average Intensity (8.8)
+
+	shlq    #16,temp
+;       sharq   #8,temp
+	sharq   #10,temp                        ; too bright.  Lower intensity
+	moveta  temp,saveint
+skp_flat:
+
+
+truepoly:                               ; ELSE This is a true polygon
+	move    left,rite
+	move    yleft,yrite
+;
+;       BACKFACE CULLING by Counter-Clockwise ordering
+;
+	move    left,next
+	subq    #8,next
+	cmp     verts,next
+	jr      PL,mod0                 ; next = (LEFT-1) mod VERTCNT
+	nop
+	move    vcount,next             ; NEXT = Ptr to Previous vertex
+mod0:   load    (next),ynew
+	move    ynew,xnew
+	and     lomask,ynew             ; YNEW = Last.Y
+;; BUG? does this not work for negatives?
+	shlq    #16,ynew
+	sharq   #16,xnew
+	sharq   #16,ynew
+;;      shrq    #16,xnew                ; XNEW = Last.X
+
+	move    left,next
+	addq    #8,next
+	cmp     next,vcount
+	jr      PL,mod1                 ; next = (RIGHT+1) mod VERTCNT
+	nop
+	move    verts,next              ; NEXT = Next vertex
+mod1:   load    (next),temp
+	move    temp,temp2
+	and     lomask,temp             ; TEMP = Next.Y
+;; BUG? see above
+	shlq    #16,temp
+	sharq   #16,temp2
+	sharq   #16,temp
+;;      shrq    #16,temp2               ; TEMP2 = Next.X
+
+	neg     temp
+	add     yleft,temp              ; TEMP = Top.Y - Next.Y
+	neg     temp2
+	add     xleft,temp2             ; TEMP2 = Top.X - Next.X
+	sub     xnew,xleft              ; XLEFT = Top.X - Last.X
+	sub     ynew,yleft              ; YLEFT = Top.Y - Last.Y
+
+	imult   temp2,yleft
+	imult   temp,xleft
+
+	movei   #facend,temp
+	cmp     xleft,yleft
+	jump    MI,(temp)               ; IF (Counter-Clockwise) THEN Reject this face
+	nop
+	move    yrite,yleft
+;****************************************************
+; set up texture map!!!!
+; assuming inputs verts - pointer to vertices
+;                 vcount - pointer to last vertex
+; can mess with all registers except the above two!
+;*****************************************************
+
+; set up all blitter variables that are once per face!
+; can use all registers except texindex and temp(2), r10, r0, r1
+	movefa  a_B_PATD,R28
+	movefa  color,R27
+	move    R28,R25
+	addq    #4,R25
+	move    R27,R26
+
+	movefa  a_B_CMD,temp
+
+	moveq   #0,R3
+	bset    #16,R3
+	movefa  a_DESTADDR,R22
+	movefa  a_A1_BASE,R21
+
+bwait2:
+	load    (temp),temp2
+	btst    #0,temp2
+	jr      EQ,bwait2
+	nop
+
+	store   R27,(R28)
+	store   R26,(R25)
+	store   R22,(R21)
+
+	movei   #TEXTDATA,ptr
+	movei   #TexVertPtr,temp3
+	cmpq    #0,texindex
+	jr      MI,skp_ind
+	nop
+	shlq    #3,texindex     ; make index (2 longs per texturemap)
+	add     texptr,texindex
+	load    (texindex),temp
+	store   temp,(ptr)
+	shlq    #2,tboxindex            ; make it index longs
+	add     tboxptr,tboxindex
+	load    (tboxindex),temp
+	store   temp,(temp3)
+	addq    #4,texindex
+	addq    #4,temp3
+	load    (texindex),temp 
+	store   temp,(temp3)
+skp_ind:
+	movei   #textMap,R0
+	jump    (R0)
+	nop
+tmapret:
+
+;
+;       Face Done - Go on to the next face
+;
+facend:
+;;      movefa  qfaceptr,faceptr        ; "Pop" saved Polyhedron variables
+	movei   #qfaceptr,temp
+	load    (temp),faceptr
+;;      movefa  qsegptr,segptr
+;       addq    #4,temp
+;       load    (temp),segptr
+;;      movefa  qvertptr,vertptr
+;       addq    #4,temp
+
+;       load    (temp),vertptr
+;;      movefa  qfacecnt,facecnt
+;       addq    #4,temp
+	addq    #8,temp
+	load    (temp),facecnt
+	addq    #4,temp
+	load    (temp),texptr
+	addq    #4,temp
+	movei   #INPUT6,temp2
+	load    (temp),tboxptr
+	load    (temp2),vertptr
+
+	movei   #faceloop,temp          ; NEXT FACE
+	subq    #1,facecnt
+	jump    NE,(temp)
+	nop
+
+;*==============================================================*
+;*      GPU RTS
+;*==============================================================*
+
+gpuend:
+	movefa	a_B_CMD,temp2
+bwait:
+	load	(temp2),temp3
+	btst	#0,temp3
+	jr	EQ,bwait
+	nop
+	movei	#PIT0,temp
+	movei	#ttime3,temp2
+	load	(temp),temp3
+	store	temp3,(temp2)
+
+	movei	#G_CTRL,temp2		; GPU control/status register
+	load	(temp2),temp
+	bclr	#0,temp 		 ; clear GPUGO bit
+	store	temp,(temp2)		; stop the GPU
+
+endloop:
+	jr	endloop 		; infinite loop
+	nop
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; textMap
+;;
+;; This routine is an implementation of texture mapping.  As inputs, it
+;; takes a source polygon containing texture data and a destination polygon,
+;; and it maps the texture onto the destination.  Both polygons must have
+;; the same number of vertices, the vertices must be ordered clock-wise,
+;; and the polygons must be convex (and non-intersecting).  Before using,
+;; the widths of the source and destination windows must be specified.
+;; The defaults are embedded in the setting of the A1 and A2 flags.
+;;
+;; Algorithm adapted from Dr.Dobb's Sept-Oct. 1992
+;;
+;; NOTES:  This routine calls three other routines: lineDraw, SetUpEdge,
+;; and StepEdge.  Whenever textMap calls any of these routines, the
+;; register set will be switched
+;;
+;; Author: Denis L. Fung
+;;
+;; Inputs:
+;;      NUMVERT         The number of vertices in the polygons
+;;      SRCPLY          The address of the array describing the vertices,
+;;                      with each vertex being a word.  This address must
+;;                      be long-aligned.
+;;      SRCADDR         The address of the texture data.
+;;      DSTPLY          The address of the array describing the vertices,
+;;                      with each vertex being a word.  This address must
+;;                      be long-aligned.
+;;      DSTADDR         The destination address of the draw window.
+;;      GPCLIP          Clip flag, 1 = on, 0 = off.
+;;      GPXMNCL...      Clip variables
+;;      RETADDR         Return address, if 0, then it will stop the GPU
+;;
+;;      Destroys:  All registers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+textMap:
+	movei   #PIT0,R0
+	movei   #ttime2,R2
+	load    (R0),R1
+	store   R1,(R2)
+
+	REGUNDEF        vertptr
+	REGUNDEF        ptr
+	MAXY    .regequ          R26
+	MINY    .regequ          R25
+	NUMVERT .regequ          R24
+	MAXVERT .regequ          R23
+	INDEX   .regequ          R22
+	MINVERT .regequ          R21
+	VERTPTR .regequ          R20
+	MASK    .regequ          R19
+	VERTY   .regequ          R18
+
+	movei   #NumVerts,R0
+	load    (R0),NUMVERT
+	moveq   #0,INDEX
+	cmpq    #2,NUMVERT              ; Reject faces < 3 vertices
+	jr      PL,cont_tm
+	nop
+	movei   #tmapret,R1
+	jump    (R1)
+cont_tm:
+	; scan through the dest polygon vertices and find the top of
+	; the left and right edges, assuming that the vertices run in
+	; a clockwise direction (else this polygon wouldn't be visible
+	; due to backface removal
+	moveq   #0,MAXY
+	movefa  a_lomask,MASK
+	bset    #15,MAXY
+	movei   #varray,VERTPTR
+	move    MAXY,MINY
+	movei   #do_textM,R29
+	neg     MAXY
+	movei   #tm_loop,R28
+	subq    #1,MINY
+	cmp     NUMVERT,INDEX
+tm_loop:
+	jr      MI,tm_lcnt
+	load    (VERTPTR),VERTY
+	jump    (R29)
+	nop
+tm_lcnt:
+	and     MASK,VERTY      ; mask out the x-value
+	shlq    #16,VERTY
+	sharq   #16,VERTY
+	cmp     MINY,VERTY
+	jr      PL,do_max
+	nop
+	move    VERTY,MINY
+	move    INDEX,MINVERT
+do_max:
+	cmp     VERTY,MAXY
+	jr      PL,min_max
+	addq    #8,VERTPTR              ; skip to next vertex
+	move    VERTY,MAXY
+	move    INDEX,MAXVERT
+min_max:
+	addq    #1,INDEX
+	jump    (R28)
+	cmp     NUMVERT,INDEX
+do_textM:
+	; reject 0-pixel high polygons
+	cmp     MAXY,MINY
+	jr      MI,text_cont
+	moveq   #1,R0
+	movei   #tmapret,R29
+	jump    (R29)
+	nop
+text_cont:
+	movei   #MaxVert,R3
+	movei   #G_REMAIN,R1
+	store   MAXVERT,(R3)
+	movefa  a_DestY,R2
+	subq    #4,R3
+	store   R0,(R1)
+	store   MINVERT,(R3)
+	; set up to scan the initial left and right edges fo the source and
+	; dest polygns.  We always tep the dest poly edges by one in Y,
+	; so calc corresponding dest Xstep for each edge, and then the
+	; corresponding source image X and Y steps
+	movei   #LeftEdge,R27
+	store   MINY,(R2)
+	movefa  a_himask,R17
+	movei   #done_left,R29
+	store   R17,(R27)       ; set up edge direction
+	movei   #SetUpEdge,R20
+	move    MINVERT,R28
+	jump    (R20)
+	nop
+done_left:
+	moveq   #0,R17
+	movei   #RightEdge,R27
+	bset    #16,R17
+	movei   #MinVert,R19
+	store   R17,(R27)       ; set up edge direction
+	movei   #SetUpEdge,R20
+	load    (R19),R28
+	movei   #done_right,R29
+	jump    (R20)
+	nop
+done_right:
+	; step down dest edges one scan line at a time.  At each scan
+	; line, find corresponding edge points in the source image.  Scan
+	; between the edge points in the source, drawing the corresponding
+	; pixels across the current scan line in the dest plygn. (We know
+	; which way teh left and right edges run through the vertex list
+	; because visible (non-backfage-culled) plygns always have vertices
+	; in clockwise order as seen from the viewpoint)
+loop_tmap:
+	; the dest Y coordinate is not edge specific; it applies to both
+	; edges since we always step Y by 1
+	movefa  a_DestY,R17
+	movei   #GPYMXCL,R16
+	load    (R17),R11
+	cmp     R16,R11
+	; done if off bottom of clip rectangle
+	jr      MI,no_ymxcl
+	moveq   #GPYMNCL,R13
+	movei   #text_stop,R1
+	jump    (R1)
+	nop
+no_ymxcl:
+	cmp     R13,R11
+	; draw only if inside Y bounds of clip rectangle
+	jr      MI,scn_ln_ret
+	nop
+	movei   #scn_ln_ret,R29
+	movefa  a_lineDraw,R20
+	jump    (R20)
+	nop
+scn_ln_ret:
+	; advance the source and dest polygn edges, ending if we've
+	; scanned all the way to the bottom of the plygn
+
+	movei   #fin_stpl,R29
+	movefa  a_StepEdge,R20
+	movei   #LeftEdge,R27
+	jump    (R20)
+	nop
+fin_stpl:
+	; R0 has the return code, 0 means quit
+	cmpq    #0,R0
+	jr      NE,nxt_e
+	nop
+	movei   #text_stop,R20
+	jump    (R20)
+	nop
+nxt_e:
+	movei   #RightEdge,R27
+	movefa  a_StepEdge,R20
+	movei   #fin_stpr,R29
+	jump    (R20)
+	nop
+
+fin_stpr:
+	cmpq    #0,R0
+	jr      EQ,text_stop
+	movefa  a_DestY,R10
+	load    (R10),R11
+	addq    #1,R11
+	store   R11,(R10)
+	movei   #loop_tmap,R20
+	jump    (R20)
+	nop
+text_stop:
+; turn off 16.16 divides
+	movei   #G_REMAIN,R4
+	moveq   #0,R3
+	movei   #tmapret,R1
+	store   R3,(R4)         ; set up for 16.16 divides
+	jump    (R1)
+	nop
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; StepEdge
+;;
+;; This routine steps an edge one scan line in the destination, and the
+;; corresponding distance in the source.  If an edge runs out, starts a
+;; new edge if there is one.
+;;
+;; Input:
+;;      R27     Pointer to edge structure
+;;      R29     Return address
+;;      NOTE: Same as SetupEdge, since we call that routine.
+;; Output:
+;;      R0      Returns 1 if successful, 0 if no more edges to scan.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; parameters
+
+	EdgePtr         .regequ          R27
+	RetAd           .regequ          R29
+
+StepEdge:
+	DestX           .regequ          R1
+	ADestX          .regequ          R2
+	XErrTerm        .regequ          R3
+	AXErrTerm       .regequ          R4
+	XAdjUp          .regequ          R5
+	XDir            .regequ          R6
+	XAdjDown        .regequ          R7
+	TexFlag         .regequ          R8
+	SourceX         .regequ          R9
+	ASourceX        .regequ          R10
+	SourceY         .regequ          R11
+	ASourceY        .regequ          R12
+	SStepX          .regequ          R13
+	SStepY          .regequ          R14
+	XIntStep        .regequ          R15
+	DestI           .regequ          R16
+	ADestI          .regequ          R17
+	IStep           .regequ          R18
+	EPtr            .regequ          R19
+
+	move    EdgePtr,EPtr
+	addq    #4,EPtr
+	load    (EPtr),R26
+	move    EPtr,ADestX
+	; count off the scan line we stepped the last time; if this
+	; edge is finished, try to start another one
+	subq    #1,R26
+	jr      NE,cont_step
+	store   R26,(EPtr)
+	addq    #4,EPtr
+	movei   #SetUpEdge,R2
+	load    (EPtr),R28      ; load up CurrentEnd
+	jump    (R2)            ; jsr to SetUpEdge, let it do the return
+	nop
+cont_step:
+	; Step dest X Bresenham-style, to get precise dest pixel placement
+	; and to avoid gaps
+	addq    #32,ADestX
+	move    ADestX,R26      ; for loading up XIntStep
+	move    ADestX,AXErrTerm
+	addq    #4,R26
+	load    (ADestX),DestX
+	addq    #8,AXErrTerm
+	load    (R26),XIntStep
+	move    ADestX,R25      ; for loading XAdjUp
+	add     XIntStep,DestX
+	addq    #12,R25
+	load    (AXErrTerm),XErrTerm
+	load    (R25),XAdjUp
+	movefa  texindex,TexFlag
+	add     XAdjUp,XErrTerm
+	subq    #1,XErrTerm
+	jr      MI,no_err       ; Did we overflow the error term?
+	addq    #1,XErrTerm
+	move    EPtr,R24
+	addq    #4,R25
+	move    EPtr,R23
+	subq    #4,R23
+	load    (R25),XAdjDown
+	load    (R23),XDir
+	sub     XAdjDown,XErrTerm
+	shlq    #16,XDir
+	sharq   #16,XDir
+	add     XDir,DestX
+no_err:
+	store   DestX,(ADestX)
+	moveq   #1,R0           ; for the return code
+	store   XErrTerm,(AXErrTerm)
+	cmpq    #-1,TexFlag
+	jr      NE,tex_ed       ; Is this Gouraud shaded?
+	move    ADestX,ADestI
+	move    ADestX,R25      ; to point to IStep
+	subq    #8,ADestI
+	subq    #4,R25
+	load    (ADestI),DestI
+	load    (R25),IStep
+	movefa  a_FFFFFF,R24
+	add     IStep,DestI
+	cmp     R24,DestI
+	jr      MI,max_i
+	nop
+	move    R24,DestI
+max_i:
+	store   DestI,(ADestI)
+	jump    (R29)
+tex_ed:
+	; step the current source edge
+	move    EPtr,ASourceX
+	move    EPtr,ASourceY
+	addq    #8,ASourceX
+	addq    #12,ASourceY
+	move    EPtr,R23
+	load    (ASourceX),SourceX
+	move    EPtr,R24
+	load    (ASourceY),SourceY
+	addq    #16,R23
+	addq    #20,R24
+	load    (R23),SStepX
+	load    (R24),SStepY
+	add     SStepX,SourceX
+	add     SStepY,SourceY
+	store   SourceX,(ASourceX)      ; SourceX + SourceStepX
+	store   SourceY,(ASourceY)      ; SourceY + SourceStepY
+	jump    (R29)
+	nop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; SetUpEdge
+;;
+;; This routine sets up an edge to be scanned; the edge starts at StartVert
+;; and proceeds in direction Edge->Direction through the vertex list.
+;; Edge->Direction must be set prior to call: -1 to scan a left edge 
+;; (backwars through the vertex list), 1 to scan a right edge (forward
+;; through the vertext list).  Automatically skips over 0-height edges.
+;;
+;; Input:
+;;      R27     Pointer to the edge structure
+;;      R28     Start vertex
+;;      R29     Return address
+;;
+;; Output:
+;;      R0      1 if successful, 0 if no more edges to scan
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; parameters
+
+	.regundef	EdgePtr
+	.regundef	RetAd
+
+	EdgePtr         .regequ          R27
+	StartVert       .regequ          R28
+	RetAd           .regequ          R29
+
+SetUpEdge:
+
+; local variables
+
+	NextVert        .regequ          R26
+	TexGour         .regequ          R25
+
+; done if this edge starts at the bottom vertex
+
+	movei   #MaxVert,R20
+	move    EdgePtr,R21     ; copy for later
+	load    (R20),R19
+	cmp     StartVert,R19
+	jr      NE,cnt_set
+	load    (EdgePtr),NextVert      ; load Edge->Direction
+	moveq   #0,R0           ; return 0
+	movei   #SetUpQuit,R1
+	jump    (R1)
+cnt_set:
+	; advance to nex vertex, wrapping if we run off the start or
+	; end of the vertex list
+	sharq   #16,NextVert            ; shift out lower word (XDir)
+	movei   #NumVerts,R1
+	add     StartVert,NextVert
+	load    (R1),R2
+	cmpq    #0,NextVert
+	jr      MI,max_vrt
+	move    StartVert,R10
+	cmp     R2,NextVert     ; is NumVerts > NextVert
+	jr      MI,cont_vrt
+	movefa  a_lomask,R18
+	jr      zero_vrt
+	nop
+max_vrt:
+	subq    #1,R2
+	move    R2,NextVert
+	jr      cont_vrt
+	movefa  a_lomask,R18
+zero_vrt:
+	moveq   #0,NextVert
+cont_vrt:
+	; Calculate the vars for this edge and done if this isn't a zero-
+	; height edge.  R21 has EdgePtr copy
+	move    NextVert,R12
+	shlq    #3,R10
+	movei   #varray,R19
+	shlq    #3,R12
+	move    R19,R20         ; R19 & R20 have the VertexPtr address
+	add     R10,R19
+	add     R12,R20
+	load    (R19),R10
+	load    (R20),R12
+	move    R10,R11
+	move    R12,R13
+	sharq   #16,R10
+	and     R18,R11
+	sharq   #16,R12
+	and     R18,R13
+	shlq    #16,R11
+	shlq    #16,R13
+	sharq   #16,R11
+	sharq   #16,R13
+	; just calculated:  R10 = VertexPtr[StartVert].X
+	;                   R11 = VertexPtr[StartVert].Y
+	;                   R12 = VertexPtr[NextVert].X
+	;                   R13 = VertexPtr[NextVert].Y
+	; now check if this is a zero-height edge.  If not, then do 
+	; all the calcs for TexVertPtr.
+	move    R13,R22
+	sub     R11,R22
+	jr      NE,cont_clc
+	movefa  texindex,TexGour
+	movei   #SetUpEdge,R19          ; go back to the beginning and keep
+	move    NextVert,StartVert      ; looking for a non-0-height edge
+	jump    (R19)
+	nop
+cont_clc:
+	shlq    #16,R22                 ; make remainScans 16.16 for divides
+	movei   #no_intns,R1
+	cmpq    #-1,TexGour
+	jump    NE,(R1)
+	; about to calculate: R1 = Intensity
+	;                     R2 = Intensity Deltas
+	;       R18 contains a low word mask from above
+	addq    #4,R19
+	addq    #4,R20
+	load    (R19),R1
+	load    (R20),R2
+	and     R18,R1
+	and     R18,R2
+	shlq    #8,R1
+	shlq    #8,R2
+	sub     R1,R2   ; VertexPtr[NextVert].I - VertexPtr[StartVert].I
+;       sharq   #16,R2  ; make integer for divide!
+	abs     R2
+	jr      CC,calc_di
+	div     R22,R2  ; divide by RemainScans
+	move    R21,R19
+	addq    #28,R19
+	store   R1,(R19)
+	addq    #4,R19
+	jr      div_skp
+	neg     R2
+calc_di:
+	move    R21,R19
+	addq    #28,R19
+	store   R1,(R19)
+	addq    #4,R19
+div_skp:
+	store   R2,(R19)
+no_intns:
+	; R21 still has EdgePtr
+	; R22 contains RemainScans
+
+	RemainScans     .regequ          R22
+
+	sharq   #16,RemainScans ; convert to int from 16.16
+	addq    #4,R21          ; point to RemainScans
+	store   RemainScans,(R21)
+	addq    #4,R21
+	move    R21,R20
+	store   NextVert,(R21)  ; save CurrentEnd
+	addq    #28,R20
+	movei   #draw_rl,R8     ; for below
+	store   R10,(R20)       ; save VertexPtr[Start].X
+	movei   #done_dr,R7     ; for below
+;;;;;;;
+
+	; now finish up the dest. calcs
+	sub     R10,R12         ; calc DestXWidth
+
+	move    R21,R19         ; point to DirXDir
+	subq    #8,R19
+	;
+
+	DestXWidth      .regequ          R12
+
+	cmpq    #0,R12  
+	jump    MI,(R8)         ; jump to draw_rl
+	moveq   #1,R9
+	; do left to right
+	movefa  a_himask,R5
+	addq    #8,R20          ; point to DestXErrTerm
+	load    (R19),R6        ; DirXDir
+	and     R5,R6
+	or      R9,R6
+	store   R6,(R19)
+	moveq   #0,R5
+	store   R5,(R20)
+
+	addq    #8,R20          ; point to XAdjDown
+	move    DestXWidth,R6
+	move    RemainScans,R4
+	abs     R6
+	div     R4,R6
+; interlace for the divide
+	move    R20,R19
+	store   RemainScans,(R20)
+	move    RemainScans,R5
+	subq    #4,R20          ; XAdjUp
+	subq    #12,R19         ; XIntStep
+	sharq   #16,R6
+	store   R6,(R19)
+	abs     R6
+	; already preloaded with done_dr
+	jump    (R7)
+	imult   R5,R6
+draw_rl:
+	; do right to left
+	movefa  a_lomask,R9
+	addq    #8,R20          ; point to DestXErrTerm
+	move    R9,R5           ; use as mask
+	load    (R19),R6        ; DirXDir
+	not     R5              ; invert mask
+	moveq   #1,R3           
+	and     R5,R6
+	sub     RemainScans,R3  ; 1 - RemainScans
+	or      R9,R6           ; or in XDir part
+	store   R3,(R20)
+	store   R6,(R19)        ; save away
+	addq    #8,R20          ; point to XAdjDown
+	abs     DestXWidth
+	move    DestXWidth,R6
+	move    RemainScans,R4
+	div     R4,R6
+	move    R20,R19
+	store   RemainScans,(R20)
+	move    RemainScans,R5
+	subq    #4,R20          ; XAdjUp
+	subq    #12,R19         ; XIntStep
+	sharq   #16,R6
+	neg     R6
+	store   R6,(R19)
+	abs     R6      
+	imult   R5,R6
+done_dr:
+	sub     R6,DestXWidth
+	store   DestXWidth,(R20)
+;;;;;;
+	cmpq    #-1,TexGour
+	jr      NE,go_txt
+	move    StartVert,R14
+	moveq   #1,R0
+	jump    (R29)
+	nop
+go_txt:
+	; calculate the texture coordinates
+	movei   #TexVertPtr,R20
+	move    NextVert,R16
+	load    (R20),R19
+	shlq    #2,R14          ; multiply by 4
+	move    R19,R20         ; R19 & R20 have the TexVertPtr address
+	shlq    #2,R16          ; for calc address
+	add     R14,R19
+; don't need this because already loaded above
+	add     R16,R20
+	load    (R19),R14
+	load    (R20),R16
+; don't need to extend the values to longs since the
+; texture map coordinates should always be positive
+	move    R14,R15
+	move    R16,R17
+	sharq   #16,R14
+	and     R18,R15
+	sharq   #16,R16
+	and     R18,R17
+	; just calculated:  R14 = TexVertPtr[StartVert].X
+	;                   R15 = TexVertPtr[StartVert].Y
+	;                   R16 = TexVertPtr[NextVert].X
+	;                   R17 = TexVertPtr[NextVert].Y
+
+	addq    #4,R21          ; point to SourceX
+	move    R14,R0
+	move    R15,R9
+	shlq    #16,R0
+	store   R0,(R21)
+	shlq    #16,R9
+	addq    #4,R21
+	store   R9,(R21)
+
+	sub     R14,R16         ; TexVertPtr[Next].X - TexVertPtr[Start].X
+	; make copies of R16 and R17 to do XOR for sign check!
+	move    R16,R14
+	move    RemainScans,R13
+	abs     R16
+	div     R13,R16
+	; interlace some code for the divide.
+	sub     R15,R17         ; same as above, but Y
+	move    R17,R15
+	abs     R17
+	xor     R13,R14
+	xor     R13,r15
+
+	div     R13,R17
+	; interlace some code for the divide.
+	move    R21,R19 
+	subq    #16,R19         ; point to DirXDir
+
+	btst    #31,R14         ; does SourceStepX have to be negated?
+	jr      EQ,no_Xneg
+	addq    #4,R21          ; point to StepX
+	neg     R16
+no_Xneg:
+	store   R16,(R21)
+	btst    #31,R15         ; does SourceStepY have to be negated?
+	jr      EQ,no_Yneg
+	addq    #4,R21          ; point to StepY
+	neg     R17
+no_Yneg:
+	store   R17,(R21)
+	moveq   #1,R0           ; success
+SetUpQuit:
+	jump    (R29)
+	nop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; lineDraw
+;;
+;; This routine is a specialized line drawing routine that takes pixel
+;; data from the source data and transfers them to the destination.  The
+;; source uses a DDA to walk the data, whereas the destination is a non-
+;; scaled horizontal line.  Note that the A1 and A2 registers must be
+;; switched when called.  In addition, the algorithm uses the approach of
+;; pre-stepping 1/2 pixel into the source image and rounding to the
+;; nearest source pixel at each step, so that the texture maps will appear
+;; reasonably similar at all angles.
+;;
+;; Input
+;;      R29     Return address
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	
+lineDraw:
+	.regundef	DestX
+	.regundef	TexFlag
+
+	XMNCL           .regequ          R0
+	XMXCL           .regequ          R1
+	DestX           .regequ          R2
+	DestXMax        .regequ          R3
+	TexFlag         .regequ          R4
+	DestWidth       .regequ          R5
+	I               .regequ          R6
+	StepI           .regequ          R7
+
+;;; Load up destination stuff and clip variables to see if we should bail
+	movefa  a_R_DestX,R28
+	movefa  a_GPXMNCL,XMNCL
+	load    (R28),DestXMax
+	movefa  a_L_DestX,R27
+	load    (R27),DestX
+	move    DestXMax,DestWidth
+	movefa  a_GPXMXCL,XMXCL
+	cmp     XMNCL,DestXMax
+	movefa  texindex,TexFlag
+	jump    MI,(R29)
+	cmp     DestX,XMXCL
+	movefa  a_do_tmap,R28
+	jump    MI,(R29)
+	sub     DestX,DestWidth
+	subq    #1,DestWidth
+	jump    MI,(R29)
+	addq    #1,DestWidth
+	shlq    #16,DestWidth           ; make 16.16 for divides
+	cmpq    #-1,TexFlag
+	jump    NE,(R28)
+	cmp     XMXCL,DestXMax
+	movefa  a_R_DestI,R26
+	jr      MI,gmx_ok
+	movefa  a_L_DestI,R27
+	move    XMXCL,DestXMax
+gmx_ok:
+	load    (R27),I
+	move    XMNCL,R28
+	load    (R26),StepI
+	sub     I,StepI
+;       sharq   #16,StepI
+	abs     StepI
+	jr      CC,negI
+	div     DestWidth,StepI
+	moveq   #17,R8
+	shlq    #12,R8
+	movefa  a_B_CMD,R10
+	movefa  a_B_IINC,R11
+	movefa  a_B_COUNT,R12
+	movefa  a_A1_PIXEL,R13
+	movefa  a_DestFlags,R20
+	movefa  a_A1_FLAGS,R22
+	load    (R20),R21
+	movefa  a_DestY,R24
+	movefa  a_FFFFFF,R9
+	load    (R24),R15
+	jr      nonegI
+	neg     StepI
+negI:
+	moveq   #17,R8
+	shlq    #12,R8
+	movefa  a_B_CMD,R10
+	movefa  a_B_IINC,R11
+	movefa  a_B_COUNT,R12
+	movefa  a_A1_PIXEL,R13
+	movefa  a_DestFlags,R20
+	movefa  a_A1_FLAGS,R22
+	load    (R20),R21
+	movefa  a_DestY,R24
+	movefa  a_FFFFFF,R9
+	load    (R24),R15
+nonegI:
+	sub     DestX,XMNCL
+	jr      MI,do_gblit
+	shlq    #16,R15
+	move    R28,DestX
+	move    StepI,R23
+	sharq   #16,R23
+	imult   XMNCL,R23
+	shlq    #16,R23
+	add     R23,I
+	move    StepI,R23
+	mult    XMNCL,R23
+	add     R23,I
+do_gblit:
+	movefa  a_B_I3,R14
+	or      DestX,R15
+	sub     DestX,DestXMax
+	cmpq    #15,DestXMax
+	jr      PL,phr_mode
+	bset    #16,DestXMax
+	and     R9,StepI
+	bset    #16,R21         ; set addpixel bit
+.blwait:
+	load    (R10),R27
+	btst    #0,R27
+	jr      EQ,.blwait
+	nop
+	store   StepI,(R11)
+	store   R21,(R22)
+	store   I,(R14)
+	store   DestXMax,(R12)
+	store   R15,(R13)
+	store   R8,(R10)
+	jump    (R29)
+phr_mode:
+	; can trash DestX
+	shlq    #30,DestX
+	movei   #doneI,R23
+	shrq    #30,DestX       ; DestX mod (32 * 8)
+	jr      NE,not_palign   ; zero means phrase aligned
+	cmpq    #1,DestX
+	move    I,R25
+	move    R25,R26
+	add     StepI,R26
+	move    R26,R27
+	add     StepI,R27
+	move    R27,R28
+	jump    (R23)
+	add     StepI,R28
+not_palign:
+	jr      NE,not_1
+	cmpq    #2,DestX
+	move    I,R25
+	move    I,R26
+	sub     StepI,R25
+	move    R26,R27
+	add     StepI,R27
+	move    R27,R28
+	jump    (R23)
+	add     StepI,R28
+not_1:
+	jr      NE,not_2
+	move    I,R27
+	move    I,R26
+	sub     StepI,R26
+	move    R26,R25
+	sub     StepI,R25
+	move    I,R28
+	jr      doneI
+	add     StepI,R28
+not_2:
+	move    I,R28
+	sub     StepI,R27
+	move    R27,R26
+	sub     StepI,R26
+	move    R26,R25
+	sub     StepI,R25
+doneI:
+	move    R14,R17
+	addq    #4,R17
+	move    R17,R18
+	addq    #4,R18
+	move    R18,R19
+	shlq    #2,StepI
+	addq    #4,R19
+	and     R9,StepI
+blwait2:
+	load    (R10),R1
+	btst    #0,R1
+	jr      EQ,blwait2
+	nop
+
+	store   StepI,(R11)
+	store   R21,(R22)
+	store   R28,(R14)
+	store   R27,(R17)
+	store   R26,(R18)
+	store   R25,(R19)
+	store   DestXMax,(R12)
+	store   R15,(R13)
+	store   R8,(R10)
+	jump    (R29)
+	nop
+do_tmap:
+;       XMNCL           .regequ          R0
+;       XMXCL           .regequ          R1
+;       DestX           .regequ          R2
+;       DestXMax        .regequ          R3
+;       TexFlag         .regequ          R4
+;       DestWidth       .regequ          R5
+	SourceStepX     .regequ          R6
+	SourceStepY     .regequ          R7
+	LeftSX          .regequ          R8
+	LeftSY          .regequ          R9
+
+	jr      MI,no_cl
+	movefa  a_L_SourceX,R27
+	move    XMXCL,DestXMax
+no_cl:
+	movefa  a_R_SourceX,R28
+	load    (R27),LeftSX
+	load    (R28),SourceStepX
+	sub     LeftSX,SourceStepX
+	jr      MI,x_neg
+	nop
+;       shrq    #16,SourceStepX
+	div     DestWidth,SourceStepX
+	addq    #4,R27
+	addq    #4,R28
+	load    (R27),LeftSY
+	load    (R28),SourceStepY
+	movefa  a_A1_PIXEL,R22
+	movefa  a_A1_INC,R21
+	movefa  a_B_IINC,R16
+	movefa  saveint,R15
+	jr      x_cont
+	nop
+x_neg:
+	abs     SourceStepX
+;       shrq    #16,SourceStepX
+	div     DestWidth,SourceStepX
+	addq    #4,R27
+	addq    #4,R28
+	load    (R27),LeftSY
+	load    (R28),SourceStepY
+	movefa  a_A1_PIXEL,R22
+	movefa  a_A1_INC,R21
+	movefa  a_B_IINC,R16
+	movefa  saveint,R15
+	neg     SourceStepX
+x_cont:
+	sub     LeftSY,SourceStepY
+	jr      MI,y_neg
+	movefa  a_A1_BASE,R23
+;       shrq    #16,SourceStepY
+	div     DestWidth,SourceStepY
+	movei   #A1_FINC,R20
+	movei   #A1_FPIXEL,R19
+;;;     movei   #SRCEN|LFU_S|DSTA2|SRCSHADE|ZBUFF,R17
+	movei   #SRCEN|LFU_S|DSTA2|ZBUFF,R17
+	jr      y_cont
+	movefa  a_B_CMD,R18
+y_neg:
+	abs     SourceStepY
+;       shrq    #16,SourceStepY
+	div     DestWidth,SourceStepY
+	movei   #A1_FINC,R20
+	movei   #A1_FPIXEL,R19
+	movefa  a_B_CMD,R18
+;;;     movei   #SRCEN|LFU_S|DSTA2|SRCSHADE|ZBUFF,R17
+	movei   #SRCEN|LFU_S|DSTA2|ZBUFF,R17
+	neg     SourceStepY
+; Advance 1/2 step in stepping direction, to space scanned pixels evenly
+; between left and right edges.  We rename LeftSX and LeftSY to use them
+; as SourceX and SourceY.
+y_cont:
+	move    XMNCL,R26
+	move    SourceStepX,R27
+	move    SourceStepY,R28
+	sharq   #1,R27
+	movei   #no_cl_le,R14
+	sharq   #1,R28
+	add     R27,LeftSX
+	add     R28,LeftSY
+	cmp     DestX,XMNCL
+; Clip left edge?
+;       jr      MI,no_cl_le
+	jump    MI,(R14)
+	movefa  a_DestFlags,R10
+	sub     DestX,R26
+	movefa  a_lomask,R14
+	move    SourceStepX,R27
+	move    SourceStepY,R28
+	and     R14,R27
+	move    XMNCL,DestX
+	and     R14,R28
+	move    SourceStepX,R24
+	mult    R26,R27
+	move    SourceStepY,R25
+	mult    R26,R28
+	sharq   #16,R24
+	add     R27,LeftSX
+	add     R28,LeftSY
+	sharq   #16,R25
+	imult   R26,R24
+	imult   R26,R25
+	shlq    #16,R24
+	shlq    #16,R25
+	add     R24,LeftSX
+	add     R25,LeftSY
+
+no_cl_le:
+	sub     DestX,DestXMax
+	jump    EQ,(R29)                ; did the clip make it zero pixels wide?
+	movefa  a_DestY,R11
+	load    (R10),R14
+	load    (R11),R13
+	bset    #16,R14         ; xaddpix
+	shlq    #16,R13
+	or      DestX,R13
+	movefa  a_DESTADDR,R12
+	bset    #16,DestXMax
+	movei   #TEXTDATA,R28
+	movei   #TexFlags,R27
+	load    (R28),R11
+	load    (R27),R10       ; XADDINC must be set already!
+	movefa  a_himask,R4
+	move    LeftSX,R0
+	move    LeftSY,R1
+	and     R4,R0
+	and     R4,R1
+	move    SourceStepX,R2
+	shrq    #16,R0
+	move    SourceStepY,R5
+	or      R1,R0
+	and     R4,R2
+	movefa  a_lomask,R1
+	and     R4,R5
+	and     R1,LeftSX
+	and     R1,LeftSY
+	and     R1,SourceStepX
+	shlq    #16,LeftSY
+	and     R1,SourceStepY
+	shrq    #16,R2
+	or      LeftSY,LeftSX
+	shlq    #16,SourceStepY
+	or      R5,R2
+	or      SourceStepY,SourceStepX
+
+	movei   #A2_FLAGS,R28
+	movei   #A2_BASE,R27
+	movefa  a_B_COUNT,R26
+	movei   #A2_PIXEL,R25
+	movefa  a_A1_FLAGS,R24
+;
+; All of this code is stuck after the above divides...
+;
+;       movefa  a_A1_BASE,R23
+;       movefa  a_A1_PIXEL,R22
+;       movefa  a_A1_INC,R21
+;       movei   #A1_FINC,R20
+;       movei   #A1_FPIXEL,R19
+;       movefa  a_B_CMD,R18
+;       movei   #SRCEN|LFU_S|DSTA2|SRCSHADE|ZBUFF,R17
+;       movefa  a_B_IINC,R16
+;       movefa  saveint,R15
+
+; Wait until blitter is not busy
+; check if blitter is done
+blitwait:
+	load    (R18),R9
+	btst    #0,R9
+	jr      EQ,blitwait
+	nop
+	
+	store   R14,(R28)
+	store   R12,(R27)
+	store   DestXMax,(R26)
+	store   R13,(R25)
+	store   R11,(R23)
+	store   R10,(R24)
+	store   R0,(R22)
+	store   R2,(R21)
+	store   SourceStepX,(R20)
+	store   LeftSX,(R19)
+	store   R15,(R16)
+	store   R17,(R18)
+	jump    (R29)
+	nop
+
+;*======================================================================*
+;*      END OF PROGRAM SEGMENT
+;*======================================================================*
+
+;*======================================================================*
+;*      RANDOM DATA SEGMENT
+;*======================================================================*
+
+	.phrase
+
+rmatrix:
+	.rept	12              ;* enough for [3x3] plus 3
+	.dc.l	0
+	.endr			; NOTE: These two matrices must remain in
+
+
+lmatrix:                        ;  Contiguous Memory
+	.rept	12              ;* enough for [4x3]
+	.dc.l	0
+	.endr
+
+tmatrix:
+	.rept	12              ;* enough for [3x4]
+	.dc.l	0
+	.endr
+
+varray:                         ; G.P. GPU RAM Buffer - used for lotsa stuff
+	.rept	3*MAXVERTS      ; But only one thing at a time (I hope)
+	dc.l	0
+	.endr
+
+qfaceptr:
+	dc.l	0       ; Polyhedron Registers
+;qsegptr:
+	dc.l	0
+qvertptr:
+	dc.l	0       
+qfacecnt:
+	dc.l	0               
+qtexptr:
+	dc.l	0       ; ptr to list of texture maps
+qtboxptr:
+	dc.l	0       ; ptr to list of texture map boxes
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	
+	.long
+
+TEXTDATA:
+	dc.l	0       ; source address, texture data
+DESTADDR:
+	dc.l	0       ; destination address
+
+; variables used by the subroutines
+
+MinVert:
+	dc.l	0
+MaxVert:
+	dc.l	0
+NumVerts:
+	dc.l	0
+DestY:
+	dc.l	0
+;VertexPtr:
+	dc.l	0       ; ptr to dest coordinates
+DestFlags:
+	dc.l	0       ; blitter flags to characterize the destination
+TexVertPtr:
+	dc.l	0       ; ptr to texture map coordinates
+TexFlags:
+	dc.l	0       ; blitter flags to characterize the texture map
+ttime1:
+	dc.l	0
+ttime2:
+	dc.l	0
+ttime3:
+	dc.l	0
+
+; Edge structures:  representation of a scan down an edge
+
+LeftEdge:
+
+     L_DirXDir:		dc.l	0	; Upper word: 1, right edge, -1, left
+					; Lower word: direction for dest X stepping
+     L_RemainScans:	dc.l	0	; height left to scan out in dest
+     L_CurrentEnd:	dc.l	0	; vertex of end of current edge
+     L_SourceX:		dc.l	0	; current X for this edge
+     L_SourceY:		dc.l	0	; current Y for this edge
+;;   L_SourceZ:		dc.l	0	; current Z for this edge
+     L_SourceStepX:	dc.l	0	; X step in src for Y step of 1 in dest
+     L_SourceStepY:	dc.l	0	; Y step in src for Y step of 1 in dest
+;;   L_SourceStepZ:	dc.l	0	; Z step in src for Y step of 1 in dest
+     L_DestI:		dc.l	0	; intensity value, 8.16
+     L_DestIStep:	dc.l	0	; intensity increment, 8.16
+
+; variables used for all-ints Bresenham-type X stepping through the
+; dest. needed for precise pixel placement to avoid gaps
+
+     L_DestX:		dc.l	0	; current X location for this edge
+     L_DestXIntStep:	dc.l	0	; whole part of dest X step per scan-
+					; line Y step
+     L_XErrTerm:	dc.l	0	; current error term for dest X stepping
+     L_XAdjUp:		dc.l	0	; amount to add to error term per scan-
+					; line move
+     L_XAdjDown:	dc.l	0	; amount to sub from error term when 
+					; error term turns over
+
+
+RightEdge:
+
+     R_DirXDir: 	dc.l	0	; Upper word: 1, right edge, -1, left
+					; Lower word: direction for dest X stepping
+     R_RemainScans:	dc.l	0	; height left to scan out in dest
+     R_CurrentEnd:	dc.l	0	; vertex of end of current edge
+     R_SourceX: 	dc.l	0	; current X for this edge
+     R_SourceY: 	dc.l	0	; current Y for this edge
+;;   R_SourceZ: 	dc.l	0	; current Z for this edge
+     R_SourceStepX:	dc.l	0	; X step in src for Y step of 1 in dest
+     R_SourceStepY:	dc.l	0	; Y step in src for Y step of 1 in dest
+;;   R_SourceStepZ:	dc.l	0	; Z step in src for Y step of 1 in dest
+     R_DestI:		dc.l	0	; intensity value, 8.16
+     R_DestIStep:	dc.l	0	; intensity increment, 8.16
+
+; variables used for all-ints Bresenham-type X stepping through the
+; dest. needed for precise pixel placement to avoid gaps
+
+     R_DestX:		dc.l	0	; current X location for this edge
+     R_DestXIntStep:	dc.l	0	; whole part of dest X step per scan-
+					; line Y step
+     R_XErrTerm:	dc.l	0	; current error term for dest X stepping
+     R_XAdjUp:		dc.l	0	; amount to add to error term per scan-
+					; line move
+     R_XAdjDown:	dc.l	0	; amount to sub from error term when 
+					; error term turns over
+EndOfPack:
+
+	.phrase
+	.68000
+TXTCRY_E::	
+
+;*======================================================================*
+;*                                 EOF                                  *
+;*======================================================================*
+
+

@@ -1,0 +1,61 @@
+3DS2JAG
+-------
+3DS2JAG is a utility which converts an AutoDesk 3D Studio v2.0 or v3.0 file
+into the Jaguar 3D model format.  The output is an assembly file containing
+the 3D data which after assembling it can be linked with the final program.
+The file name of the output file will have the file extention ".J3D".
+
+
+Usage: 
+	3ds4jag [-l label] [-n] [-z] [-v] [-f] filename
+								
+	-l label	label option, assign a label
+	-n		do not output normals
+	-z		Zdyble output format
+	-v		consolidate vertecies 	
+	-f		combines faces
+
+
+OPTIONS
+-------
+-l      Label Option.  Assigns a label to the 3D data. If no label is
+        assigned the default label is `data'.
+
+-n      No Normals Option.  Suppresses the output of the normals in the
+        face list.
+
+-v      Consolidate Vertecies Option.  Consolidates duplicate vertecies.
+
+-f      Combine Faces Option.  Tries to combine triangle shaped faces to
+        rectangle faces.   Note: This option does not work reliably yet.
+
+-z      Zdyble Option.  This is a slighly different output format of the
+        facelist. The first word in the face list is the texture index.
+	If it's $FFFF the face is not texture mapped and the second word
+	is the color information. Otherwise the second word is an index into
+        the texture points array. The third word is the number of vertecies.
+
+
+
+
+October 4, 1994
+---------------
+The files created with the 3DS2JAG utlity now use an extension of ".J3D". 
+Older versions used a filename extension of ".JAG" but this was changed
+to avoid conflicts with the Jaguar JPEG utilities, which also output
+files with a ".JAG" extension.
+
+
+July 14, 1994
+-------------
+This is the first release that can handle 3D-Studio v3.0 objects. 
+Commandline options are changed from earlier version.  Matching demo for
+3D routines has been much improved.
+
+The 3DS2JAG utility is now located in the JAGUAR\BIN directory by
+default instead of the \JAGUAR\3DDEMO directory.
+
+Some of the documentation formerly in the 3DS2JAG file is now included
+in the main Jaguar Developer's Documentation distributed after July 14, 1994.
+
+

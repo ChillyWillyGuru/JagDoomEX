@@ -1,0 +1,8 @@
+echo 'Loading Atari Jaguar CD-BIOS 4.3...'
+gag on
+read cdbios43.tx 3000 ; read cdbios43.dta 3e00
+gag off
+echo "	start	size	end"
+echo "text	3000	9a8	39a7"
+echo "data	3e00	8	3e07"
+echo "bss	3e08	0	3e07"

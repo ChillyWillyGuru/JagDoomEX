@@ -1,0 +1,5 @@
+load cdbios45.db
+aread maketoc.cof
+g
+write toc.dat 2c00[100]
+ 

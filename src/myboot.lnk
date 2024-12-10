@@ -1,0 +1,7 @@
+-n
+-e
+-a 2000 x x
+-o boot
+-rq
+
+boot.o

@@ -1,0 +1,63 @@
+#====================================================================
+# Makefile    
+#====================================================================
+
+ERASE = erase
+
+#====================================================================
+#       Macro & Assembler flags
+#====================================================================
+
+STADDR     = 802000
+
+MACFLAGS   = -fb -g -rd
+GFLAGS     = -I$(MACPATH) -c -CGPU -R1 -o
+ALNFLAGS   = -v -v -l -rd -e -g -a $(STADDR) x 5000
+JAGFLAGS   = -v
+
+#====================================================================
+#       Standard Build Rules
+#====================================================================
+
+.SUFFIXES: .o .s
+
+.s.o:
+	mac $(MACFLAGS) $<
+
+.SUFFIXES: .o .gas      
+
+.gas.o:
+	mac $(MACFLAGS) -dGPU $<
+
+.SUFFIXES: .o .tga
+
+.tga.o:
+	tga2cry -o$*.cry $<
+	mac $(MACFLAGS) $*.cry
+	$(ERASE) $*.cry
+
+#====================================================================
+#       Object code modules
+#====================================================================
+
+MACOBJS   = startup.o crymain.o video.o jagcry.o joypad.o \
+		objlist.o gpu.o
+
+GASMOBJS  = turtle.o sort.o txtcry.o
+
+CRYOBJS  = back1.o back2.o back3.o bottom.o bottomfr.o engbot.o engfrnt.o \
+	    engside.o engtop.o fin.o finside.o gunback.o \
+	    hood.o roof.o rtfront.o rtside.o winfrnt.o wing.o wingside.o \
+	    winrt.o \
+	    gunside.o guntop.o
+
+#====================================================================
+#       EXECUTABLES
+#====================================================================
+
+3ddemo.cof: makefile $(GASMOBJS) $(CRYOBJS) $(MACOBJS) ship1.o
+	aln $(ALNFLAGS) -o 3ddemo.cof -c 3ddemo.lnk
+
+ship1.o: ship1.3ds
+	3ds2jag $(JAGFLAGS) -lcube ship1.3ds
+	mac $(MACFLAGS) $*.j3d

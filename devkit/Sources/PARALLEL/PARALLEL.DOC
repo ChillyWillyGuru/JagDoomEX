@@ -1,0 +1,1921 @@
+
+
+
+
+
+_____________________________________________________________________________
+
+  Parallel.Exe                                  Parallel Technologies, Inc.
+  Parallel Port Information Utility                                PO Box 7
+  (C) Copyright 1993 Jay Lowe                        Redmond, WA 98073-0007
+
+  This program may be used                                Lab  206-869-1136
+  free of charge subject to the                           Fax  206-869-9767
+  Restricted License Agreement                     Compuserve     76640,203
+  as stated below                         Internet 76640.203@COMPUSERVE.COM
+_____________________________________________________________________________
+
+
+
+  Welcome to the Parallel Port Information Utility
+-----------------------------------------------------
+
+   Parallel is a simple utility which displays the configuration of the
+   parallel ports (LPT ports) in your system. Parallel is useful for:
+
+      1.  Configuring parallel port software such as Windows printer
+          connections, parallel port device drivers, and print spoolers.
+
+      2.  Resolving technical support problems with parallel port devices,
+          including printers and external peripherals such as network
+          adapters, portable disks, tape drives, CD-ROMs, floppies, etc.
+
+      3.  Configuring your parallel ports for best performance.
+
+      4.  Resolving pesky IO address and IRQ contention problems.
+
+      5.  Discovering the performance capabilities of your parallel ports.
+
+      6.  Learning how your particular system's CMOS configuration
+          relates to the actual configuration of your parallel ports.
+
+      7.  Making informed decisions when buying parallel ports and devices.
+
+      8.  Getting the best parallel port performance for your dollar.
+
+      9.  Experimenting with your parallel port configuration.
+
+      10. Solving problems associated with print spoolers and network print
+          capture programs which redirect printer output by changing the
+          port mappings kept in the LPT Bios data area.
+
+   Now is a good time for you to learn something about parallel ports,
+   since parallel ports are becoming increasingly useful due to the recent
+   explosion in the popularity of portable and external peripherals, and
+   because new parallel port standards (EPP, ECP, IEEE 1284) are breaking
+   performance barriers and allowing full bus speed operation. There are
+   major performance differences between different types of ports and
+   these differences are becoming of increasing significance to consumers.
+
+   These applications of Parallel are dicussed in more detail below. But
+   first let's take a quick look at how you run the program itself and
+   interpret the various information it displays.
+
+PARALLEL.DOC                                                              Page 1
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+------------------------------
+  Quick Overview of Parallel
+------------------------------
+
+   Parallel operates by testing each of the standard addresses in your
+   system where parallel ports might be found and gathering a broad
+   assortment of useful information about the specific port behavior.
+   Parallel tests the ports and then produces a compact display which
+   is convenient and easy to read. You may need to refer to these
+   instructions or the built-in reference screen a few times until you
+   learn what the various columns of information mean.
+
+   How to use Parallel:
+
+   Step 1 => Disconnect parallel port peripherals (printers, disks, etc)
+   Step 2 => Disable parallel port software (device drivers, spoolers, etc)
+   Step 3 => Attach the optional loopback connector(s) for IRQ detection
+   Step 4 => Run PARALLEL
+   Step 5 => Read the display...
+
+   Parallel will display five columns of information containing one or
+   more lines about each port. The columns are:
+
+        Port Type        The parallel port's IO capabilities. Types are:
+
+                         No Port   --   No port is exists at the address
+                         4 bit     --   A slow "unidirectional" port
+                         8 bit     --   A faster "bidirectional" port
+                         EPP       --   A very fast Enhanced Parallel Port
+
+        Address          IO Base Address of the port (3BC, 378, 278)
+
+        IRQ              Interrupt level associated with the port (5 or 7)
+
+        BIOS Name        Logical device name of the port (LPT1, LPT2, LPT3)
+
+        Notes            A wide assortment of comments, warnings, etc.
+
+
+   Port Strangeness Factor. On a single line, after the columnar display,
+   Parallel reports a magic number called the "Port Strangeness Factor".
+   This is simply the total number of strange or unusual properties that
+   Parallel has found when examining your configuration. If your ports are
+   considered strange by Parallel, you might want to take some action
+   to correct the situtation or at least be aware of the peculiarity.
+   The Port Strangeness is not reported if your configuration is nominal.
+
+
+
+
+
+
+
+
+
+
+
+
+PARALLEL.DOC                                                              Page 2
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+------------------------------
+  Detailed Program Operation
+------------------------------
+
+
+   Before running Parallel, temporarily remove all parallel port devices
+   and software to establish a baseline configuration. Temporarily
+   disconnect printers and other parallel port devices such as disks,
+   network adapters, tape drives, etc, and disable any special parallel
+   port software you may have running, like print spoolers or parallel
+   port device drivers. The interaction of Parallel with external devices
+   is discussed in some detail later on, and you may find that disconnecting
+   these devices is simply not necessary in your configuration.
+
+   Then, type PARALLEL at the command line.  Parallel will display the
+   parallel port type, IO address, IRQ level, BIOS name equivalence, and
+   an assortment of informative notes about your parallel ports.
+
+   If you have a relatively slow PC, you may notice that Parallel produces
+   a certain amount of temporary "debugging" output as it attempts to
+   determine your port configuration and then overlays this output with
+   the final display. This is normal and has been included in the first
+   release of the program for possible support purposes.
+
+   Type PARALLEL ? for a reminder screen on interpreting the display.
+
+   If, perchance, the display scrolls off the screen, which might happen
+   if Parallel is reporting extensive notes about interesting conditions
+   on your ports, then use the MORE command or redirect Parallel's output
+   to a file. Redirection to a file can also be handy if you need to fax
+   Parallel's output to someone.
+
+          PARALLEL | MORE          ; pauses the output every screen
+          PARALLEL > filename      ; redirects output to a file
+
+   Parallel works best when you disconnect any parallel port devices, such
+   as printers, external peripherals, or "laplink" cables. Even our 4bit,
+   8bit, or Univeral High-Speed Turbo cables for our handy parallel port
+   network drivers (Pipx and Pndis) should be temporarily disconnected
+   when you run Parallel, at least until you understand how Parallel can
+   be affected by interference from devices attached to the port(s).
+   Parallel may also affect active devices attached to parallel ports
+   (printers, network adapters, external parallel port disks, etc),
+   although we've made every attempt to minimize these effects. Parallel's
+   interactions with devices are discussed in some detail below.
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARALLEL.DOC                                                              Page 3
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+-------------------
+  Sample Displays
+-------------------
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³ Parallel Port Information Utility, v1.00 (930308). Use PARALLEL ? for help. ³
+³ (C) Copyright 1993 Jay Lowe, Parallel Technologies, Inc.   We thank you.    ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³  Port Type  ³ Address ³ IRQ ³ BIOS Name ³ Notes                             ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 8 bit port  ³   3BC   ³  5  ³   LPT1:   ³ IRQ determined by loopback        ³
+³ 4 bit port  ³   378   ³  7  ³   LPT2:   ³ IRQ determined by loopback        ³
+³   No port   ³   278   ³  -  ³     -     ³ No port found at this address     ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ Experts in parallel port technology and devices since 1987.  CIS# 76640,203 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+    The system above (a 486/33 clone with two LPT cards) shows:
+
+        o  an 8BIT true bidirectional port at 3BC using IRQ 5
+        o  a 4BIT unidirectional port at 378 using IRQ 7
+        o  loopback connectors are installed in both ports
+        o  the IRQ configuration is healthy, but reversed from "standard"
+        o  the ports are well behaved (there are no special notes)
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³ Parallel Port Information Utility, v1.00 (930308). Use PARALLEL ? for help. ³
+³ (C) Copyright 1993 Jay Lowe, Parallel Technologies, Inc.   We thank you.    ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³  Port Type  ³ Address ³ IRQ ³ BIOS Name ³ Notes                             ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 4 bit port  ³   3BC   ³  7  ³   LPT1:   ³ IRQ determined by loopback        ³
+³             ³         ³     ³           ³  NOTE: Possible IRQ conflict!     ³
+³ 4 bit port  ³   378   ³  7  ³   LPT2:   ³ IRQ determined by loopback        ³
+³             ³         ³     ³           ³  NOTE: IRQ sense is INVERTED      ³
+³   No port   ³   278   ³  -  ³     -     ³ No port found at this address     ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ Your Port Strangeness Factor = 2.   We suggest that you read Parallel.Doc.  ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ Experts in parallel port technology and devices since 1987.  CIS# 76640,203 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+    The system above (an original IBM-PC) shows:
+
+        o  a 4BIT unidirectional port at 3BC using IRQ 7
+        o  a 4BIT unidirectional port at 378 using IRQ 7
+        o  an IRQ Conflict - both ports are using the same IRQ
+        o  the interrupt sense of the second port is inverted
+
+    Notes:
+
+        o  we can't use IRQ5 in this case because the IBM/PC disk uses IRQ5
+        o  these old expansion cards do not have IRQ5 capability anyway
+        o  when a new LPT card in placed at IRQ5, the interrupt test fails
+           because the disk controller's interrupt line interferes with it
+
+
+
+PARALLEL.DOC                                                              Page 4
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+-------------------------------
+  Sample Displays (continued)
+-------------------------------
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³ Parallel Port Information Utility, v1.00 (930308). Use PARALLEL ? for help. ³
+³ (C) Copyright 1993 Jay Lowe, Parallel Technologies, Inc.   We thank you.    ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³  Port Type  ³ Address ³ IRQ ³ BIOS Name ³ Notes                             ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   No port   ³   3BC   ³  -  ³     -     ³ No port found at this address     ³
+³ 4 bit port  ³   378   ³  ?  ³   LPT1:   ³ Need loopback to determine IRQ    ³
+³             ³         ³     ³           ³  See instructions in PARALLEL.DOC ³
+³             ³         ³     ³           ³  Otherwise assume IRQ 7 or IRQ 5  ³
+³             ³         ³     ³           ³  Port has latent EPP tendencies   ³
+³             ³         ³     ³           ³  EPP BIOS is not installed        ³
+³   No port   ³   278   ³  -  ³     -     ³ No port found at this address     ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ Your Port Strangeness Factor = 1.   We suggest that you read Parallel.Doc.  ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ Experts in parallel port technology and devices since 1987.  CIS# 76640,203 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+    The system above (a DELL NL25 laptop) shows:
+
+        o  a 4BIT unidirectional port at 378 with unknown IRQ
+        o  IRQ is unknown because the loopback connector is not installed
+        o  The port has EPP capability, but it is not currently enabled
+        o  There is no EPP BIOS installed in the system
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³ Parallel Port Information Utility, v1.00 (930308). Use PARALLEL ? for help. ³
+³ (C) Copyright 1993 Jay Lowe, Parallel Technologies, Inc.   We thank you.    ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³  Port Type  ³ Address ³ IRQ ³ BIOS Name ³ Notes                             ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   No port   ³   3BC   ³  -  ³     -     ³ No port found at this address     ³
+³  EPP port   ³   378   ³  7  ³   LPT1:   ³ IRQ determined by EPP hardware    ³
+³             ³         ³     ³           ³  EPP BIOS is installed            ³
+³   No port   ³   278   ³  -  ³     -     ³ No port found at this address     ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ Experts in parallel port technology and devices since 1987.  CIS# 76640,203 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+    The system above (the same DELL NL25) shows:
+
+        o  the port has been switched into EPP mode with our own EPP BIOS
+
+    Notes:
+
+        o  Enabling EPP on most EPP laptops requires a special EPP BIOS
+        o  These are usually provided by the laptop or peripheral vendor
+
+
+
+
+
+
+PARALLEL.DOC                                                              Page 5
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+----------------------------
+  Interpreting the Display
+----------------------------
+
+   Understanding the Port Type
+   ---------------------------
+
+   This can be 4bit, 8bit, EPP or No Port. We will add recognition for
+   other ports such as Microsoft/HP ECP ports, and/or other IEEE 1284
+   ports, as they begin to appear in end-user systems.
+
+        No Port     No port was found at the given IO Address.
+
+                    Parallel tests all the base addresses and displays at
+                    least one line of information about each base address,
+                    even if there is no port installed at that base address.
+
+                    Parallel uses a rather more robust technique for
+                    detecting a port than is used in any of the BIOSes we
+                    have seen. This means that Parallel can detect ports
+                    which fail the BIOS boot-time tests. Parallel uses a
+                    rotating bit test and assumes the port exists if any of
+                    the bits at the port location respond correctly.
+
+                    False Positives.  Parallel can be fooled into thinking
+                    that a port is present when it is not (false positive)
+                    only if there is some other device which behaves like a
+                    parallel port located at the address being tested.  We
+                    have only seen this on one system, an off-shore 286
+                    laptop which had several other design problems as well.
+
+                    False Negatives.  There is one way in which Parallel
+                    can be fooled into thinking that a port does not exist
+                    (false negative). If an active device is connected to
+                    the data lines and is providing enough power to
+                    "overdrive" the port, then the port existance test will
+                    fail because the incoming data from the device will
+                    foil the readback test. We have only seen Parallel
+                    produce false negatives when an external device is
+                    actively driving the port's inputs or when the Loopback
+                    is incorrectly installed. By the way, in this case, the
+                    PC's BIOS will also fail to detect the port. Again,
+                    Parallel works best when you disconnect any parallel
+                    port devices.
+
+        4bit ports  The port can do 8bit byte output and 4bit nibble input.
+
+                    These ports are often called "unidirectional", and are
+                    most commonly found on desktop bus cards (also called
+                    IO expansion cards, serial/parallel cards, or even 2S+P
+                    cards). This is still the most common type of port,
+                    especially on desktop systems.
+
+                    4bit ports are capable of effective transfer rates of
+                    about 40 Kbytes/sec (KBPS) in typical devices and can
+                    be pushed upwards of 80 KBPS with certain design
+                    tricks. The port speed is also affected by electrical
+
+PARALLEL.DOC                                                              Page 6
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+                    characteristics of the noise suppression circuitry.
+                    Some ports have completely ridiculous arrangements of
+                    noise suppression circuits which slow them down quite
+                    dramatically and can prevent their functioning with
+                    parallel port peripherals.
+
+             NOTE:  The sample transfer rates given here reflect the actual
+                    performance of parallel port network adapters, disks,
+                    etc. The raw transfer rate of the port itself is higher
+                    but since most parallel devices use software strobing to
+                    control data access, the effective transfer rate is
+                    dependent on the quality of the driver software supplied
+                    with the device. Due to the recent explosion in the
+                    number of parallel port peripherals entering the market,
+                    there is an extreme degree of variability in the quality
+                    and performance of these devices and their drivers.
+
+                    4bit ports are found on about 50% of all systems and
+                    about 75% or more of desktop systems.
+
+                    We do not recommend 4bit ports; 8bit ports are better.
+
+             NOTE:  There is a class of "semi-bidirectional" parallel ports
+                    which appear to the PC to be 4bit ports, but actually
+                    have 8bit capability when they are connected to
+                    external devices with strong drivers. These include
+                    the original PC/AT parallel port. Parallel will report
+                    these ports as 4bit ports but they may actually function
+                    as 8bit ports with a few parallel port peripherals.
+
+                    A good example of a peripheral which handles these ports
+                    well are IQ Technologies' parallel port network adapters.
+
+                    It is actually possible to identify this type of port
+                    using a side-effect of Parallel's loopback test. See
+                    the special section below on Semi-Bidirectional ports.
+
+
+        8bit ports  These ports can do both 8bit input and output.
+
+                    These ports are sometimes called "bidirectional ports",
+                    but that term is often misused by some vendors to refer
+                    to 4bit ports as well. Most newer laptops have 8bit
+                    capability although it may need to be enabled with the
+                    laptop's vendor-specific CMOS setup function. This is
+                    discussed below. A relatively smaller percentage of LPT
+                    bus cards have 8bit capability which sometimes must be
+                    enabled with a hardware jumper on the board itself.
+
+                    True 8bit ports are preferable to 4bit ports because
+                    they are considerably faster when used with external
+                    devices that take advantage of 8BIT capability.
+
+                    8bit ports are capable of speeds ranging from 80-150
+                    KBPS, again depending on the speed of the attached
+                    device, the quality of the driver software, and on the
+                    port's electrical characteristics.  8bit ports are
+
+PARALLEL.DOC                                                              Page 7
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+                    found on 25% of desktops, 50% of laptops, and about
+                    90% of newer laptops built since 1991.
+
+           CAVEAT:  A number of vendors claim "bidirectional" capability
+           EMPTOR   for their parallel ports when they are actually just
+                    4bit ports. When buying a parallel port expansion card,
+                    or an entire system, you might want to use Parallel to
+                    find out the REAL capabilities of the port. Be aware
+                    that a vendor's reputation for quality in other areas
+                    may not translate into good parallel ports.  There are
+                    examples of well-known vendors making false claims for
+                    their parallel ports... sometimes, it appears, simply
+                    because they don't understand them... claims or ports.
+
+                    Of the 8bit add-in LPT cards we have tested, we like the
+                    Everex MagicIO the best, but it can be hard to find.
+
+                    We are not going to pan anyone's "bidirectional" add-in
+                    cards specifically, but be warned that the use of terms
+                    like "bidirectional" or "PS/2 compatible" may have
+                    nothing to do with the port's actual IO capability.
+                    You can use Parallel to test add-in cards to determine
+                    the parallel port's IO actual behavior.
+
+        EPP ports   Can do both 8bit input and output at bus speeds.
+
+                    These ports are as fast as 8bit bus cards and can
+                    achieve transfer rates of 1 Mbyte/sec and faster. For
+                    example, our EPP-capable external SCSI disk is faster
+                    on a very popular SL laptop than it's internal drive.
+                    EPP ports are supposed to conform to a well defined
+                    electrical standard and many of them actually do so.
+                    However, if you are buying a laptop and want to be sure
+                    of using fast EPP-capable external peripherals, then
+                    definitely arrange to try before you buy.
+
+                    Xircom has been active in creating and defining the EPP
+                    standard, and since their EPP-capable network adapters
+                    are fairly common, it's worth mentioning that these
+                    adapters can be used as a practical benchmark for the
+                    goodness of a particular EPP port. Crude but effective.
+
+                    EPP ports are most often found on laptops using the
+                    Intel 386SL chipset with the 360SL IO support chip. You
+                    can usually identify these laptops by the 'SL' suffix
+                    in their name, HOWEVER this is not a hard and fast
+                    rule, since there are non-'SL' systems with EPP ports
+                    as well as 'SL' systems which (in our tests) have non-
+                    functioning or sub-standard EPP ports.  Other vendors
+                    offer add-in EPP cards for the ISA bus. Parallel will
+                    not currently recognize non-Intel EPP ports; we will be
+                    adding this feature in the near future. We know of one
+                    vendor now offering EPP-capable add-in cards:
+
+                         FarPoint Communications       805-726-4420
+
+                    The FarPoint card is quite nice because it is a "soft"
+
+PARALLEL.DOC                                                              Page 8
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+                    design with downloadable personalities. It comes with
+                    support for fast Windows printing and a fast Netware
+                    spooling NLM. We like it.
+
+                    SMC's Component Products Division is due to release
+                    EPP and ECP chips in the very near future, so users
+                    can expect to see EPP and ECP capabilities become
+                    available on a wider range of systems.
+
+           HOW TO:  Run Parallel on any system you intend to buy to see
+                    what kind of parallel port(s) are provided.  If you are
+                    buying a desktop with a built-in LPT card, try to get
+                    real 8bit capability instead of the more typical 4bit.
+                    Some LPT cards have hardware jumpers that are required
+                    to enable the bidirectional behavior. So make sure you
+                    get a manual for the LPT card when you buy a system.
+
+                    If you are buying a laptop and have any desire to use
+                    external peripherals like network adapters, portable
+                    hard disks, CD-ROMS, tape drives, etc, then seriously
+                    consider getting a laptop with an EPP port. They are a
+                    LOT faster running EPP-capable external peripherals. In
+                    any case, try before you buy. Few vendors (and users)
+                    are well-informed about parallel port technology and
+                    inappropriate claims, however inadvertant, are common.
+
+         COMING:    Microsoft, Hewlett-Packard, and others are espousing a
+         SOON --    new standard for parallel ports, the ECP port, which is
+         ECP PORTS  may become part of the proposed IEEE 1284 specification,
+                    which also covers EPP. Some vendors are reported to
+                    have silicon for this port, but we haven't seen it in
+                    any end-user systems yet. The ECP port is pretty much
+                    the same as EPP ports in terms of performance but uses
+                    a quite different hardware design. The major difference
+                    is that ECP has Microsoft's blessing and they will
+                    probably support it (but perhaps only in Windows) if it
+                    actually materializes. Quite typically, there is no
+                    guarantee that MS will ever support EPP.
+
+                    When using Parallel to make buying decisions, please
+                    make sure you've got the most recent release. Parallel
+                    port technology will be changing rapidly over the next
+                    year and we will be updating Parallel frequently.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARALLEL.DOC                                                              Page 9
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+   Understanding the IO Address
+   ----------------------------
+
+   This is the base address of the port. It will be 3BC, 378, or 278 hex.
+   The IO address specifies the port's location in the PC address space.
+
+   Normally the first port is configured to 3BC, the second to 378, etc,
+   however the ports can be assigned to any of these three addresses.
+
+   On bus cards, the IO address is usually set by a arrangement of jumpers
+   unique to the particular board. You will need a manual or the ability
+   to read PC board traces (gacck!). These jumpers are usually arranged to
+   allow you to select one of three addresses: 3BC, 378, 278.
+
+   Sometimes these addresses are called by the "logical device names" of
+   LPT1, LPT2, and LPT3, although this practice is quite misleading (see
+   BIOS discussion below). Some boards offer a more limited selection of
+   configurations (usually 378 and 278) and a few are actually hardwired
+   to a specific address. Vendors do this to save a little money and also
+   to eliminate the chance of creating an address collision with the
+   "standard" address of 3BC. Because of the increasing number of clones
+   which are assembled from various components, we often see systems with
+   one LPT card, configured to address 378. In fact, a fair number of
+   systems are shipped with this 378 configuration.
+
+   A slightly interesting result we've seen in several desktops spins off
+   when someone adds a second LPT card to a system which already has a LPT
+   at 378, IRQ 7. Sometimes they naively reason that since 378 is taken,
+   they can use 3BC and slap in the card without checking the IRQ level.
+   This creates a configuration of 3BC and 378 both using IRQ 7, a
+   situation which can lead to intermittent crashes when using interrupt
+   driven parallel port software.
+
+   By the way, a few systems have parallel ports and com ports built onto
+   the motherboard itself and, in this case, the configuration jumpers
+   will be found on the motherboard.
+
+   Notice that there are three commonly used IO Addresses (3BC, 378, 278)
+   and two available interrupt levels (IRQ 7 and IRQ 5). This means that
+   if you have three LPT cards in a system, two of them will probably be
+   sharing a hardware interrupt level. This is hardwarily permissible, and
+   generally doesn't create any problems since most DOS and Windows
+   software doesn't use interrupts for printing anyway. However, if you
+   are using LPT software like an interrupt-driven print spooler or
+   interrupt-driven LPT devices like external hard disks, external network
+   adapters, and so forth, then you have to be sure that either (1) the
+   ports are not using the same interrupt level, or (2) the software is
+   capable of "interrupt sharing".
+
+   When adding or configuring LPT cards, we suggest using 3BC, IRQ 7 for
+   the first card; 378, IRQ 5 for the second card; and 278, no IRQ for the
+   third card. This gives you two interrupt-capable LPT ports, and one
+   port (at 278) which you should use only for non-interrupt driven usage,
+   like the status-driven spooling provided by DOS.
+
+   In any case, armed with this understanding and the Parallel Utility,
+   you are equipped to select a configuration which works for you.
+
+PARALLEL.DOC                                                             Page 10
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+
+           HOW TO:  The IO ADDRESS is a standard parameter in network
+                    configuration files where it takes on different names
+                    and syntaxes to confuse innocent users.
+
+                    Some simple-minded parallel port peripherals (ones
+                    without auto-configuring capability) require that you
+                    specify the IO address, IRQ level, and sometimes the
+                    Port Type in a vendor-specific way. Parallel provides
+                    you with this information. See Configuring Networks and
+                    Devices below.
+
+           HOW TO:  Resolving IO Address conflicts is usually fairly simple,
+                    since it is rare to find a device which uses the
+                    standard parallel port addresses.
+
+                    A good procedure for eliminating potential IO address
+                    conflicts when installing parallel port add-in boards
+                    is to remove all the boards, install one, use Parallel
+                    to see what addresses it finds, install the next, and
+                    so forth.  If Parallel finds each board at a separate
+                    addresses as you install them, then you can be sure of
+                    your configuration.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARALLEL.DOC                                                             Page 11
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+   Understanding the IRQ Level
+   ---------------------------
+
+   This is the hardware interrupt level assigned to the port. It will
+   always be either 7 or 5. Parallel displays "?" when it cannot detect
+   the IRQ level of the port and "-" when the port doesn't exist. Parallel
+   needs an external loopback connector to automatically detect the IRQ.
+   With appropriate precautions (described in horrible and excruciating
+   detail below) you can use a simple paperclip as a loopback connector.
+
+   Normally IRQ 7 is assigned to the first port and IRQ 5 is assigned to
+   the second port. However, due to the explosion of clones assembled from
+   disparate parts, it is not uncommon to see systems with one LPT port
+   located at 378 with an IRQ of 7 or 5. This is because clones are often
+   assembled using offshore add-in LPT cards which are shipped configured
+   to operate as a second LPT card.
+
+   This is a good time to point out that there are few hard and fast rules
+   when it comes to parallel port configuration. Ports can be located at any
+   one of the three standard base address and can use either of the IRQ
+   levels. If you are developing parallel port software, you should auto-
+   detect the actual configuration rather than assume any standard usage.
+   We offer libraries and source code for this purpose. Here at Parallel
+   Technologies, we test our software using many strange configurations and
+   delight in adding idiosyncratic ports to our extensive collection.
+
+   The most common idiosyncrasy of port IRQ is IRQ inversion.  The PC
+   standard calls for interrupts to be generated on 0->1 transitions of
+   the interrupt line.  A small percentage of parallel ports generate
+   their interrupts on 1->0 transitions.  Ports with inverted IRQ can
+   fail to operate with some interrupt software, particularly certain
+   external network adapters, disks, and so forth. Parallel identifies
+   these ports with a note "IRQ style is INVERTED".
+
+   Some parallel ports have non-functioning IRQ lines. They are simply not
+   capable of generating interrupts. Only a very few pieces of software
+   are capable of dealing with these ports by using a polled mode of
+   operation. It is sometimes possible to repair such systems by jumpering
+   the interrupt enable line to the parallel port chip.
+
+   On ISA cards (bus cards in ISA slots) the interrupt level is usually
+   set with jumpers on the board - these jumpers are different for every
+   card so you need to hunt around for the manual in order to change them.
+   If you're lucky there will be readable labels on the card itself.
+
+   On laptops, the interrupt level can usually be set using the vendor's
+   specific CMOS configuration (setup) program. Sometimes these CMOS setup
+   programs are built into the ROM; sometimes they exist as separate
+   programs or as part of the vendor's diagnostic program(s). Refer to
+   your manual to find out how to enter the CMOS setup mode. BE CAREFUL
+   when using the CMOS setup, since it gives you access to parameters that
+   can disable your system if wrongly changed. KNOW WHAT YOU ARE DOING.
+
+
+
+
+
+
+PARALLEL.DOC                                                             Page 12
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+                            ******************
+                            * IMPORTANT NOTE *
+                            ******************
+
+          Misuse of your system's CMOS setup program can prevent
+          your system from operating correctly, or in some cases,
+          from operating at all! Be sure you know what you are
+          doing; read your user's manual or get qualified help if
+          you have any doubts.
+
+   Another strange feature of these software configurable ports is that
+   they often have very peculiar ideas about nomenclature. Often these
+   CMOS setup programs use vendor specific "magic code words" to select
+   various parallel port configurations, and these magic words can have
+   non-obvious effects. Sometimes the vendor's manuals don't even provide
+   a secret decoder ring to explain what their magic words really mean in
+   terms of IO Address, IRQ, and Port Type. Parallel will be useful for
+   determining the actual effect of the CMOS setup choices on your system.
+
+   For example, on my Dell NL25 laptop, 4bit mode is called "Normal" and
+   8bit is called "Enhanced" and there is no choice at all for the real
+   Enhanced Parallel Port (the SL's EPP port). So someone might obviously
+   think they have enabled EPP by choosing "Enhanced". Futhermore, the IRQ
+   level cannot be set directly, but rather is set as a by-product of
+   selecting combinations of the IO address and the Port Type. Most of the
+   choices on my Dell yield IRQ 7, but one lonely choice - LPT1, 278,
+   Normal mode results in IRQ 5. It makes a strange sort of sense when you
+   are experienced with parallel ports, but is likely to be confusing to
+   the average user (if we ever find him, or her). The Dell is not alone
+   in it's strange naming conventions, most laptops have confusing,
+   misleading, or incomplete labels and controls in their CMOS setup
+   programs. This sort of indirect control in very common in CMOS setups
+   and creates a lot of tech support calls from frustrated users.
+
+   In addition, most SL laptops don't have the capability to enable their
+   EPP ports from CMOS. Usually you need to run a separate vendor-supplied
+   BIOS extension to enable EPP capability. These take the form of a tiny
+   TSR which adds INT 17h BIOS extensions for controlling the EPP port,
+   and handles command line arguments for enabling and disabling EPP. An
+   interesting sidelight of switching into EPP mode can be that your port
+   IO address may change on the fly. The Intel EPP hardware allows EPP
+   ports to be configured at IO Addresses 378 and 278. So if you have set
+   your port address to 3BC (with CMOS for example) and then switch into
+   EPP mode, your port will appear to have moved.
+
+   Parallel will come in handy in trying to make sense of what your
+   laptops' CMOS settings are actually doing to your parallel ports.
+
+
+
+
+
+
+
+
+
+
+
+PARALLEL.DOC                                                             Page 13
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+   Understanding the BIOS Name
+   ---------------------------
+
+   This is the "human-readable" (hah!) name which you use to refer to the
+   port when using DOS commands, Windows picklists, and so forth. It will
+   be one of the following: LPT1, LPT2, LPT3.  LPT4 is extremely rare and
+   Parallel currently ignores it.
+
+   The port address is NOT the same as the BIOS name for the port. For
+   example, LPT1 can refer to a port at 3BC, 378, or 278.
+
+   So, how does the BIOS associate the LPT names with the actual ports?
+
+   Whenever your system boots, the BIOS goes out and tries to write and
+   readback data from locations 3BC, 378, and 278. If it can read back
+   what it writes, then the BIOS decides there is a port there and adds
+   the IO address to a LPT table in the "Bios Data Area". This table is
+   four words located at 40:8. A command like "copy foo.txt lpt2:" means
+   "copy the file foo.txt to the second printer that BIOS knows" and DOS
+   uses a software interrupt, INT 17h, to do just that. INT 17h looks in
+   the Bios Data area to find out the IO address of the "second printer",
+   which can be any of the IO Addresses - 3BC, 378, or 278.
+
+   The result is that LPT1 refers to the first port BIOS finds at boot
+   time, wherever it may be. So "LPT1" means "the first printer", not
+   necessarily 3BC, 378, or 278. Some BIOSes have unique methods for
+   finding their LPT ports.
+
+   When you see LPT1, LPT2, or LPT3 used in hardware manuals to refer to
+   port locations, be alert for possible misleading information. Some
+   well-known vendor's manuals use LPT1 to refer to 378 and LPT2 to refer
+   to 278, an entirely spurious practice which has confused many users.
+
+   It is possible for some parallel port software to set the port into an
+   IO mode that causes it to fail the BIOS test and seem to "disappear"
+   from your system even after a soft boot (CTRL-ALT-DEL). Parallel has a
+   better test, and finds such ports. A hard reset (a power-off reset)
+   will clear the port. Parallel ports are not completely trivial devices;
+   they have a number of states that can affect their operation. So if you
+   are having a parallel port problem, one of the first things to do a
+   power-off reset.
+
+   Another factor here is that various programs can fiddle with the
+   LPT table. The utility SWAPPRT, for example, can be used to swap
+   LPTx with LPTy which it does by moving the entries in the LPT table.
+   There are variations of this redirection theme.
+
+   If Parallel does not display a BIOS name for a port, that means the
+   IO Address for that LPT position has been replaced with a value that
+   does not match a valid hardware port.  Some parallel port device
+   drivers do this as a way to grab possesion of the port and prevent
+   other software from writing to the port while the driver is installed.
+
+
+
+
+
+
+PARALLEL.DOC                                                             Page 14
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+   Understanding the Notes and Comments
+   ------------------------------------
+
+   The "Notes" field of the display will contain various comments,
+   depending on what Parallel has detected. Each note may be followed by
+   one or more comments giving further information or directions. These
+   secondary comments are indented one space under their note.
+
+   "No port found at this address"
+
+                    No parallel port is installed at this IO Address.
+
+                    However, it is also possible that an active external
+                    device is overdriving the port's inputs, which can
+                    prevent the software readback test from working.
+
+                    Be sure that you have disconnected all external devices.
+
+   "Need loopback to determine IRQ"
+
+                    The port exists, but does not respond to attempts to
+                    generate IRQs. This is because a loopback connector
+                    is required for IRQ detection in most cases.
+
+   "Port IRQs are not functioning"
+
+                    This is pretty bad. It means that the loopback connector
+                    is present and working correctly, but Parallel still
+                    can't generate any interrupts. Technically it means
+                    that transitions in the ACK line don't affect the PIC.
+                    Practically it means that interrupt devices and software
+                    probably won't work, unless they have polling support.
+
+                    Possible reasons for failing the IRQ test include:
+
+                        1. The port's interrupt capability is disabled
+
+                           Check your CMOS configuration and/or the
+                           hardware jumpers on the parallel port board(s)
+                           to be sure that the interrupt is enabled.
+                           The function of CMOS parameters and/or hardware
+                           jumpers varies from system to system, so check
+                           your manual or contact your vendor if you have
+                           problems enabling the port's interrupt line.
+
+                           Note that most CMOS and jumper arrangements
+                           combine enabling the IRQ with selecting the
+                           level, ie, "enable IRQ5" or "enable IRQ7".
+                           Removing the jumper generally disables IRQ.
+
+                        2. The port does not have IRQ capability
+
+                           Most ports DO have interrupt capability,
+                           but a small percentage (at a guess %1 to %5)
+                           do not. More laptops lack interrupts than
+                           add-in cards. Add-in cards without IRQ are rare.
+                           Most reports of non-functional parallel port
+
+PARALLEL.DOC                                                             Page 15
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+                           IRQs in desktop systems can be tracked to
+                           configuration problems which create interrupt
+                           conflicts (see #3) which effectively disable IRQ.
+
+                        3. There is an IRQ conflict with another device
+
+                           It is possible that another device in your
+                           system is preventing the parallel port IRQs
+                           from functioning.  For example, in IBM-PCs
+                           and XTs, the disk controller which uses IRQ 5
+                           can prevent parallel ports configured to IRQ5
+                           from creating interrupts.
+
+                    To isolate this problem, remove all boards from the
+                    system that are not required to perform the test.
+                    In other words, strip down to just the parallel port,
+                    floppy controller and video, and repeat the test.
+
+                    If possible, configure the parallel port to IRQ7.
+                    If the port can create IRQ7 interrupts, but not IRQ5
+                    interrupts, then an interrupt conflict is likely.
+
+   "IRQ determined by loopback"
+
+                    The loopback was detected, is operating correctly,
+                    and the port's IRQs are functioning correctly. The
+                    IRQ level found is given in the IRQ column.
+
+   "IRQ estimated by port float"
+
+                    No loopback connector was detected, but the port is
+                    generating IRQs anyway. This probably means that the
+                    port is connected to an inactive (unpowered) external
+                    device. Treat IRQs determined in this way with some
+                    skepticism; better to disconnect the device and use a
+                    loopback connector.
+
+   "IRQ determined by EPP hardware"
+
+                    If the Port Type is determined to be EPP, then Parallel
+                    does not use the IRQ test, but rather reports the IRQ
+                    which is standard for an EPP port at that IO Address.
+
+   "IRQ noise is present"
+
+                    Parallel has detected extraneous interrupts occuring
+                    on IRQ level 5 or 7 during the IRQ test.
+
+                    This condition is reported when the total number of
+                    interrupts occurring on both IRQ5 and IRQ7 exceeds
+                    the number of interrupts Parallel tests for.
+
+                    This can mean several things:
+
+                        1. PIC errors. The PC's interrupt controller (PIC)
+                           is generating errors as described below.
+
+
+PARALLEL.DOC                                                             Page 16
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+                        2. An active device other than the parallel port
+                           is generating interrupts on IRQ 5 or 7.
+
+                        3. The port's interrupt line is electrically noisy.
+                           This has been seen with boards which have two
+                           parallel ports where transitions in one port's
+                           IRQ line causes noise on the other port's IRQ.
+
+                    This result may be ignored if you are not having any
+                    problems, but be informed that this condition is quite
+                    likely to confuse parallel port software which tries
+                    to autodetect the port's IRQ level.
+
+    TECHNICAL NOTE: PIC errors are usually found with parallel port chips
+                    whose "open" condition on the ACK line may allow the
+                    IRQ signal to float randomly. This effect creates
+                    8259 interrupt controller errors which are directed to
+                    IRQ7 where they can be mistaken for "real" interrupts.
+                    This effect may confuse some parallel port software.
+
+                    An 8259 error condition is defined to occur when the
+                    8259 attempts to service the requesting device but the
+                    device's interrupt line has gone inactive.  These
+                    are also known as "lost interrupts", which are not
+                    really lost but rather redirected to IRQ7. A noisy IRQ
+                    line can create the appearance of lost interrupts.
+
+                    This effect of lost interrupts explains why some
+                    parallel port driver software works well on IRQ7 but
+                    not IRQ5, or vice versa. Parallel port interrupt
+                    handlers have to account for conditions that are
+                    generally not seen by other device drivers. So if you
+                    are having problems with a parallel port device driver
+                    you may want to try configuring the port to the other
+                    interrupt level.
+
+   "NOTE: Data port has stuck bits!"
+
+                    The rotating bit test has detected bits in the data
+                    port which cannot be set or cleared properly.
+
+                    You have probably inserted the Loopback incorrectly.
+
+                    Of course if there is no Loopback wire present, then
+                    something else must be happening! It could be that an
+                    active device is forcing some of the data lines to a
+                    fixed level. It could also mean that your port exists,
+                    but some of the data bits are not working, which is a
+                    polite way of saying that your port may be busted.
+
+                    Parallel may report a false Port Type in this case.
+
+                    Make sure that the loopback, if used, is correct. Make
+                    sure that no devices are plugged into the port.
+
+   "IRQ style is INVERTED"
+
+
+PARALLEL.DOC                                                             Page 17
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+                    The port's IRQ line functions in an opposite sense from
+                    the PC standard. A significant amount of software will
+                    fail to work with such ports. There is no remedy for
+                    this condition in general; the best we can advise is to
+                    use a different port if you have a bus system or try
+                    other CMOS settings on a laptop if that is possible.
+                    You might try contacting your vendor.
+
+                    Parallel may falsely report inverted IRQ if there is
+                    an external device connected to the port.
+
+   "Possible IRQ Conflict"
+
+                    Two or more ports in your system are using the same IRQ
+                    level. If you are not using interrupt-driven parallel
+                    port peripherals or printing software then you might
+                    simply ignore the warning if you are not experiencing
+                    any problems. However, you should know that some very
+                    strange results can occur when two parallel ports are
+                    trying to drive the same IRQ line. Sometimes one or both
+                    ports can falsely appear to have INVERTED IRQ.
+
+                    The best solution is to move one of the ports to another
+                    IRQ level, if that is possible.
+
+    "BIOS Data doesn't match hardware"
+
+                    The contents of the BIOS Data Area LPT Table does not
+                    correspond to the expected initial state at boot time.
+
+                    This is probably due to a parallel port device driver
+                    or a SWAPLPT program having fiddled with the BIOS data,
+                    in which case it may be considered normal operation.
+
+                    This information is useful if you are having problems
+                    with print redirection. Also, some parallel port device
+                    drivers do not examine the hardware directly to determine
+                    which ports exist, but rather only look at the BIOS.
+                    If you have run some other parallel port software which
+                    has changed the BIOS in a non-standard way, then these
+                    device drivers may fail to find any parallel ports, or
+                    may try to access the wrong port. This can often be
+                    solved by changing the order of loading or by manually
+                    configuring the failing driver.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARALLEL.DOC                                                             Page 18
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+---------------------------
+  Automatic IRQ detection
+---------------------------
+
+   Parallel uses two methods for automatic detection of a port's IRQ
+   level: port float or the external loopback connector.
+
+   Understanding Port Float
+   ------------------------
+
+   Many parallel ports will "float" in a unstable logic state when
+   connected to an unpowered external device such as a printer. This
+   unstable logic state may cause the port to generate a limitless stream
+   of apparent interrupts to the CPU if the port's interrupt line is
+   enabled. This peculiar behavior is used to advantage by Parallel.
+
+   If you have a unpowered (powered off) printer, or other device,
+   attached to a port, then Parallel may be able to detect the interrupt
+   level using this floating port behavior. In this case, Parallel will
+   display "IRQ determined by port float". You should treat the IRQ
+   determined in this way as a "best guess". To be sure of the IRQ,
+   you need to disconnect the floating device and use loopback.
+
+   In some cases, attaching a unpowered device to a port will enable
+   Parallel to detect IRQ by loopback, since the combination of port and
+   device appears indistinguishable from a loopback connector to Parallel.
+
+   FLOAT NOTE: Powered on devices usually hold the interrupt line in a
+   stable state and prevent IRQ autodetection. It is best to disconnect
+   your parallel port device(s) and use the loopback connector when you
+   need the absolute best results from Parallel.
+
+   EXAMPLE: On my home system, an unpowered HP LaserJet II printer on an
+   8bit port "floats" and Parallel reliably reports IRQ5. Attached to a
+   4bit port on the same system, the LaserJet is indistinguishable from a
+   loopback connector.  So turning the LaserJet off converts it into an
+   expensive, but handy, paperclip. Turning it on prevents IRQ detection.
+
+   TECHNICAL NOTE: Whether or not a given device and port combination will
+   float, emulate loopback, or be invisible to Parallel is determined by
+   the pull-ups on each end, CMOS vs TTL logic behavior, and the power
+   available at the port to a unpowered device. In the above example, I
+   suspect that enough power is provided by the 8bit TTL port to drive the
+   unpowered CMOS logic in the LaserJet into an unstable oscillating
+   state, which appears to the system as a frenzy of level 5 IRQs.
+
+   Port float is a handy effect, but use Loopback for best results.
+
+   Loopback
+   --------
+
+   The most reliable way to determine IRQ is to use an external
+   loopback connection. Loopback is described in the next section.
+
+
+
+
+
+PARALLEL.DOC                                                             Page 19
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+--------------------------------------------
+  IRQ detection using the LoopBack Feature
+--------------------------------------------
+
+                              ******************
+                              * IMPORTANT NOTE *
+                              ******************
+
+   First, DECIDE NOT TO SCREW UP YOUR PORT by crudely jamming wires into
+   the wrong places with too much force.  REMEMBER that the female DB-25
+   connector is likely to be made out of CHEAP, BREAKABLE PLASTIC, so
+   decide right now not to break it. WE ARE NOT LIABLE FOR ANY DAMAGE YOU
+   MAY DO FOR WHATEVER REASON.
+
+   The danger is that you will push too hard when inserting the loopback
+   wire and force the female connector pin out of its position in the DB-
+   25 shell. That is why WE SUGGEST MAKING A LOOPBACK PLUG using a male
+   DB-25 connector as described below. If you cannot make a loopback plug,
+   then use a parallel port extension cable instead. This protects your
+   port from physical damage and also makes it a lot easier to work with.
+
+   The port is supposed to be electrically designed to tolerate the
+   loopback perfectly well. However there is a DANGER OF DAMAGE BY STATIC
+   DISCHARGE so make sure that you GROUND YOURSELF TO THE PORT before
+   inserting the loopback wire. It would be terrible if you blew out a
+   $25 parallel port on a $1000 486 motherboard simply because you failed
+   to PAY ATTENTION TO THESE PRECAUTIONS. PROCEED AT YOUR OWN RISK.
+
+   The other danger is that you will apply the loopback to a port which is
+   not really a parallel port at all. DON'T DO THIS. If you are not sure
+   of what you are doing STOP RIGHT NOW. We have no control over what you
+   might damage if you try this with a port other than a parallel port.
+
+   Whew... on with the instructions.
+
+      1.  Find the parallel port(s) you want to test. They will be female
+          DB-25 connectors. MAKE SURE THAT YOU HAVE CORRECTLY IDENTIFIED
+          THE PARALLEL PORT. Disconnect any devices (printers, network
+          adapters, external disks, etc) which might be attached to other
+          parallel ports on your system.
+
+      2.  Make sure that the connector IS NOT SOME OTHER TYPE OF CONNECTOR
+          like an external SCSI connector or a COM port.
+
+          SCSI ports can be either female DB-25s or a larger connector,
+          like a 37, 40, or 50-pin connector. COM ports are usually male
+          DB-25 or small male DB-9 connectors, but this is not guaranteed.
+
+          Look in your manual if there is any doubt. DON'T PROCEED unless
+          you are sure you have identified the parallel port(s) correctly.
+
+      3. Connect the Loopback Plug and go to Step 7.
+
+          If you do not have a Loopback Plug, use a straight through M-F
+          parallel port extension cable to prevent damage to your port.
+          Connect the male end of the extension cable to your port and
+          place the loopback wire into the female end of the cable.
+
+PARALLEL.DOC                                                             Page 20
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+      4.  Identify Pin 10 and Pin 9 on the female end of the extension
+          cable. Refer to the illustration below. Notice that a DB-25
+          connector is wider on one side.  The pins you want are the 4th
+          and 5th from the left on the wider edge.
+
+          USE A FLASHLIGHT TO FIND THE MARKINGS IF YOU HAVE ANY DOUBT.
+
+        Front View         -------- Pin 10 - 4th from left on wider edge
+        Female DB-25       |   ---- Pin  9 - 5th from left on wider edge
+        Connector          |   |
+                           v   v
+         ____________________________________________________________
+        /                                                            \
+        \     13  12  11  10   9   8   7   6   5   4   3   2   1     /
+         \                                                          /
+          \     25  24  23  22  21  20  19  18  17  16  15  14     /
+           \______________________________________________________/
+
+                  Pin 10 is the interrupt line (the ACK line)
+                  Pin  9 is the high order data line (the 80h bit)
+
+      4.  Create a loopback wire. A standard paperclip works fine. Just
+          straighten it out and bend it into a "U" shape with the ends 1/8
+          inch apart. Make sure the ends of the paperclip are SMOOTH and
+          have NO ROUGH EDGES that might damage the plastic connector.
+
+      5.  GROUND YOURSELF to the PC and to the parallel port by touching
+          your hand and the loopback wire first to the PC's metal chassis
+          near the parallel port connector and then to one of the connector
+          nuts or the connector metal housing itself. Do this to DISCHARGE
+          ANY STATIC ELECTRICITY you may have about you (created for
+          example by scooting across the rug in a silk negligee on the
+          way to your PC or by stroking your cat with woolen gloves).
+
+          Parallel ports are usually resistant to static discharge, but not
+          all ports are created equally, so don't ask for trouble.
+
+      6.  Carefully insert the paperclip into the extension cable's DB-25
+          connector so that Pin 9 is connected to Pin 10. DON'T FORCE IT.
+          It will insert at most about 1 quarter of an inch (about .5 cm)
+          and there should be absolutely no physical resistance.
+
+      7.  Now run Parallel. It will automatically use the loopback to
+          determine which IRQ level the port is actually using. You may
+          loopback more than one, or all, ports at the same time.
+
+      8.  Remove the loopback when you are done.
+
+      9.  Congratulate yourself on using reasonable handling precautions
+          when working with expensive equipment.
+
+
+
+
+
+
+
+
+PARALLEL.DOC                                                             Page 21
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+--------------------------------------
+  Making Your Own Loopback Connector
+--------------------------------------
+
+   We strongly advise that you make a loopback connector, inside of using
+   the expedient paperclip approach.
+
+   Simply obtain a male DB-25 connector and solder a permanent connection
+   bewteen Pin 9 to Pin 10 on the back of the connector.
+
+   Male DB-25 connectors are inexpensive and commonly available in
+   electronics parts stores.
+
+   This will prevent any physical damage to your port, which is the major
+   source of risk with this procedure, and the reason for our incessant
+   nagging about precautions. This sort of loopback connector will be no
+   more dangerous to your system than a printer, and is a handy accessory
+   if you frequently use Parallel.
+
+                                  Connect Pin 10 to Pin 9
+
+      Back View          -----    Pin 10 - 4th from left on wider edge
+      Male DB-25         |   |    Pin  9 - 5th from left on wider edge
+      Connector          |   |
+                         v   v
+       ____________________________________________________________
+      /                                                            \
+      \     13  12  11  10   9   8   7   6   5   4   3   2   1     /
+       \                                                          /
+        \     25  24  23  22  21  20  19  18  17  16  15  14     /
+         \______________________________________________________/
+
+                  Pin 10 is the interrupt line (the ACK line)
+                  Pin  9 is the high order data line (the 80h bit)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARALLEL.DOC                                                             Page 22
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+--------------------------------------------
+  Semi-Bidirectional Ports, A Special Case
+--------------------------------------------
+
+   A port is semi-bidirectional when it is capable of performing 8BIT
+   input when connected to a device which has strong drivers. So this
+   semi-bidirectionality comes about as the relationship between the
+   port and the device it is connected to.
+
+   This type of port will appear to be a 4BIT port with most parallel
+   port external peripherals, since low power CMOS drivers are by far
+   the most common in these external devices.
+
+   A few peripherals have stronger TTL drivers which can achieve 8BIT
+   operation by overdriving the port. There are even sub-classes of
+   ports which can achieve the effect depending on what data is used.
+
+   Some vendors describe their ports as bidirectional when actually
+   they are only semi-bidirectional and will only function as 4BIT ports
+   with most peripherals. True 8BIT ports are preferable because they
+   have a significant speed advantage with most external peripherals.
+   Indeed, some parallel port peripherals require true 8BIT capability.
+
+
+   Identifying semi-bidirectional ports
+   ------------------------------------
+
+   Step 0  =>   Read the cautions and disclaimers applying to loopback
+
+   Step 1  =>   Select the port to test. The test only applies to 4BIT ports.
+
+   Step 2  =>   Attach a parallel port extension cable to the port
+
+   Step 3  =>   At the female DB-25 end, loopback Pin 8 to Pin 21 (GND).
+
+   Step 4  =>   Run Parallel
+
+   Step 5  =>   If Parallel reports "Data port has stuck bits" then the
+                port is likely to have semi-bidirectional capability.
+
+   We will probably build this test into the next version of Parallel.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARALLEL.DOC                                                             Page 23
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+-----------------------------------------------------------------
+  Using Parallel to Manually Configure Parallel Port Peripherals
+-----------------------------------------------------------------
+
+   With the information that Parallel reports, you are equipped
+   to perform manual configuration of network adapters and other
+   parallel port peripheral devices, should they require such manual
+   configuration. Here are a few examples of how Parallel's IO address
+   and IRQ level are used in popular network software configuration
+   files when them for use with parallel port adapters.
+
+   Note that these examples also apply to our Pipx and Pndis drivers
+   which allow Netware Lite, Windows for Workgoups, and Lan Manager
+   networking using simple parallel port cables between two systems.
+   TestDrive versions of Pipx and Pndis are available on Compuserve,
+   or you can buy the commercial versions directly from us. These
+   drivers allow you to use your favorite network software between
+   two systems through the parallel port, without network adapters.
+   This is a handy capability for laptops, and in other situations
+   where you need truely portable and universal networking at low cost.
+   Pipx and Pndis support several different types of cables, ranging
+   from the low-performance "laplink" type cable you may already
+   have up to our fabulous Universal High-Speed Turbo Cable (wow!)
+   which can do parallel port networking at 200 Kbytes/sec or more.
+
+   In the following examples, assume Parallel has reported a parallel
+   port at IO address 3BC, IRQ 7.
+
+   These examples are not meant to be cookbook instructions, but
+   are offered to give you a feel for how to apply the information
+   displayed by Parallel. Other manual configuration parameters may or not
+   not be supported by specific vendors as custom keywords. Examples
+   are: IOMODE, IRQMODE, CABLETYPE, PORTTYPE, BITMODE, and so forth.
+
+   Netware NET.CFG file for ODI drivers
+   ------------------------------------
+
+          PORT 3BC
+          INT  7
+
+   Lan Manager or Windows Workgroups PROTOCOL.INI file
+   ---------------------------------------------------
+
+          IOBASE = 0x3BC
+          IRQ = 7
+
+
+   Other device configuration files and programs
+   ---------------------------------------------
+
+   If you are having trouble installing a parallel port peripheral, be
+   prepared to run Parallel when calling your vendor for technical support.
+   They will be better able to help you use their custom features if you
+   can tell them your exact parallel port configuration.
+
+
+
+
+PARALLEL.DOC                                                             Page 24
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+---------------------
+  Technical Support
+---------------------
+
+   Parallel is Freeware, and comes with Freeware-style support. It has
+   been extensively tested with a wide range of systems from original PCs
+   to 486s and works with all parallel port hardware we've seen.
+
+   We are willing to offer friendly assistance on an as-available basis,
+   but only via Compuserve mail (CIS 76640,203) or in the IBMHW forum.
+
+   Alas, we do not offer free telephone assistance to the general public.
+
+   If you are in dire need of technical support in solving parallel port
+   related problems, you may open a support account with us by contacting:
+
+   Mailing Address                           Shipping Address
+   ---------------------------               ---------------------------
+   Parallel Technologies, Inc.               Parallel Technologies, Inc.
+   PO Box 7                                  18080 NE 68th, # A-100
+   Redmond, Wa 98073-0007                    Redmond, Wa 98052
+   (206) 869-1136
+   (206) 869-9767 (fax)                      ( for UPS, FEDEX, etc )
+   Compuserve ID# 76640,203
+   InterNet ID# 76640.203@COMPUSERVE.COM
+
+   The Parallel software itself, and other parallel port software
+   utilities and developer's libraries, example drivers, hardware
+   prototyping tools, contract development services, and a wide range of
+   OEM parallel port products are available from Parallel Technologies.
+
+   Custom versions of the Parallel Port Information Utility are available.
+   Please call us if your firm would benefit from a custom version of the
+   Parallel Port Information Utility.
+
+   Vendors of parallel port hardware are invited and requested to contact us
+   so that we may ensure that Parallel is compatible with their products.
+
+   We offer consulting services in the design of parallel port hardware,
+   parallel port peripheral devices, and DOS and Windows software.
+
+   Permission is given to distribute and use Parallel without charge,
+   provided you adhere to the terms and conditions of the license
+   agreement given below. Specifically, you may not charge anyone for
+   for sharing or using Parallel, and you may not modify it or change it.
+   Nor may you use it as part of a commercial product or service without
+   our written permission.
+
+   Vendors may freely distribute Parallel on an individual basis, without
+   charge, by electronic BBS or other means.  However, you may not include
+   it in or with your product without our written permission.
+
+   We welcome your comments and suggestions by Email, phone, or fax.
+
+   If you have particular features you would like to see supported by
+   Parallel, we'd be more than glad to hear from you.
+
+
+PARALLEL.DOC                                                             Page 25
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+---------------------------------------------
+  Other Products from Parallel Technologies
+---------------------------------------------
+
+    We at Parallel Technologies' have been creating innovative parallel
+    port devices and software since 1989. Here are a few highlights:
+
+        o  1st ... network adapter for the parallel port
+        o  1st ... built-in passthrough printing port
+        o  1st ... automatic self-configuring drivers
+        o  1st ... universal support for all parallel ports
+        o  1st ... network adapters with multiple media support
+        o  1st ... Windows 3.1 multimedia driver for parallel adapter
+        o  1st ... Multiple Parallel Device API for shared devices
+        o  1st ... intelligent parasitic power for self-powered devices
+        o  1st ... daisychained parallel port peripherals
+        o  1st ... multiplexed parallel port peripherals
+        o  1st ... Parallel Port Expansion System
+        o  1st ... product development tools for OEMs and developers
+
+        o  PC MAG Editor's Choice for Ethernet parallel port NIC
+        o  most total network adapters  --  6 and counting...
+        o  most total parallel port peripherals  --  12 and counting...
+
+    We have in-depth experience with the wonderful and sometimes bizarre
+    world of the PC parallel port and serve on both the EPP and IEEE 1284
+    standards committees. Having created more than a dozen parallel port
+    devices with their associated drivers and software utilities, we are
+    the most experienced source for off-the-shelf technology, developer
+    tools and components, and contract services.
+
+    Here are a few of our current and forthcoming products that you may
+    find interesting.
+
+
+    Parallel -- the Parallel Port Information Utility
+    -------------------------------------------------
+
+        A handy utility which examines your system's parallel ports and
+        reports the Port Type, IO address, IRQ level, BIOS name, and an
+        assortment of informative notes and warnings in a compact and easy
+        to read display. The output may be redirected to a file for tech
+        support purposes. Parallel uses very sophisticated techniques for
+        port and IRQ detection and is aware of a broad range of quirky port
+        features.
+
+        Parallel is the definitive parallel port Tech Support tool.
+
+        Parallel is Freeware, subject to a restricted license agreement.
+        It may be used free of charge for any personal, non-commercial
+        purpose. Vendors should contact us regarding commercial licenses.
+
+        A forthcoming commercial version of Parallel will use an active
+        loopback connector enabling many new features including detailed
+        resolution of port IO behavior and effective throughput testing.
+
+
+
+PARALLEL.DOC                                                             Page 26
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+    Parallel Port Networking
+    ------------------------
+
+        Now you can network two PCs using your favorite network software
+        with just a parallel port cable between the systems.
+
+        Our family of parallel port network drivers (PIPX, PNDIS, PPACKET,
+        and others TBA) work with standard network software to turn your
+        parallel port into a network adapter.  All types of ports are
+        supported with a very few specific exceptions.
+
+        Supports: Netware Lite, Workgroups for Windows, MS Lan Manager,
+        various TCP/IP systems, and other network operating systems that
+        use the ODI, NDIS, or packet driver interfaces.
+
+        Performance is better than you might expect, ranging from a low
+        end of 40 KBps between 4BIT ports all the way up to an effective
+        200 KBps between EPP ports using our TURBO cable. This upper range
+        is better than many ethernet ISA cards.
+
+        The drivers are available with or without cables, and existing cable
+        types typically used with laplink type products are also supported.
+
+
+    The MultiPort Parallel Port Expansion System
+    --------------------------------------------
+
+        The MultiPort 4-port multiplexor turns your parallel port into
+        a general purpose expansion system, capable of supporting up to
+        four simultaneously operating parallel port peripherals including
+        network adapters, portable hard drives, tape backup units, CDROMs,
+        floppies, and so forth. For example, you can use the MultiPort Mux
+        to attach a network adapter, a hard disk, a CD-ROM, and a printer,
+        all operating together through a single parallel port.
+
+        Now your laptop (and desktop) can enjoy a full range of peripherals
+        with all the portability, sharability, and convenience of parallel
+        port devices.
+
+
+    Parallel Port Developer's Kit
+    -----------------------------
+
+        Pipx was constructed with Parallel Technologies' advanced parallel
+        port software, which has been used in over 10 parallel port devices
+        including network adapters, parallel port disks, parallel port
+        wireless IR adapters, parallel port MIDI interfaces, and so forth.
+
+        This software includes support for all types of ports, IO code
+        that is extremely resistant to port idiosyncrasies, and full
+        autodetection of all port hardware features. The code is very well
+        documented. A selection of sample drivers for parallel port devices
+        is also available.
+
+
+
+
+
+PARALLEL.DOC                                                             Page 27
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+    OEM Products
+    ------------
+
+        Most of our products are available for OEM licensing, including
+        network adapters, EPP-capable hard disks, parallel-SCSI interface,
+        parallel MIDI adapter, and the MultiPort parallel port expander.
+
+
+    Development Services
+    --------------------
+
+        We specialize in contract development of parallel port peripherals
+        and associated software including DOS and Windows device drivers.
+        Our broad and deep experience with parallel port devices and our
+        commitment to specialization allows us to design, implement, test,
+        and support them very efficiently.
+
+        You might be interested in our 30/90 development offer. We propose
+        to convert any ISA peripheral into a parallel port device in only
+        30 days to prototype, 90 days to production.
+
+        We also offer more limited development support, such as developing
+        additional devices drivers for existing peripherals.
+
+        We are quite experienced with EPP ports and are ready to upgrade
+        your existing parallel port devices to full EPP performance.
+
+
+    Consulting and Training
+    -----------------------
+
+        In support of in-house development, you will find our consulting
+        and training services invaluable in avoiding the pitfalls of
+        parallel port development while achieving the highest possible
+        product performance and quality.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARALLEL.DOC                                                             Page 28
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+------------------------------
+  Software License Agreement
+------------------------------
+
+                                 IMPORTANT
+
+Read this agreement before installing or using the Software. Installing
+and/or using the Software on your computer indicates your acceptance of
+these terms. If you do not agree to these terms and conditions, delete the
+Software and all it's associated files from your computer. This Software
+License Agreement gives you ONLY RESTRICTED RIGHTS to use the Software (and
+all it's associated files and documentation) as follows:
+
+YOU MAY
+
+      1.  Use the Software without charge on as many systems as you wish,
+
+      2.  Share the Software with others for their personal use, but only
+          if you share it intact, without any changes or modifications of
+          any kind, and complete with all it's documentation and associated
+          files. You must pass it on exactly in the same form as we release
+          it, or not pass it on at all.
+
+      3.  Make backup copies of the Software, so long as you place our
+          copyright notice on the backup copies,
+
+      4.  Request and receive limited technical support as provided in the
+          Freeware Product Support Policy below.
+
+      5.  Vendors may distribute the Software free of charge by electronic
+          or other means for the purpose of technical support, but may not
+          include the Software in their products without our written permission.
+
+YOU MAY NOT
+
+      1.  Use the Software in any way except as provided in this agreement,
+
+      2.  Modify, alter, copy, transfer, or reproduce the Software in any
+          way, except as expressly allowed in this agreement,
+
+      3.  Translate, de-assemble, de-compile, reverse program, or reverse
+          engineer the Software or any of its components,
+
+      4.  Charge any kind of fee for distributing the Software without our
+          written permission,
+
+      5.  Use the Software for commercial purposes without our permission,
+
+      6.  Sublicense, lease, rent, sell, distribute, or otherwise dispose
+          of the Software without our written permission.
+
+This license is effective from the date of first use of the Software and
+shall remain in force until terminated. You may terminate this agreement by
+destroying any and all copies of the Software and its documentation.
+
+
+
+
+PARALLEL.DOC                                                             Page 29
+
+Parallel Port Information Utility  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  User's Manual
+
+
+
+Parallel Technologies, Inc. may terminate this agreement if you fail to
+comply with any of the terms and conditions of it. You agree to destroy any
+and all copies of the Software and its documentation, in whatever form, if
+we terminate this license agreement, and you agree to provide us written
+certification of such destruction upon our request.
+
+Statement of Exclusion of Warranty
+
+ALL PRODUCTS DELIVERED PURSUANT TO THIS AGREEMENT ARE DELIVERED ON AN
+"AS-IS" BASIS AND PARALLEL TECHNOLOGIES, ITS DEALERS AND DISTRIBUTORS,
+EXPRESSLY DISCLAIM ANY AND ALL WARRANTIES OR CONDITIONS OF MERCHANTABLE
+QUALITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+Limitation of Liability
+
+PARALLEL TECHNOLOGIES DISCLAIMS ALL WARRANTIES RELATING TO THIS SOFTWARE,
+WHETHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, AND ALL
+SUCH WARRANTIES ARE EXPRESSLY AND SPECIFICALLY DISCLAIMED.  NEITHER
+PARALLEL TECHNOLOGIES NOR ANYONE ELSE WHO HAS BEEN INVOLVED IN THE
+CREATION, PRODUCTION, OR DELIVERY OF THIS SOFTWARE SHALL BE LIABLE FOR ANY
+INDIRECT, CONSEQUENTIAL, SPECIAL, PUNITIVE, OR INCIDENTAL DAMAGES OR
+DAMAGES DUE TO LOST PROFITS, DATA, OR INFORMATION ARISING OUT OF THE USE OR
+INABILITY TO USE SUCH SOFTWARE EVEN IF PARALLEL TECHNOLOGIES HAS BEEN
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR CLAIMS.  IN NO EVENT SHALL
+PARALLEL TECHNOLOGIES' LIABILITY FOR ANY DAMAGES EVER EXCEED THE PRICE PAID
+FOR THE LICENSE TO USE THE SOFTWARE, REGARDLESS OF THE FORM OF CLAIM.  THE
+PERSON USING THE SOFTWARE BEARS ALL RISKS AS TO THE QUALITY AND PERFORMANCE
+OF THE SOFTWARE.  This warranty gives you specific rights and you may have
+other rights.
+
+This agreement shall be governed by the laws of the State of Washington and
+shall inure to the benefit of Parallel Technologies, Inc. and any
+successors, administrators, heirs and assigns.  Any action or proceeding
+brought by either party against the other arising out of or related to this
+agreement shall be brought only in a STATE or FEDERAL COURT of competent
+jurisdiction located in King County, Washington.
+
+     =================================================================
+     =                        FBI WARNING                            =
+     =       Failure to observe the restrictions of this license     =
+     =                     may be a violation                        =
+     =        of 17 United States Code sections 101 through 810      =
+     =      which carries severe personal and corporate penalties.   =
+     =================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+PARALLEL.DOC                                                             Page 30
+
