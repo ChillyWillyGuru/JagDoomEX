@@ -124,6 +124,7 @@ with JagLink in any case.
 
 ## Changelog
 ```
+241215 - Fixed sprites sometimes visible thru walls bug.
 241215 - Fixed transparent spectres on real hardware.
 241214 - Fixed init.s to work with real hardware.
 241210 - First commit to repo.
