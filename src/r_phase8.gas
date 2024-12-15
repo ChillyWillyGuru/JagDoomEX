@@ -149,7 +149,7 @@ blitwait1:
     nop
 ;    movei   #$41002F01,dv_cmd   ; command if invisible (hole in spacetime)
 ;    movei   #$41202F01,dv_cmd   ; command if invisible (ghostly phantoms)
-    movei   #$4102EF09,dv_cmd   ; command if invisible (translucent green/purple)
+    movei   #$00028F09,dv_cmd   ; command if invisible (translucent)
     moveq   #0,r0
 skip1:
 	movei	#255,r1

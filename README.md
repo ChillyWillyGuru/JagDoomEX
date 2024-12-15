@@ -114,13 +114,9 @@ John Carmack for writing such an awesome game, and releasing it to the public.
 Carl Forhan for arranging for the code, and doing the initial work to get it
 running.
 CyranoJ for fixing the offset in the HUD in the code released by Carl.
+Bitbotherer for the tips that allowed me to get init.s working on real harware.
 ```
 ## Known Bugs
-
-The init.s file needs some work. It didn't work as it came from Carl. I made
-some changes that get it working in BigPEmu, but it doesn't work on a real
-console - yet. I'll work on it until it does, but until then, we use Carl's
-workaround to handle the initialization code.
 
 The network code is still as it was - kinda buggy. I don't know if or when I
 will get to it. I only have one Jaguar, and the JagGD cart is not compatible
@@ -128,7 +124,9 @@ with JagLink in any case.
 
 ## Changelog
 ```
-241210 - First commit to repo
+241215 - Fixed transparent spectres on real hardware.
+241214 - Fixed init.s to work with real hardware.
+241210 - First commit to repo.
 241209 - Fixed the spectre - now in Super Ghostly Phantasmagoric™ rendering.
 241209 - Remapped the controls to allow for the ProPad.
 ```

@@ -48,12 +48,10 @@ clrbss:
 	jsr     IntInit
 	jsr     VideoIni
 
-;/*	move.w   #0x8C1,VMODE            // Set 16 bit CRY;/* 256 overscanned */
-;move.w   #0xC1+(7<<9),VMODE     ;/* Set 16 bit CRY;/* 160 overscanned */
-	move.w  #$EC1,VMODE     ;/* Set 16 bit CRY;/* 160 overscanned */
+;/*	move.w  #0x8C1,VMODE             // Set 16 bit CRY;/* 256 overscanned */
+	move.w  #$EC1,VMODE             ;/* Set 16 bit CRY;/* 160 overscanned */
 
 	jmp     _Jag68k_main
-
 
 .bss
 .dphrase
@@ -61,7 +59,11 @@ clrbss:
 _listbuffer:	ds.l  40
 _listbuffer1:	ds.l  40
 _listbuffer2:	ds.l  40
-_stopobj:	    ds.l  2
+
+.data
+.dphrase
+
+_stopobj:	    dc.l  0,STOPOBJ
 
 .globl _listbuffer,_listbuffer1,_listbuffer2,_stopobj
 
@@ -95,12 +97,11 @@ pal_vmid        =       322
 
 VideoIni:
 ;/* Check if NTSC or PAL */
-;/* For now assume NTSC */
 
 	movem.l d0-d6,-(sp)
 
 	move.w	CONFIG,d0
-	and.w	#$10,d0
+	and.w	#VIDTYPE,d0
 	beq.s   ispal
 
 	move.w	#ntsc_hmid,d2
@@ -152,8 +153,6 @@ doit:
 
 	move.w  #0,BG
 	move.l  #0,BORD1
-;/*      move.w   #$f0ff,BG */
-;/*      move.l   #$ffffffff,BORD1 */
 
 	movem.l (sp)+,d0-d6
 	rts
@@ -184,7 +183,7 @@ _a_hde:		    .ds.w	1
 ;*/
 
 _CopyObjList:	
-	move.w  #0,$f00026     ;/* restart object processor, just in case */
+	move.w  #0,$f00026              ;/* restart object processor, just in case */
 	
 ;/* point the object processor at a stop object until copy is done */
 	move.l  #_stopobj,d5
@@ -193,7 +192,7 @@ _CopyObjList:
 
 reread:
 	move.l  _readylist_p,a0
-	cmp.l	_readylist_p,a0		;/* make sure its the entire word */
+	cmp.l	_readylist_p,a0		    ;/* make sure its the entire word */
 	bne	    reread
 	
 	move.l  a0,_displaylist_p       ;/* let the program know this is being used */
@@ -282,12 +281,10 @@ Frame:
 	link    a6,#0
 	movem.l d0-d5/a0-a5,-(sp)
 
-;/*move.w   #0xC1+(7<<9),VMODE           ;/* Set 16 bit CRY/* 160 overscanned */
-
 	jsr		_CopyObjList
 
-	move.l	_isrvmode,d0	;/* set VMODE for top part of screen */
-	move.w  d0,VMODE	;/* can be reset by GPU interrupt */
+	move.l	_isrvmode,d0	    ;/* set VMODE for top part of screen */
+	move.w  d0,VMODE	        ;/* can be reset by GPU interrupt */
 
 ;/* */
 ;/*  This monsterous ugly code lifted almost directly from demo.s which */
@@ -296,37 +293,37 @@ Frame:
 
 ;/* read player 1 joypad */
 
-	move.l	#$f0fffffc,d1	  ;/* d1 = Joypad data mask */
-	moveq.l	#-1,d2		;/* d2 = Cumulative joypad reading */
+	move.l	#$f0fffffc,d1	    ;/* d1 = Joypad data mask */
+	moveq.l	#-1,d2		        ;/* d2 = Cumulative joypad reading */
 
 	move.w	#$81fe,JOYSTICK
-	move.l	JOYSTICK,d0	;/* Read joypad, pause button, A button */
-	or.l	d1,d0		  	;/* Mask off unused bits */
+	move.l	JOYSTICK,d0	        ;/* Read joypad, pause button, A button */
+	or.l	d1,d0		  	    ;/* Mask off unused bits */
 	ror.l	#4,d0
-	and.l	d0,d2		;/* d2 = xxAPxxxx RLDUxxxx xxxxxxxx xxxxxxxx */
+	and.l	d0,d2		        ;/* d2 = xxAPxxxx RLDUxxxx xxxxxxxx xxxxxxxx */
 	move.w	#$81fd,JOYSTICK
-	move.l	JOYSTICK,d0	;/* Read *741 keys, B button */
-	or.l	d1,d0		  	;/* Mask off unused bits */
+	move.l	JOYSTICK,d0	        ;/* Read *741 keys, B button */
+	or.l	d1,d0		  	    ;/* Mask off unused bits */
 	ror.l	#8,d0
-	and.l	d0,d2		;/* d2 = xxAPxxBx RLDU741* xxxxxxxx xxxxxxxx */
+	and.l	d0,d2		        ;/* d2 = xxAPxxBx RLDU741* xxxxxxxx xxxxxxxx */
 	move.w	#$81fb,JOYSTICK
-	move.l	JOYSTICK,d0	;/* Read 2580 keys, C button */
-	or.l	d1,d0		  	;/* Mask off unused bits */
+	move.l	JOYSTICK,d0	        ;/* Read 2580 keys, C button */
+	or.l	d1,d0		  	    ;/* Mask off unused bits */
 	rol.l	#6,d0
 	rol.l	#6,d0
-	and.l	d0,d2		;/* d2 = xxAPxxBx RLDU741* xxCxxxxx 2580xxxx */
+	and.l	d0,d2		        ;/* d2 = xxAPxxBx RLDU741* xxCxxxxx 2580xxxx */
 	move.w	#$81f7,JOYSTICK
-	move.l	JOYSTICK,d0	;/* Read 369# keys, Option button */
-	or.l	d1,d0		 ;/* Mask off unused bits */
+	move.l	JOYSTICK,d0	        ;/* Read 369# keys, Option button */
+	or.l	d1,d0		        ;/* Mask off unused bits */
 	rol.l	#8,d0
-	and.l	d0,d2		;/* d2 = xxAPxxBx RLDU741* xxCxxxOx 2580369# */
-				;/*              (inputs active low) */
+	and.l	d0,d2		        ;/* d2 = xxAPxxBx RLDU741* xxCxxxOx 2580369# */
+                                ;/*              (inputs active low) */
 
 	moveq.l	#-1,d1
-	eor.l	d2,d1		;/* d1 = xxAPxxBx RLDU741* xxCxxxOx 2580369# */
-				;/*           (now inputs active high) */
+	eor.l	d2,d1		        ;/* d1 = xxAPxxBx RLDU741* xxCxxxOx 2580369# */
+                                ;/*           (now inputs active high) */
 ;/*===================== */
-	cmp.l	#$10001,d1	;/* # + * reset */
+	cmp.l	#$10001,d1	        ;/* # + * reset */
 	bne	    notreset
 ;/* throw a reset returnpoint over the old returnpoint */
 	move.l	#reset,6(a6)
@@ -340,14 +337,13 @@ notreset:
 	lsl.l	#2,d0
 	move.l	d0,a0
 	add.l	#_joypad,a0
-	move.l	d1,(a0)		;/* joypad[ticcount&31] = joystickbits */
+	move.l	d1,(a0)		        ;/* joypad[ticcount&31] = joystickbits */
 
 
 ;/* */
 ;/* other VI stuff */
 ;/* */
 	addq.l	#1,_ticcount
-	move.w	#$100,d0
 
 ;/*========================================================================== */
 ;/* */
@@ -355,8 +351,7 @@ notreset:
 ;/* */
 ;/*========================================================================== */
 
-;0:
-
+	move.w	#$100,d0
 	or.w    enabled_ints,d0
 	move.w  d0,INT1
 	move.w  #0,INT2
