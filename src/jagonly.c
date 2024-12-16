@@ -33,18 +33,18 @@ pixel_t	*screens[2];	/* [SCREENWIDTH*SCREENHEIGHT];  */
 short	*palette8;		/* [256]	for translating 8 bit source to 16 bit */
 int		*screenshade;	/* pixels for screen shifting */
 
-byte		*debugscreen;
+byte	*debugscreen;
 extern	jagobj_t	*sbar;
 extern	byte		*sbartop;
 
-int			workpage;	/* which frame is not being displayed */
-int			worklist;	/* which listbuffer is not being used */
+int		workpage;	    /* which frame is not being displayed */
+int		worklist;	    /* which listbuffer is not being used */
 
 int	isrvmode = 0xC1+(7<<9);		/* vmode value set by ISR each screen */
 
-extern	int		listbuffer[256];
-extern	int		listbuffer1[256];
-extern	int		listbuffer2[256];
+extern	int		listbuffer[40];
+extern	int		listbuffer1[40];
+extern	int		listbuffer2[40];
 extern	int		stopobj[2];
 
 int		*listbuffers[2] = {listbuffer1,listbuffer2};
@@ -53,17 +53,17 @@ int		*displaylist_p;				/* list currently being displayed */
 int		*readylist_p = stopobj;		/* list to display next frame */
 int		*worklist_p, *work_p;		/* list currently being built */
 
-int             joypad[32]; 
-int             joystick1; 
-int             ticcount; 
+int     joypad[32]; 
+int     joystick1; 
+int     ticcount; 
  
 unsigned	branch1, branch2;
  
-int             junk; 
-int             spincount;  
-int             ZERO = 0, zero = 0, zero2 = 0; 
+int     junk; 
+int     spincount;  
+int     ZERO = 0, zero = 0, zero2 = 0; 
 
-pixel_t			*framebuffer;
+pixel_t	*framebuffer;
 
 extern	jagobj_t *sbar;
 
@@ -176,7 +176,7 @@ soundbuffer[5] = 0xeeee;
 		((int *)0xf03000)[i] = ((int *)&gpubase)[i]; 
 	for ( ; i< 1024 ; i++) 
 		((int *)0xf03000)[i] = 0; 
-	*(int *)0xf02110 = (int)&gpubase_init;		/* set it up at init code  */
+	*(int *)0xf02110 = (int)&gpubase_init;	/* set it up at init code  */
 	*(int *)0xf02114 = 1;                   /* start it  */
 
 /* set a two color palette */
@@ -1391,7 +1391,7 @@ void DoubleBufferObjList (void)
 /* */
 /* start using the list */
 /* */
-	isrvmode = 0xc1 + (3<<9);		/* 320 * 224, 16 bit color */
+	isrvmode = 0xc1 + (3<<9);		        /* 320 * 224, 16 bit color */
 	readylist_p = worklist_p;
 	while (displaylist_p != readylist_p)
 	;
@@ -1426,7 +1426,7 @@ void ClearEEProm (void)
 	sfxvolume = 200;
 	musicvolume = 128;
 	controltype = 0;
-	maxlevel = 1;
+	maxlevel = 24;      /* chillywilly - all levels unlocked */
 
 	WriteEEProm ();	
 }
@@ -1466,7 +1466,7 @@ void ReadEEProm (void)
 	if (startskill > sk_nightmare)
 		ClearEEProm ();
 	startmap = eeprombuffer[2];
-	if (startmap > 26)
+	if (startmap > 25)
 		ClearEEProm ();
 	sfxvolume = eeprombuffer[3];
 	if (sfxvolume > 255)
@@ -1478,7 +1478,7 @@ void ReadEEProm (void)
 	if (controltype > 5)
 		ClearEEProm ();
 	maxlevel = eeprombuffer[6];
-	if (maxlevel > 25)
+	if (maxlevel > 24)
 		ClearEEProm ();
 }
 

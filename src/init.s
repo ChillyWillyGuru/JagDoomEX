@@ -198,38 +198,21 @@ reread:
 	move.l  a0,_displaylist_p       ;/* let the program know this is being used */
 	move.l  #_listbuffer,a1         ;/* copy to here */
 	
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
-	move.l  (a0)+,(a1)+
+    movem.l (a0)+,d0-d7/a2-a3
+	movem.l d0-d7/a2-a3,(a1)
+    adda.w  #40,a1
+
+    movem.l (a0)+,d0-d7/a2-a3
+	movem.l d0-d7/a2-a3,(a1)
+    adda.w  #40,a1
+
+    movem.l (a0)+,d0-d7/a2-a3
+	movem.l d0-d7/a2-a3,(a1)
+    adda.w  #40,a1
+
+    movem.l (a0)+,d0-d7/a2-a3
+	movem.l d0-d7/a2-a3,(a1)
+    adda.w  #40,a1
 
 ;/* start the object processor at the newly copied list */
 	move.l  #_listbuffer,d5
@@ -279,7 +262,7 @@ IntInit:
 
 Frame:
 	link    a6,#0
-	movem.l d0-d5/a0-a5,-(sp)
+	movem.l d0-d7/a0-a5,-(sp)
 
 	jsr		_CopyObjList
 
@@ -355,7 +338,7 @@ notreset:
 	or.w    enabled_ints,d0
 	move.w  d0,INT1
 	move.w  #0,INT2
-	movem.l (sp)+,d0-d5/a0-a5
+	movem.l (sp)+,d0-d7/a0-a5
 	unlk    a6
 	rte
 

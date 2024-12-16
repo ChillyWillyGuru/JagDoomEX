@@ -118,16 +118,14 @@ Bitbotherer for the tips that allowed me to get init.s working on real harware.
 ```
 ## Known Bugs
 
-The startup code in init.s is still buggy. While I've gotten it to work on
-real hardware, it eventually fails after a few minutes and Doom crashes. So
-I'm switching back to using init.sav until I can do more bug-fixing on init.s.
-
 The network code is still as it was - kinda buggy. I don't know if or when I
 will get to it. I only have one Jaguar, and the JagGD cart is not compatible
 with JagLink in any case.
 
 ## Changelog
 ```
+241216 - Unlocked all levels.
+241216 - Another fix for init.s. Passed stability test.
 241215 - Reverted back to using init.sav.
 241215 - Fixed sprites sometimes visible thru walls bug.
 241215 - Fixed transparent spectres on real hardware.
