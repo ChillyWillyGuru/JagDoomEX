@@ -79,7 +79,7 @@ C2OBJ = gcc -B/devkit/bin/ -b m68k -V2.6 -Wall -DJAGUAR -O2 -c -o $@ $?
 init.o :init.s
 #	cpp -DJAGUAR -DJAGPROFILE -lang-c++ -nostdinc $< $*.i
 #	as -mc68000  -o $@ $*.i
-	$(GAS2OBJ)
+#	$(GAS2OBJ)
 
 lastobj.o :lastobj.s
 #	cpp -DJAGUAR -DJAGPROFILE -lang-c++ -nostdinc $< $*.i
@@ -258,7 +258,7 @@ boot:
 
 clean:
 	rm -f *.o *.abs temp1.bin temp2.bin temp3.bin JagDoomEX.j64 JagDoomEX.rom
-#	cp init.sav init.o
+	cp init.sav init.o
 
 rom:
 	rm -f temp1.bin temp2.bin temp3.bin JagDoomEX.j64

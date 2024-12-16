@@ -662,6 +662,7 @@ L89:
  cmp r19,r0 ;(b_floorheight)
  movei #L95,scratch
  jump S_LT,(scratch) ; chillywilly - bug-fix
+; jump PL,(scratch)
  nop
  cmp r19,r18 ;(b_floorheight)(f_floorheight)
  movei #L94,scratch
