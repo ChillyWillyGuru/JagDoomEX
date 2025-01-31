@@ -24,6 +24,8 @@ MATH_C .equr r25
 MATH_RTS .equr r24
 MATH_SIGN .equr r23
 
+    .extern _stretchscale
+
 	movei	#codestart,scratch
 	jump	T,(scratch)
 	nop
@@ -1126,8 +1128,11 @@ L127:
  store r20,(r0) ;(xscale)
 
  store r20,(FP) ; arg[] ;(xscale)
- movei #144179,r0
- or r0,scratch ; scoreboard bug
+ 
+; chillywilly: correct yscale for widescreen
+ movei #_stretchscale,r0
+ load (r0),r0
+
  store r0,(FP+1) ; arg[]
  movei #_G_FixedMul,r0
  store r28,(FP+10) ; push ;(RETURNPOINT)
@@ -1151,15 +1156,15 @@ L128:
  load (FP+17),r16 ; pop ;(tz)
  load (FP+18),r15 ; pop ;(vis)
  load (FP+10), RETURNPOINT ; pop
- move r15,r0 ;(vis)
- addq #20,r0
+ move r15,r0    ;(vis)
+ addq #20,r0    ;(yscale)
  store r29,(r0) ;(RETURNVALUE)
 
- move r15,r0 ;(vis)
- addq #24,r0
+ move r15,r0    ;(vis)
+ addq #24,r0    ;(yiscale)
  movei #-1,r1
- move r15,r2 ;(vis)
- addq #20,r2
+ move r15,r2    ;(vis)
+ addq #20,r2    ;(yscale)
  load (r2),r2
  div r2,r1
  store r1,(r0)
@@ -1171,10 +1176,10 @@ L128:
  jump EQ,(scratch)
  nop
 
- move r15,r0 ;(vis)
- addq #16,r0
+ move r15,r0    ;(vis)
+ addq #16,r0    ;(xiscale)
  movei #-1,r1
- move r20,r2 ;(xscale)
+ move r20,r2    ;(xscale)
  div r2,r1
  neg r1
  store r1,(r0)

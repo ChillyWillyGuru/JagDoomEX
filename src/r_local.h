@@ -234,6 +234,11 @@ extern	fixed_t		viewx, viewy, viewz;
 extern	angle_t		viewangle;
 extern	fixed_t		viewcos, viewsin;
 
+extern	boolean		initmathtbl;
+extern	boolean		anamorphicview;
+extern	int			stretch;
+extern	fixed_t		stretchscale;
+
 extern	player_t	*viewplayer;
 extern	boolean		fixedcolormap;
 extern	int			extralight;

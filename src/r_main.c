@@ -43,8 +43,10 @@ angle_t		viewangle;
 fixed_t		viewcos, viewsin;
 player_t	*viewplayer;
 
+int			stretchx;           /* for anamorphic widescreen */
+
 int			validcount = 1;		/* increment every time a check is made */
-int			framecount;		/* incremented every frame */
+int			framecount;		    /* incremented every frame */
 
 
 boolean		fixedcolormap;
@@ -225,20 +227,36 @@ D_printf ("Done\n");
 
 	clipangle = xtoviewangle[0];
 	doubleclipangle = clipangle*2;
-	
+
 	framecount = 0;
 	viewplayer = &players[0];
 }
 
+void R_InitMathTbl (void)
+{
+	fixed_t stretchWidth;
+    int i;
+
+	/* chillywilly: remake the yslope table for normal/widescreen */
+	stretchWidth = SCREENWIDTH / 2 * stretchscale;
+	for (i = 0; i < SCREENHEIGHT; i++)
+	{
+		fixed_t y = ((i - SCREENHEIGHT / 2) << FRACBITS) + FRACUNIT / 2;
+		y = D_abs(y);
+		y = FixedDiv(stretchWidth, y);
+		yslope[i] = (y >> 6) & 0xFFFF;  /* counts on yslope being in ram */
+	}
+}
+
 /*============================================================================= */
 
-extern int ticsinframe;
+extern  int     ticsinframe;
 
-extern int checkpostics, shoottics;
-extern int lasttics;
+extern  int     checkpostics, shoottics;
+extern  int     lasttics;
 
-extern	int	playertics, thinkertics, sighttics, basetics, latetics;
-extern	int	tictics;
+extern	int	    playertics, thinkertics, sighttics, basetics, latetics;
+extern	int	    tictics;
 
 extern	int		soundtics;
 
@@ -328,6 +346,15 @@ void R_Setup (void)
 	extralight = player->extralight << 6;
 	fixedcolormap = player->fixedcolormap;
 		
+    /* chillywilly: set stretch for rendering */
+    stretch = anamorphicview ? 28*8 : 22*8;
+    stretchscale = anamorphicview ? 183501 : 144179;
+    if (initmathtbl)
+    {
+        initmathtbl = false;
+        R_InitMathTbl();
+    }
+
 /* */
 /* calc shadepixel */
 /* */

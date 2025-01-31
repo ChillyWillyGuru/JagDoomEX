@@ -603,7 +603,7 @@ mp_entry:
 
 	or		mp_remaining,mp_remaining
 	movei	#mp_linedone,scratch
-	jump	EQ,(scratch)			; nothing to draw (sholdn't happen)
+	jump	EQ,(scratch)			; nothing to draw (shouldn't happen)
 	nop
 
 			

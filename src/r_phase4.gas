@@ -13,23 +13,25 @@ U_GT    .ccdef	$08  	; CS
 S_LT	.ccdef	$15		; PL+NE
 U_LT	.ccdef	$05		; CC+NE
 
+; alternate registers used to hold common values
 alt_viewx		.equr	r10
 alt_viewy		.equr	r11
 alt_viewangle	.equr	r12
 alt_firstflat	.equr	r13
+alt_stretch 	.equr	r16
 
-FP .equr r14
-scratch .equr r10
-scratch2 .equr r11
-RETURNVALUE .equr r29
-RETURNPOINT .equr r28
-MATH_A .equr r27
-MATH_B .equr r26
-MATH_C .equr r25
-MATH_RTS .equr r24
-MATH_SIGN .equr r23
+FP 				.equr r14
+scratch 		.equr r10
+scratch2 		.equr r11
+RETURNVALUE 	.equr r29
+RETURNPOINT 	.equr r28
+MATH_A 			.equr r27
+MATH_B 			.equr r26
+MATH_C 			.equr r25
+MATH_RTS 		.equr r24
+MATH_SIGN 		.equr r23
 
-	.extern	_viewx,_viewy,_viewangle,_firstflat
+	.extern	_viewx,_viewy,_viewangle,_firstflat,_stretch
 
 ;
 ; load up values from main memory
@@ -49,6 +51,11 @@ MATH_SIGN .equr r23
 	movei	#_firstflat,scratch
 	load	(scratch),scratch
 	moveta	scratch,alt_firstflat
+	
+    ; chillywilly: anamorphic widescreen
+	movei	#_stretch,scratch
+	load	(scratch),scratch
+	moveta	scratch,alt_stretch
 	
 	movei	#codestart,scratch
 	jump	T,(scratch)
@@ -240,7 +247,9 @@ sg_finesine		.equr	r4
 	add		sg_finesine,scratch	
 	load	(scratch),sg_sineb
 	
-	movei	#22*8,scratch
+    ; chillywilly: anamorphic widescreen
+;	movei	#22*8,scratch
+	movefa	alt_stretch,scratch
 	mult	scratch,sg_sineb
 	
 	movei   #DIVCONTROL,scratch2     ; divide unit control

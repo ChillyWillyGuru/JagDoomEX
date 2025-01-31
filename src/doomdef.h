@@ -62,6 +62,8 @@ int D_vsprintf(char *string, const char *format, int *argptr);
 
 void D_printf (char *str, ...);
 
+#define D_abs(x) (((x) < 0) ? (-x):(x))
+
 /*
 ===============================================================================
 

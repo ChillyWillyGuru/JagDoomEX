@@ -1415,7 +1415,7 @@ void DoubleBufferObjList (void)
 unsigned short eeread (int address);
 int eewrite (int data, int address);
 
-#define	EEWORDS	8		/* MUST BE EVEN!!!!!! */
+#define	EEWORDS	10		/* MUST BE EVEN!!!!!! */
 
 unsigned short eeprombuffer[EEWORDS];
 
@@ -1427,6 +1427,7 @@ void ClearEEProm (void)
 	musicvolume = 128;
 	controltype = 0;
 	maxlevel = 24;      /* chillywilly - all levels unlocked */
+    anamorphicview = 0; /* chillywilly - widescreen disabled */
 
 	WriteEEProm ();	
 }
@@ -1480,6 +1481,7 @@ void ReadEEProm (void)
 	maxlevel = eeprombuffer[6];
 	if (maxlevel > 24)
 		ClearEEProm ();
+    anamorphicview = eeprombuffer[7] ? true : false; /* chillywilly - widescreen */
 }
 
 
@@ -1494,7 +1496,8 @@ void WriteEEProm (void)
 	eeprombuffer[4] = musicvolume;
 	eeprombuffer[5] = controltype;
 	eeprombuffer[6] = maxlevel;
-
+    eeprombuffer[7] = anamorphicview ? 1 : 0; /* chillywilly - widescreen */
+    eeprombuffer[8] = 0;
 	eeprombuffer[EEWORDS-1] = 12345;
 	
 	for (i=0 ; i<EEWORDS-1 ; i++)

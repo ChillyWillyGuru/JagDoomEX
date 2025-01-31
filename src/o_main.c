@@ -6,11 +6,11 @@
 
 #define MOVEWAIT	5
 #define ITEMSPACE	40
-#define SLIDEWIDTH 90
+#define SLIDEWIDTH  90
 
-extern 	int	cx, cy;
+extern 	int	    cx, cy;
 extern	int		sfxvolume;		/* range from 0 to 255 */
-extern	int		controltype;				/* 0 to 5 */
+extern	int		controltype;	/* 0 to 5 */
 
 extern void print (int x, int y, char *string);
 extern void IN_DrawValue(int x,int y,int value);
@@ -36,6 +36,7 @@ typedef enum
 
 typedef enum
 {
+    widescrn,
 	soundvol,
 	controls,
 	NUMMENUITEMS
@@ -48,10 +49,10 @@ typedef struct
 	int		x;
 	int		y;
 	boolean	hasslider;
-	char 		name[20];
+	char 	name[20];
 } menuitem_t;
 
-menuitem_t menuitem[3];
+menuitem_t menuitem[4];
  
 typedef struct
 {
@@ -59,7 +60,7 @@ typedef struct
 	int	maxval;
 } slider_t;
 
-slider_t slider[2];
+slider_t slider[4];
 
 int		cursorframe, cursorcount;
 int		movecount;
@@ -86,6 +87,13 @@ unsigned configuration[NUMCONTROLOPTIONS][3] =
 	{BT_C, BT_B, BT_A} 
 };
 
+char anamorphic[2][4] = 
+        {"Off","On"};
+
+boolean initmathtbl = true;
+boolean anamorphicview;
+int stretch;
+fixed_t stretchscale;
 
 void O_SetButtonsFromControltype (void)
 {
@@ -101,13 +109,19 @@ void O_SetButtonsFromControltype (void)
 /* */
 void O_DrawControl(void)
 {
+	EraseBlock(menuitem[widescrn].x + 40, menuitem[widescrn].y + 20, 60, 20);
+	print(menuitem[widescrn].x + 40, menuitem[widescrn].y + 20, anamorphic[anamorphicview ? 1 : 0]);
+
 	EraseBlock(menuitem[controls].x + 40, menuitem[controls].y + 20, 90, 80);
 	print(menuitem[controls].x + 40, menuitem[controls].y + 20, buttona[controltype]);
 	print(menuitem[controls].x + 40, menuitem[controls].y + 40, buttonb[controltype]);
 	print(menuitem[controls].x + 40, menuitem[controls].y + 60, buttonc[controltype]);
+
 /*	IN_DrawValue(30, 20, controltype); */
 	
 	O_SetButtonsFromControltype ();
+    stretch = anamorphicview ? 28*8 : 22*8;
+    stretchscale = anamorphicview ? 183501 : 144179;
 }
 
 /*
@@ -125,6 +139,10 @@ void O_Init (void)
 /* the eeprom has set controltype, so set buttons from that */
 	O_SetButtonsFromControltype ();
 
+/* the eeprom has widescreen setting */
+    stretch = anamorphicview ? 28*8 : 22*8;
+    stretchscale = anamorphicview ? 183501 : 144179;
+
 /* cache all needed graphics */
 	o_cursor1 = W_CacheLumpName ("M_SKULL1",PU_STATIC);
 	o_cursor2 = W_CacheLumpName ("M_SKULL2",PU_STATIC);
@@ -141,20 +159,26 @@ void O_Init (void)
 	cursorframe = 0;
 	cursorpos = 0;	
 	
-/*    strcpy(menuitem[0].name, "  Volume"); */
-    D_strncpy(menuitem[0].name, "  Volume", 8); /* Fixed CEF */
-	menuitem[0].x = 95;
-	menuitem[0].y = 50;
-	menuitem[0].hasslider = true;
+/*  chillywilly: anamorphic widescreen */
+    D_strncpy(menuitem[widescrn].name, "Widescreen", 10);
+	menuitem[widescrn].x = 85;
+	menuitem[widescrn].y = 40;
+	menuitem[widescrn].hasslider = false;
 
- 	slider[0].maxval = 16;
-	slider[0].curval = 16*sfxvolume/255;
+/*    strcpy(menuitem[soundvol].name, "    Volume"); */
+    D_strncpy(menuitem[soundvol].name, "    Volume", 10); /* Fixed CEF */
+	menuitem[soundvol].x = 85;
+	menuitem[soundvol].y = 80;
+	menuitem[soundvol].hasslider = true;
 
-/*    strcpy(menuitem[1].name, "Controls"); */
-    D_strncpy(menuitem[1].name, "Controls", 8); /* Fixed CEF */
-	menuitem[1].x = 95;
-	menuitem[1].y = 110;
-	menuitem[1].hasslider = false;
+ 	slider[soundvol].maxval = 16;
+	slider[soundvol].curval = 16*sfxvolume/255;
+
+/*    strcpy(menuitem[controls].name, "  Controls"); */
+    D_strncpy(menuitem[controls].name, "  Controls", 10); /* Fixed CEF */
+	menuitem[controls].x = 85;
+	menuitem[controls].y = 120;
+	menuitem[controls].hasslider = false;
 
 }
 
@@ -212,9 +236,9 @@ void O_Control (player_t *player)
 					slider[cursorpos].curval++;
 					if (slider[cursorpos].curval > slider[cursorpos].maxval)
 						slider[cursorpos].curval = slider[cursorpos].maxval;
-					if (cursorpos == 0)
+					if (cursorpos == soundvol)
 					{
-						sfxvolume = 255*slider[0].curval / slider[0].maxval;
+						sfxvolume = 255*slider[soundvol].curval / slider[soundvol].maxval;
 						S_StartSound (NULL, sfx_pistol);
 					}
 				}
@@ -226,9 +250,9 @@ void O_Control (player_t *player)
 					slider[cursorpos].curval--;
 					if (slider[cursorpos].curval < 0)
 						slider[cursorpos].curval = 0;
-					if (cursorpos == 0)
+					if (cursorpos == soundvol)
 					{
-						sfxvolume = 255*slider[0].curval / slider[0].maxval;
+						sfxvolume = 255*slider[soundvol].curval / slider[soundvol].maxval;
 						S_StartSound (NULL, sfx_pistol);
 					}
 				}
@@ -258,7 +282,11 @@ void O_Control (player_t *player)
 					controltype++;
 					if(controltype == NUMCONTROLOPTIONS)
 						controltype = (NUMCONTROLOPTIONS - 1); 
-				}			
+				} else if (cursorpos == widescrn)
+                {
+                    anamorphicview = true;
+                    initmathtbl = true;
+                }
 			}
 			if (buttons & JP_LEFT)
 			{
@@ -267,7 +295,11 @@ void O_Control (player_t *player)
 					controltype--;
 					if(controltype == -1)
 						controltype = 0; 
-				}
+				} else if (cursorpos == widescrn)
+                {
+                    anamorphicview = false;
+                    initmathtbl = true;
+                }
 			}
 		}
 	}
@@ -295,13 +327,11 @@ void O_Drawer (void)
 
 		if(menuitem[i].hasslider == true)
 		{
-			DrawJagobj(o_slidertrack , menuitem[i].x + 2, menuitem[i].y + 20);
+			DrawJagobj(o_slidertrack , menuitem[i].x + 12, menuitem[i].y + 20);
 			offset = (slider[i].curval * SLIDEWIDTH) / slider[i].maxval;
-			DrawJagobj(o_slider, menuitem[i].x + 7 + offset, menuitem[i].y + 20);
-/*			ST_Num(menuitem[i].x + o_slider->width + 10,	 */
-/*			menuitem[i].y + 20,slider[i].curval);  */
-		}			 
-	}	
+			DrawJagobj(o_slider, menuitem[i].x + 17 + offset, menuitem[i].y + 20);
+		}
+	}
 	
 /* Draw control info */
 

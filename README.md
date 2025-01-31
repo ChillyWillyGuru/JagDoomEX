@@ -72,6 +72,12 @@ directory which is exactly 4194304 bytes in length. This rom file can be run in
 a Jaguar emulator like BigPEmu, or on real hardware using a skunkboard or the
 Jaguar GameDrive cart.
 
+## New Features
+
+You can select widescreen on/off in the Options menu. This makes Doom look the
+proper aspect ratio on 16:9 TVs. Off assumes a standard 4:3 TV. Defaults to off,
+and is saved in the e2prom.
+
 ## New Controls
 
 C/B/A/PAUSE/OPTION remain as set in the game. The differences arise in the
@@ -124,6 +130,7 @@ with JagLink in any case.
 
 ## Changelog
 ```
+250131 - Anamorphic widescreen option implemented.
 241216 - Unlocked all levels.
 241216 - Another fix for init.s. Passed stability test.
 241215 - Reverted back to using init.sav.
