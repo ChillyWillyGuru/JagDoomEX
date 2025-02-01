@@ -4,7 +4,7 @@
 	.text
 	.68000
 
-;/* entry point in rom ($802000), copy game code/data to ram at $4000
+;/* entry point in rom ($802000), copy game code/data to ram at $2000
 
 reset:
 	lea     $200000,a7

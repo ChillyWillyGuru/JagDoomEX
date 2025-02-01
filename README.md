@@ -78,6 +78,15 @@ You can select widescreen on/off in the Options menu. This makes Doom look the
 proper aspect ratio on 16:9 TVs. Off assumes a standard 4:3 TV. Defaults to off,
 and is saved in the e2prom.
 
+I've fixed the Arms indicators so that they show the proper keypad number. At
+the same time, I've added colors to indicate some status info. The number is
+GREEN if the weapon is equipped, BLUE if the required ammo is more than half
+the max allowed count (with or without the backpack), YELLOW if the required
+ammo is less than half the max allowed count, and RED if the weapon is out of
+ammo. At a glance, you get vital information. I can make this an option if
+people prefer not having colored indicators. Let me know how you feel about
+this.
+
 ## New Controls
 
 C/B/A/PAUSE/OPTION remain as set in the game. The differences arise in the
@@ -130,6 +139,7 @@ with JagLink in any case.
 
 ## Changelog
 ```
+250201 - Colored Arms Indicators added.
 250131 - Anamorphic widescreen option implemented.
 241216 - Unlocked all levels.
 241216 - Another fix for init.s. Passed stability test.

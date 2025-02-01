@@ -3,10 +3,22 @@
 #include "doomdef.h"
 #include "st_main.h"
 
+#define GREEN	0x70707070
+#define RED 	0xB0B0B0B0
+#define BLUE	0xC8C8C8C8
+#define WHITE	0xD1D1D1D1
+#define YELLOW	0xE7E7E7E7
+
 stbar_t	stbar;
+
+/*
 jagobj_t *micronums[NUMMICROS];
+*/ 
 int		micronums_x[NUMMICROS] = {249,261,272,249,261,272};
 int		micronums_y[NUMMICROS] = {15,15,15,25,25,25};
+
+int		w2a[NUMWEAPONS] = {-1, am_clip, am_shell, am_clip, am_misl, am_cell, am_cell, -1 };
+int		w2m[NUMWEAPONS] = {10, 1, 3, 7, 8, 9, 0, 10};
 
 int		facetics;
 int		newface;
@@ -23,6 +35,7 @@ int		gibdelay;
 
 int		spclfaceSprite[NUMSPCLFACES] = 
 		{0,sbf_facelft,sbf_facergt,sbf_ouch,sbf_gotgat,sbf_mowdown};
+
 boolean doSpclFace;
 spclface_e	spclFaceType;
 
@@ -32,6 +45,106 @@ jagobj_t	*faces[NUMFACES];
 jagobj_t	*sbobj[NUMSBOBJ];
 
 sbflash_t	flashCards[NUMCARDS];	/* INFO FOR FLASHING CARDS & SKULLS */
+
+unsigned int microchars[60] = 
+{
+/* 0 */
+            0x00FF0000,
+            0xFF00FF00,
+            0xFF00FF00,
+            0xFF00FF00,
+            0x00FF0000,
+/* 1 */
+            0x00FF0000,
+            0xFFFF0000,
+            0x00FF0000,
+            0x00FF0000,
+            0xFFFFFF00,
+/* 2 */
+            0xFFFF0000,
+            0x0000FF00,
+            0x00FF0000,
+            0xFF000000,
+            0xFFFFFF00,
+/* 3 */
+            0xFFFF0000,
+            0x0000FF00,
+            0x00FF0000,
+            0x0000FF00,
+            0xFFFF0000,
+/* 4 */
+            0xFF00FF00,
+            0xFF00FF00,
+            0xFFFFFF00,
+            0x0000FF00,
+            0x0000FF00,
+/* 5 */
+            0xFFFFFF00,
+            0xFF000000,
+            0xFFFF0000,
+            0x0000FF00,
+            0xFFFF0000,
+/* 6 */
+            0x00FF0000,
+            0xFF000000,
+            0xFFFF0000,
+            0xFF00FF00,
+            0x00FF0000,
+/* 7 */
+            0xFFFFFF00,
+            0x0000FF00,
+            0x00FF0000,
+            0xFF000000,
+            0xFF000000,
+/* 8 */
+            0x00FF0000,
+            0xFF00FF00,
+            0x00FF0000,
+            0xFF00FF00,
+            0xFFFFFF00,
+/* 9 */
+            0x00FF0000,
+            0xFF00FF00,
+            0x00FFFF00,
+            0x0000FF00,
+            0x00FF0000,
+/* * */
+            0x00FF0000,
+            0xFFFFFF00,
+            0x00FF0000,
+            0xFF00FF00,
+            0x00000000,
+/* / */
+            0x0000FF00,
+            0x00FF0000,
+            0x00FF0000,
+            0xFF000000,
+            0xFF000000
+};
+
+void DrawMicroChar(int *s, int c, int x, int y)
+{
+    byte *d = bufferpage + x + y*320;
+    int mask, f, i;
+
+    for (i=0; i<5; i++)
+    {
+        mask = *s++;
+        f = c & mask;
+        if (mask & 0xFF)
+            d[3] = f & 0xFF;
+        f >>= 8;
+        if (mask & 0xFF00)
+            d[2] = f & 0xFF;
+        f >>= 8;
+        if (mask & 0xFF0000)
+            d[1] = f & 0xFF;
+        f >>= 8;
+        if (mask & 0xFF000000)
+            d[0] = f & 0xFF;
+        d += 320;
+    }
+}
 
 /*
 ====================
@@ -54,9 +167,10 @@ void ST_Init (void)
 	for (i = 0; i < NUMSBOBJ; i++)
 		sbobj[i] = W_CacheLumpNum(l+i, PU_STATIC);
 
-	l = W_GetNumForName ("MICRO_2");
+/*  l = W_GetNumForName ("MICRO_2");
 	for (i = 0; i < NUMMICROS; i++)
 		micronums[i] = W_CacheLumpNum(l+i, PU_STATIC);
+*/
 }
 
 /*================================================== */
@@ -306,16 +420,41 @@ void ST_Drawer (void)
 		
 		for (ind = 0; ind < NUMMICROS; ind++)
 		{
-			if (p->weaponowned[ind+1] != stbar.weaponowned[ind])
+			if ((p->weaponowned[ind+1] != stbar.weaponowned[ind]) || 
+                (p->ammo[w2a[ind+1]] != stbar.wammo[w2a[ind]]) ||
+                ((stbar.lastweapon == ind+1) && (p->readyweapon != stbar.lastweapon)))
 			{
+                /* change in status */
 				stbar.weaponowned[ind] = p->weaponowned[ind+1];
+                stbar.wammo[ind] = p->ammo[w2a[ind+1]];
+				EraseBlock(micronums_x[ind],micronums_y[ind],4,6);
+
 				if (stbar.weaponowned[ind])
-					DrawJagobj(micronums[ind],
+                {
+                    int color = WHITE; /* infinite ammo */
+                    if (p->readyweapon == ind+1)
+                        color = GREEN; /* weapon equipped */
+					else if (stbar.wammo[ind] >= (p->maxammo[w2a[ind+1]] >> 1))
+                        color = BLUE; /* more than half max ammo */
+                    else if (stbar.wammo[ind] > 0)
+                        color = YELLOW; /* less than half max ammo */
+                    else if (stbar.wammo[ind] == 0)
+                        color = RED; /* no ammo */
+					DrawMicroChar(&microchars[w2m[ind+1]*5], color,
 						micronums_x[ind],micronums_y[ind]);
-				else
-					EraseBlock(micronums_x[ind],micronums_y[ind],4,6);
+                }
 			}
 		}
+        if (p->readyweapon != stbar.lastweapon)
+        {
+            ind = stbar.lastweapon = p->readyweapon;
+            if (ind)
+            {
+                EraseBlock(micronums_x[ind-1],micronums_y[ind-1],4,6);
+				DrawMicroChar(&microchars[w2m[ind]*5], GREEN,
+					micronums_x[ind-1],micronums_y[ind-1]);
+            }
+        }
 	}
 	/* */
 	/* Or, frag counts! */

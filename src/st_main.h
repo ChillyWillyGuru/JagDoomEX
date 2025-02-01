@@ -100,7 +100,9 @@ typedef struct
 	int		yourFrags;
 	int		hisFrags;
 	int		currentMap;
+    int		wammo[NUMMICROS];
 	boolean	weaponowned[NUMMICROS];
+    weapontype_t lastweapon;
 	
 	/* Messaging */
 	spclface_e	specialFace;	/* Which type of special face to make */
