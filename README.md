@@ -139,6 +139,7 @@ with JagLink in any case.
 
 ## Changelog
 ```
+250201 - Fixed bug with indicators.
 250201 - Colored Arms Indicators added.
 250131 - Anamorphic widescreen option implemented.
 241216 - Unlocked all levels.

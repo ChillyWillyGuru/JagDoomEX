@@ -448,7 +448,7 @@ void ST_Drawer (void)
         if (p->readyweapon != stbar.lastweapon)
         {
             ind = stbar.lastweapon = p->readyweapon;
-            if (ind)
+            if (ind && ind < wp_chainsaw)
             {
                 EraseBlock(micronums_x[ind-1],micronums_y[ind-1],4,6);
 				DrawMicroChar(&microchars[w2m[ind]*5], GREEN,
