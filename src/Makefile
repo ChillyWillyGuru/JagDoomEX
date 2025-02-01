@@ -268,5 +268,11 @@ rom:
 	dd if=temp3.bin of=JagDoomEX.j64 bs=4096K conv=sync
 #	dd if=JagDoomEX.j64 of=JagDoomEX.rom ibs=8192 skip=1
 
+usb:
+	./jaggd -rd
+	./jaggd -u ./doom.abs,a:0x2000
+	./jaggd -u ./doom.wad,a:0x840000
+	./jaggd -x 0x2000
+
 wad:
 	dd if=Doom.j64 of=doom.wad ibs=256K skip=1
