@@ -72,6 +72,34 @@ directory which is exactly 4194304 bytes in length. This rom file can be run in
 a Jaguar emulator like BigPEmu, or on real hardware using a skunkboard or the
 Jaguar GameDrive cart.
 
+## Loading JagDoomEX across USB to Jaguar GameDrive cart
+
+If you have the JagGD cart hooked to your computer via USB, you can quickly test
+the game using an abbreviated build. Make sure you have the 'jaggd' program in
+the JagDoomEX/src directory. Do an abbreviated build
+```
+make clean
+dosemu
+```
+```
+H:
+cd src
+runme
+make
+exitemu
+```
+Then load and run JagDoomEX by running
+```
+sudo make usb
+```
+You should see the Jaguar reboot to the JagGD logo, load the code file, load the
+wad file, then start the game.
+
+I suggest using the open source reimplementation of jaggd by cubanismo:
+https://github.com/cubanismo/open_jaggd
+
+Build the tool and copy the executable to JagDoomEX/src/.
+
 ## New Features
 
 You can select widescreen on/off in the Options menu. This makes Doom look the
