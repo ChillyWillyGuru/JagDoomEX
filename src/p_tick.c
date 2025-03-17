@@ -483,6 +483,8 @@ void P_Start (void)
 #ifndef MARS
 	AM_Start ();
 	S_RestartSounds ();
+    /* start level music */
+    S_StartSong(gamemap%10, 1);
 #endif
 	players[0].automapflags = 0;
 	players[1].automapflags = 0;
@@ -493,5 +495,7 @@ void P_Start (void)
 void P_Stop (void)
 {
 	Z_FreeTags (mainzone);
-}
 
+    /* stop level music */
+    S_StopSong();
+}

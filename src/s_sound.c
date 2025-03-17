@@ -200,7 +200,7 @@ gotchannel:
 	newchannel->stopquad = finalquad + (sfx->md_data->samples>>2);
 	newchannel->source = (int *)&sfx->md_data->data;	
 	newchannel->volume = vol * (short)sfxvolume;
-	
+	channelschanged = true;  /* Signal S_UpdateSounds to mix this SFX */
 #endif
 }
 
@@ -244,17 +244,6 @@ void S_UpdateSounds(void)
 		oldsfxvolume = sfxvolume;
 	}
 	
-/* */
-/* print debugging info */
-/* */
-#if 0
-	for (i=0 ; i<SFXCHANNELS ; i++)
-	{
-		PrintNumber (1,1+i,sfxchannels[i].sfx - S_sfx);
-	}
-
-#endif
-
 	soundstarttics = samplecount;		/* for timing calculations */
 
 /* */
@@ -263,7 +252,6 @@ void S_UpdateSounds(void)
 
 	if (music)
 	{
-		
 		if (!musictime)
 			musictime = next_eventtime = samplecount + EXTERN_BUFFER_SIZE/2;
 		while (samplecount - musictime > EXTERN_BUFFER_SIZE)
@@ -273,18 +261,23 @@ void S_UpdateSounds(void)
 		}
 		st = samplecount;
 		DSPFunction (&music_dspcode);
-		musictics = samplecount - st;
+		musictics = samplecount - st; /* how long it took to generate the music */
 
-	}
+        /* mix SFX with music */
+        st = samplecount;
+        dspfinished = 0x1234;
+        dspcodestart = (int)&sfx_start;
+        DSPFunction(&sfx_start);
+        soundtics = samplecount - st; /* how long it took to generate and mix the sfx */
+    }
 	else
 	{
-#if 0
-((int *)0x1f8000)[ticon*2] = samplecount;
-((int *)0x1f8000)[ticon*2+1] = sfxsample;
-#endif
-		dspfinished = 0x1234;
-		dspcodestart = (int)&sfx_start;
-	}
+        st = samplecount;
+        dspfinished = 0x1234;
+        dspcodestart = (int)&sfx_start;
+        DSPFunction(&sfx_start);
+        soundtics = samplecount - st;
+    }
 
 #endif
 }
@@ -302,7 +295,7 @@ void S_StartSong(int music_id, int looping)
 		(unsigned char *) W_CacheLumpNum(lump, PU_STATIC);
 	music_start = looping ? music : 0;
 	music_end = (unsigned char *) music + lumpinfo[lump].size ;
-
+    sfxsample = musictime; /* Align SFX with music start */
 }
 
 void S_StopSong(void)

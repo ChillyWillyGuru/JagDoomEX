@@ -112,13 +112,25 @@ satloop:
 	
 	sharq	#8,sw_sample
 	sat16s	sw_sample
+
+    load    (sw_dest),scratch
+    move    scratch,scratch2
+    sharq   #16,scratch2    
+    shlq    #16,scratch
+    sharq   #16,scratch
+
+    add     sw_sample,scratch
+    sat16s  scratch
+	and		sw_mask,scratch
+
+    add     scratch2,sw_sample
+    sat16s  sw_sample
 	and		sw_mask,sw_sample
 	
-; double samples for 22 khz isr
 	move	sw_sample,sw_combined
 	shlq	#16,sw_combined
-	add		sw_sample,sw_combined
-	
+	add		scratch,sw_combined
+
 	store	sw_combined,(sw_dest)
 	addqmod	#4,sw_dest
 		

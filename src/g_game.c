@@ -367,13 +367,13 @@ void G_RunGame (void)
 	
 	while (1)
 	{
-	/* load a level */
+        /* load a level */
 		G_DoLoadLevel ();   
 	
-	/* run a level until death or completion */
+        /* run a level until death or completion */
 		MiniLoop (P_Start, P_Stop, P_Ticker, P_Drawer);
-	
-	/* take away cards and stuff */
+
+        /* take away cards and stuff */
 			
 		for (i=0 ; i<MAXPLAYERS ; i++) 
 			if (playeringame[i]) 
@@ -385,7 +385,7 @@ void G_RunGame (void)
 		if (gameaction == ga_warped)
 			continue;			/* skip intermission */
 					
-	/* decide which level to go to next */
+        /* decide which level to go to next */
 #ifdef MARS
 		if (gameaction == ga_secretexit)
 			nextmap = 24;
@@ -423,10 +423,10 @@ void G_RunGame (void)
 		}
 #endif
 
-	/* run a stats intermission */
+        /* run a stats intermission */
 		MiniLoop (IN_Start, IN_Stop, IN_Ticker, IN_Drawer);
 	
-	/* run the finale if needed */
+        /* run the finale if needed */
 		if (gamemap == 23)
 			MiniLoop (F_Start, F_Stop, F_Ticker, F_Drawer);
 			
@@ -452,7 +452,7 @@ int G_PlayDemoPtr (int *demo)
 	demoplayback = true;
 	exit = MiniLoop (P_Start, P_Stop, P_Ticker, P_Drawer);
 	demoplayback = false;
-	
+
 	return exit;
 }
 
@@ -482,7 +482,7 @@ void G_RecordDemo (void)
 	while (1)
 	{
 		G_PlayDemoPtr (demobuffer);
-	D_printf ("w %x,%x",demobuffer,demo_p);
+        D_printf ("w %x,%x",demobuffer,demo_p);
 	}
 	
 }

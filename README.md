@@ -115,6 +115,11 @@ ammo. At a glance, you get vital information. I can make this an option if
 people prefer not having colored indicators. Let me know how you feel about
 this.
 
+I now have music and sfx going at the same time. It does slow the game somewhat.
+It needs optimizing, but this will at least get the ball rolling on music in
+JagDoom. The SfxVolume slider controls the volume of both the sfx and music. This
+will change soon.
+
 ## New Controls
 
 C/B/A/PAUSE/OPTION remain as set in the game. The differences arise in the
@@ -154,10 +159,16 @@ or a PS/2 mouse with appropriate adapter for upcoming mouse support.
 ## Acknowledgements
 ```
 John Carmack for writing such an awesome game, and releasing it to the public.
+
 Carl Forhan for arranging for the code, and doing the initial work to get it
 running.
+
 CyranoJ for fixing the offset in the HUD in the code released by Carl.
+
 Bitbotherer for the tips that allowed me to get init.s working on real harware.
+
+Tolbat and JagChris for their help and inspiration in getting music working.
+They really pushed that along.
 ```
 ## Known Bugs
 
@@ -167,6 +178,7 @@ with JagLink in any case.
 
 ## Changelog
 ```
+250316 - First release with music and sfx during game.
 250201 - Fixed bug with indicators.
 250201 - Colored Arms Indicators added.
 250131 - Anamorphic widescreen option implemented.

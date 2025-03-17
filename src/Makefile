@@ -270,8 +270,9 @@ rom:
 
 usb:
 	./jaggd -rd
-	./jaggd -u ./doom.abs,a:0x2000
 	./jaggd -u ./doom.wad,a:0x840000
+	./jaggd -u ./doom.abs,a:0x2000
+	./jaggd -e JagDoomEX.e2p
 	./jaggd -x 0x2000
 
 wad:

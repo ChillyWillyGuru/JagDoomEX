@@ -149,11 +149,15 @@ blitwait1:
     nop
 ;    movei   #$41002F01,dv_cmd   ; command if invisible (hole in spacetime)
 ;    movei   #$41202F01,dv_cmd   ; command if invisible (ghostly phantoms)
-;    movei   #$00028F09,dv_cmd   ; command if invisible (translucent)
-;    movei   #$0002CF09,dv_cmd   ; command if invisible (translucent - rgb)
-    movei   #$00020F09,dv_cmd   ; command if invisible (translucent - cry)
-;    moveq   #0,r0
-    movei   #128,r0
+;    movei   #$00020F09,dv_cmd   ; command if invisible (translucent)
+    movei   #$00024F09,dv_cmd   ; command if invisible (translucent)
+    moveq   #0,r1
+	movei	#$f02270,r0         ; intensity inc
+    nop
+	store	r1,(r0)
+    jr      NE,skip2
+    nop
+
 skip1:
 	movei	#255,r1
 	sub		r0,r1
@@ -162,8 +166,9 @@ skip1:
 	shlq	#8,r1
 	shrq	#8,r1			; mask off high 8 bits
 	movei	#$f02270,r0     ; intensity inc
+    nop
 	store	r1,(r0)
-
+skip2:
 	
 ;===========================
 ;
@@ -275,7 +280,8 @@ blitwait2:
 	load	(dv_blitter+14),r1
 	btst	#0,r1
 	jr		EQ,blitwait2
-	move	dv_frac,r1 ;(frac)			; delay slot
+    nop
+	move	dv_frac,r1 ;(frac)			; no longer in delay slot - avoid race condition
 	
 	shrq	#16,r1
 	shlq	#16,dv_frac
@@ -307,7 +313,8 @@ nextpost:
 	btst	#15,dv_oldcolread			; last column marker
 	move	dv_oldcolread,dv_col_offset
 	jr		NE,nextx
-	move	dv_col_offset,dv_top		; harmless delay slot
+    nop
+	move	dv_col_offset,dv_top		; moved out of delay slot
 	
 	load	(dv_column),dv_oldcolread	; start next read now
 	

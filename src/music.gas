@@ -66,6 +66,7 @@ sw_zero		.equr	r21
 sw_looppoint .equr	r22
 
 	.extern	_musictime
+    .extern _musicvolume
 
 	load	(FP),sw_samples
 	
@@ -78,17 +79,23 @@ sw_looppoint .equr	r22
 	movei	#$1fff,scratch
 	and		scratch,sw_dest
 	movei	#$1f0000,scratch
-	add		scratch,sw_dest				; sw_dest = externbuffer[sfxtime*2]
+	add		scratch,sw_dest				; sw_dest = extern_buffer[(musictime*2)&EXTERN_MASK]
 	
+	movei	#_musicvolume,scratch2
+	load	(scratch2),scratch
+
 	movei	#_internal_buffer,sw_source
 	movei	#satloop,sw_looppoint
 	
 	load	(sw_source),sw_sample		; delay slotted
 satloop:
-	store	sw_zero,(sw_source)
-	sharq	#8,sw_sample
+	store	sw_zero,(sw_source)         ; clear internal buffer as written to external buffer
+	sharq	#8,sw_sample                ; 32 to 24 bit conversion
 	addq	#4,sw_source
-	sat16s	sw_sample
+	sat16s	sw_sample                   ; saturate to 16 bits
+    imult   scratch,sw_sample
+    sharq	#8,sw_sample                ; volume scale
+	sat16s	sw_sample                   ; saturate to 16 bits
 
 	storew	sw_sample,(sw_dest)
 	addqmod	#2,sw_dest
