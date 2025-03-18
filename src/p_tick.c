@@ -484,7 +484,7 @@ void P_Start (void)
 	AM_Start ();
 	S_RestartSounds ();
     /* start level music */
-    S_StartSong(gamemap%10, 1);
+    S_StartSong(((gamemap-1)%10)+1, 1);
 #endif
 	players[0].automapflags = 0;
 	players[1].automapflags = 0;

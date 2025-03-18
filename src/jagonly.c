@@ -1424,7 +1424,7 @@ void ClearEEProm (void)
 	startskill = sk_medium;
 	startmap = 1;
 	sfxvolume = 200;
-	musicvolume = 128;
+	musicvolume = 100;
 	controltype = 0;
 	maxlevel = 24;      /* chillywilly - all levels unlocked */
     anamorphicview = 0; /* chillywilly - widescreen disabled */

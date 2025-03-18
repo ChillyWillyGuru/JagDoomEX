@@ -65,9 +65,6 @@ sw_combined	.equr	r20
 sw_zero		.equr	r21
 sw_looppoint .equr	r22
 
-	.extern	_musictime
-    .extern _musicvolume
-
 	load	(FP),sw_samples
 	
 	moveq	#0,sw_zero
@@ -81,9 +78,6 @@ sw_looppoint .equr	r22
 	movei	#$1f0000,scratch
 	add		scratch,sw_dest				; sw_dest = extern_buffer[(musictime*2)&EXTERN_MASK]
 	
-	movei	#_musicvolume,scratch2
-	load	(scratch2),scratch
-
 	movei	#_internal_buffer,sw_source
 	movei	#satloop,sw_looppoint
 	
@@ -92,9 +86,6 @@ satloop:
 	store	sw_zero,(sw_source)         ; clear internal buffer as written to external buffer
 	sharq	#8,sw_sample                ; 32 to 24 bit conversion
 	addq	#4,sw_source
-	sat16s	sw_sample                   ; saturate to 16 bits
-    imult   scratch,sw_sample
-    sharq	#8,sw_sample                ; volume scale
 	sat16s	sw_sample                   ; saturate to 16 bits
 
 	storew	sw_sample,(sw_dest)
@@ -497,7 +488,7 @@ L65:
  movei #_music,r1
  load (r1),r1
  loadb (r1),r1
- movei #_sfxvolume,r2
+ movei #_musicvolume,r2
  load (r2),r2
  move r1,MATH_A
  movei #L84,MATH_RTS
@@ -604,7 +595,7 @@ L69:
  movei #_music,r1
  load (r1),r1
  loadb (r1),r1
- movei #_sfxvolume,r2
+ movei #_musicvolume,r2
  load (r2),r2
  move r1,MATH_A
  movei #L86,MATH_RTS
@@ -1286,7 +1277,7 @@ _internal_buffer::
  .extern _music_channels
  .extern _instruments
  .extern _samplecount
- .extern _sfxvolume
+ .extern _musicvolume
  .extern _M_PaintSingleChannel
 
 	.phrase

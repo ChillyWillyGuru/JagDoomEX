@@ -38,6 +38,7 @@ typedef enum
 {
     widescrn,
 	soundvol,
+    musicvol,
 	controls,
 	NUMMENUITEMS
 } menupos_t;
@@ -52,7 +53,7 @@ typedef struct
 	char 	name[20];
 } menuitem_t;
 
-menuitem_t menuitem[4];
+menuitem_t menuitem[5];
  
 typedef struct
 {
@@ -60,7 +61,7 @@ typedef struct
 	int	maxval;
 } slider_t;
 
-slider_t slider[4];
+slider_t slider[5];
 
 int		cursorframe, cursorcount;
 int		movecount;
@@ -165,16 +166,23 @@ void O_Init (void)
 	menuitem[widescrn].y = 40;
 	menuitem[widescrn].hasslider = false;
 
-/*    strcpy(menuitem[soundvol].name, "    Volume"); */
-    D_strncpy(menuitem[soundvol].name, "    Volume", 10); /* Fixed CEF */
-	menuitem[soundvol].x = 85;
+    D_strncpy(menuitem[soundvol].name, "Sfx Vol", 7); /* Fixed CEF */
+	menuitem[soundvol].x = 45;
 	menuitem[soundvol].y = 80;
 	menuitem[soundvol].hasslider = true;
 
  	slider[soundvol].maxval = 16;
 	slider[soundvol].curval = 16*sfxvolume/255;
 
-/*    strcpy(menuitem[controls].name, "  Controls"); */
+/*  chillywilly: music volume */
+    D_strncpy(menuitem[musicvol].name, "Mus Vol", 7);
+	menuitem[musicvol].x = 45;
+	menuitem[musicvol].y = 100;
+	menuitem[musicvol].hasslider = true;
+
+ 	slider[musicvol].maxval = 16;
+	slider[musicvol].curval = 16*musicvolume/255;
+
     D_strncpy(menuitem[controls].name, "  Controls", 10); /* Fixed CEF */
 	menuitem[controls].x = 85;
 	menuitem[controls].y = 120;
@@ -241,6 +249,10 @@ void O_Control (player_t *player)
 						sfxvolume = 255*slider[soundvol].curval / slider[soundvol].maxval;
 						S_StartSound (NULL, sfx_pistol);
 					}
+					else if (cursorpos == musicvol)
+					{
+						musicvolume = 255*slider[musicvol].curval / slider[musicvol].maxval;
+					}
 				}
 			}
 			if (buttons & JP_LEFT)
@@ -254,6 +266,10 @@ void O_Control (player_t *player)
 					{
 						sfxvolume = 255*slider[soundvol].curval / slider[soundvol].maxval;
 						S_StartSound (NULL, sfx_pistol);
+					}
+					else if (cursorpos == musicvol)
+					{
+						musicvolume = 255*slider[musicvol].curval / slider[musicvol].maxval;
 					}
 				}
 			}
@@ -311,11 +327,11 @@ void O_Drawer (void)
 	int		offset;
 	
 /* Erase old and Draw new cursor frame */
-	EraseBlock(56, 40, o_cursor1->width, 200);
+	EraseBlock(16, 40, o_cursor1->width, 200);
 	if(cursorframe)
-		DrawJagobj(o_cursor1, 60, menuitem[cursorpos].y - 2);
+		DrawJagobj(o_cursor1, 20, menuitem[cursorpos].y - 2);
 	else
-		DrawJagobj(o_cursor2, 60, menuitem[cursorpos].y - 2);
+		DrawJagobj(o_cursor2, 20, menuitem[cursorpos].y - 2);
 
 /* Draw menu */
 
@@ -327,9 +343,9 @@ void O_Drawer (void)
 
 		if(menuitem[i].hasslider == true)
 		{
-			DrawJagobj(o_slidertrack , menuitem[i].x + 12, menuitem[i].y + 20);
+			DrawJagobj(o_slidertrack , menuitem[i].x + 112, menuitem[i].y + 2);
 			offset = (slider[i].curval * SLIDEWIDTH) / slider[i].maxval;
-			DrawJagobj(o_slider, menuitem[i].x + 17 + offset, menuitem[i].y + 20);
+			DrawJagobj(o_slider, menuitem[i].x + 117 + offset, menuitem[i].y + 2);
 		}
 	}
 	

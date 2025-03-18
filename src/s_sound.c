@@ -11,9 +11,10 @@ boolean			channelschanged;	/* set by S_StartSound to signal */
 
 int				finalquad;			/* the last quad mixed by update. */
 									
-int 			sfxvolume = 128;	/* range 0 - 255 */
-int 			musicvolume = 128;	/* range 0 - 255 */
-int				oldsfxvolume = 128;	/* to detect transition to sound off */
+int 			sfxvolume = 200;	/* range 0 - 255 */
+int 			musicvolume = 100;	/* range 0 - 255 */
+int				oldsfxvolume = 200;	/* to detect transition to sound off */
+int				oldmusvolume = 100;	/* to detect transition to music off */
 
 int				soundtics;			/* time spent mixing sounds */
 int				soundstarttics;		/* time S_Update started */
@@ -37,6 +38,8 @@ unsigned char	*music_memory;		/* current location of cached music */
 int             samples_per_midiclock;	/* multiplier for midi clocks */
 
 int				musictics = 0;
+
+int             curmid, curlp;      /* last music id/looping requested for volume on/off */
 
 #define abs(x) ((x)<0 ? -(x) : (x))
 
@@ -232,10 +235,10 @@ void S_UpdateSounds(void)
 	{
 		if (oldsfxvolume)
 		{
+            /* sound just turned off, clear buffer */
 			oldsfxvolume = 0;
-			S_Clear ();
+			S_Clear();
 		}
-		return;
 	}
 	else
 	{
@@ -243,6 +246,23 @@ void S_UpdateSounds(void)
 			finalquad = (samplecount >> 3) - 100;	/* don't mix lots of junk */
 		oldsfxvolume = sfxvolume;
 	}
+
+	if (!musicvolume)
+	{
+        if (oldmusvolume)
+        {
+            /* music just turned off */
+            oldmusvolume = 0;
+            S_StopSong();
+            S_Clear();
+        }
+    }
+    else
+    {
+        if (!oldmusvolume)
+            S_StartSong(curmid, curlp); /* just turned on, restart music */
+        oldmusvolume = musicvolume;
+    }
 	
 	soundstarttics = samplecount;		/* for timing calculations */
 
@@ -263,20 +283,27 @@ void S_UpdateSounds(void)
 		DSPFunction (&music_dspcode);
 		musictics = samplecount - st; /* how long it took to generate the music */
 
-        /* mix SFX with music */
-        st = samplecount;
-        dspfinished = 0x1234;
-        dspcodestart = (int)&sfx_start;
-        DSPFunction(&sfx_start);
-        soundtics = samplecount - st; /* how long it took to generate and mix the sfx */
+        if (sfxvolume)
+        {
+            /* mix SFX with music */
+            st = samplecount;
+            sfxsample = musictime;
+            dspfinished = 0x1234;
+            dspcodestart = (int)&sfx_start;
+            DSPFunction(&sfx_start);
+            soundtics = samplecount - st; /* how long it took to generate and mix the sfx */
+        }
     }
 	else
 	{
-        st = samplecount;
-        dspfinished = 0x1234;
-        dspcodestart = (int)&sfx_start;
-        DSPFunction(&sfx_start);
-        soundtics = samplecount - st;
+        if (sfxvolume)
+        {
+            st = samplecount;
+            dspfinished = 0x1234;
+            dspcodestart = (int)&sfx_start;
+            DSPFunction(&sfx_start);
+            soundtics = samplecount - st;
+        }
     }
 
 #endif
@@ -284,38 +311,47 @@ void S_UpdateSounds(void)
 
 void S_StartSong(int music_id, int looping)
 {
-
 	int lump;
 
+    curmid = music_id;
+    curlp = looping;
 	next_eventtime = musictime;
 	musictime = 0;
 	samples_per_midiclock = 0;
-	lump = W_GetNumForName(S_music[music_id].name);
-	music_memory = music = 
-		(unsigned char *) W_CacheLumpNum(lump, PU_STATIC);
-	music_start = looping ? music : 0;
-	music_end = (unsigned char *) music + lumpinfo[lump].size ;
-    sfxsample = musictime; /* Align SFX with music start */
+    if (musicvolume)
+    {
+        lump = W_GetNumForName(S_music[music_id].name);
+        music_memory = music = 
+            (unsigned char *) W_CacheLumpNum(lump, PU_STATIC);
+        music_start = looping ? music : 0;
+        music_end = (unsigned char *) music + lumpinfo[lump].size ;
+        sfxsample = musictime; /* Align SFX with music start */
+    }
+    else
+    {
+        music_memory = music = 0;
+        sfxsample = 0;
+    }
 }
 
 void S_StopSong(void)
 {
-
 	int i;
 	int *ptr;
 
-	Z_Free (music_memory);
-	music = 0;							/* prevent the DSP from running */
+    if (music)
+    {
+        Z_Free (music_memory);
+        music = 0;							/* prevent the DSP from running */
+    }
 
-	ptr = soundbuffer+1;				/* clear music output buffer */
-	for (i=(EXTERNALQUADS*32)/4;i;i-=8)
-	{
+    ptr = soundbuffer+1;				/* clear music output buffer */
+    for (i=(EXTERNALQUADS*32)/4;i;i-=8)
+    {
 		ptr[0] = 0;
 		ptr[2] = 0;
 		ptr[4] = 0;
 		ptr[6] = 0;
 		ptr += 8;
 	}
-
 }
-

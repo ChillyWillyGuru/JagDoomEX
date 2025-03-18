@@ -117,8 +117,10 @@ this.
 
 I now have music and sfx going at the same time. It does slow the game somewhat.
 It needs optimizing, but this will at least get the ball rolling on music in
-JagDoom. The SfxVolume slider controls the volume of both the sfx and music. This
-will change soon.
+JagDoom. The Sfx Vol slider controls the volume of sfx, and the Mus Vol slider
+controls the volume of the music. When the music is off, the speed returns to
+normal. I did increase the speed with music a hair, but it's still noticeably
+slower than without music.
 
 ## New Controls
 
@@ -178,6 +180,8 @@ with JagLink in any case.
 
 ## Changelog
 ```
+250318 - Fixed music bug when starting maps 10 and 20. Separate SFX and Music
+         volume sliders in the options.
 250316 - First release with music and sfx during game.
 250201 - Fixed bug with indicators.
 250201 - Colored Arms Indicators added.
